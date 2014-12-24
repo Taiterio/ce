@@ -1,0 +1,10 @@
+name: CustomEnchantments
+main: com.taiter.ce.Main
+version: 2.1c
+
+softdepend: [WorldGuard, WorldEdit, Vault]
+
+commands:
+  customenchantments:
+   description: The main command for Custom Enchantments
+   aliases: [ce]

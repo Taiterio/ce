@@ -1,0 +1,17 @@
+Global:
+ Logging:
+  Enabled: false
+  MinimumMsForLog: 1000
+  LogEvents: true
+  LogItems: true
+  LogEnchantments: true
+ Enchantments:
+  CEnchantmentColor: DARK_RED;ITALIC
+  CEnchantmentTable: true
+  CEnchantingProbability: 10
+  StrictEnchantmentChecking: false
+  MaximumCustomEnchantments: 1000
+  RequirePermissions: true
+  RepeatPotionEffects: true
+  RepeatDelay: 600
+Enchantments:

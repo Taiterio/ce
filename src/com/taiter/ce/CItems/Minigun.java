@@ -1,0 +1,110 @@
+package com.taiter.ce.CItems;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
+
+
+public class Minigun extends CItem {
+
+	int ArrowCountPerVolley;
+	int ShotsPerSecond;
+
+	
+	public Minigun(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
+		super(originalName, color, lDescription, lCooldown, mat);
+		this.configEntries.add("ArrowCountPerVolley: 20");
+		this.configEntries.add("ShotsPerSecond: 20");
+	}
+
+	@Override
+	public boolean effect(Event event, final Player player) {
+		final EntityShootBowEvent e = (EntityShootBowEvent) event;
+		e.setCancelled(true);
+		addLock(player);
+
+			new BukkitRunnable() {
+				
+				int lArrows = ArrowCountPerVolley;
+				ItemStack last = player.getItemInHand();
+				
+				@Override
+				public void run() {
+					if (lArrows > 0) {
+						if(player.getItemInHand().hasItemMeta() && player.getItemInHand().getItemMeta().equals(last.getItemMeta())) {
+							if (player.getGameMode().equals(GameMode.CREATIVE) || player.getInventory().contains(Material.ARROW, 1)) {
+								if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+									if(last.getDurability() < 380) {
+										
+										last.setDurability((short) (last.getDurability() + 1));
+										last = player.getItemInHand();
+										
+									} else {
+										
+										ItemStack brokenItem = new ItemStack(Material.AIR);
+										player.setItemInHand(brokenItem);
+										player.getWorld().playEffect(player.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
+										player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.4f, 0f);
+										removeLock(player);
+										this.cancel();
+										
+									}
+								
+								
+									ItemStack arrows = new ItemStack(
+										Material.ARROW, 1);
+									player.getInventory().removeItem(
+										arrows);
+								}
+
+								Arrow arrow = player.launchProjectile(Arrow.class);
+								arrow.setBounce(false);
+								arrow.setVelocity(player.getLocation().getDirection().multiply(5));
+								arrow.setShooter(player);
+								arrow.setMetadata("ce.minigunarrow", new FixedMetadataValue(main, null));
+								player.getWorld().playEffect(player.getLocation(),Effect.BOW_FIRE, 20);
+								lArrows--;
+								return;
+								
+							} else {
+								
+							player.sendMessage(ChatColor.RED + "Out of ammo!");
+							player.getWorld().playEffect(player.getLocation(), Effect.CLICK2, 80);
+							
+							}
+						}
+					}
+					
+					removeLock(player);
+					this.cancel();
+					
+				}
+			}.runTaskTimer(main, 0l, 20/ShotsPerSecond);
+			
+			return true;
+		
+	}
+
+	@Override
+	public void initConfigEntries() {
+		ArrowCountPerVolley = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".ArrowCountPerVolley"));
+		ShotsPerSecond = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".ShotsPerSecond"));
+		if(ShotsPerSecond > 20) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Warning: The Minigun setting 'ShotsPerSecond' is too high,");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE]          the maximum value is 20, which will be used instead. ");
+			ShotsPerSecond = 20;
+		}
+
+	}
+
+}
