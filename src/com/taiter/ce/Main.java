@@ -156,17 +156,17 @@ public final class Main extends JavaPlugin {
     	lorePrefix = tools.resolveEnchantmentColor();
     	
     	//TODO: This has to be commented out to allow versions below WorldGuard 6.0 to be compatible 
-//    	WorldGuardPlugin wl = getWorldGuard();
-//    	if(wl != null)
-//    		try {
-//    			query = wl.getRegionContainer().createQuery();
-//    		} catch (NoSuchMethodError e) {
-//    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] You are using an outdated version of WorldGuard,");
-//    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] errors or incompatibility may result,");
-//    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please consider upgrading to WorldGuard 6.0.");    			
-//    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Alternatively, download the CE version that is");
-//    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] compatible with pre-WorldGuard 6.0 versions.");
-//    		}
+    	WorldGuardPlugin wl = getWorldGuard();
+    	if(wl != null)
+    		try {
+    			query = wl.getRegionContainer().createQuery();
+    		} catch (NoSuchMethodError e) {
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] You are using an outdated version of WorldGuard,");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] errors or incompatibility may result,");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please consider upgrading to WorldGuard 6.0.");    			
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Alternatively, download the CE version that is");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] compatible with pre-WorldGuard 6.0 versions.");
+    		}
 
         
     	
