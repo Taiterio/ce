@@ -129,11 +129,11 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable(){
     	    	
-    	plugin 		= this;
-    	commandC 	= new CeCommand(this);
+    	plugin			= this;
+    	commandC		= new CeCommand(this);
     	
-    	items		 = new ArrayList<CItem>();
-    	enchantments = new ArrayList<CEnchantment>();
+    	items		 	= new ArrayList<CItem>();
+    	enchantments 	= new ArrayList<CEnchantment>();
     	
         
     	this.saveDefaultConfig();
@@ -141,7 +141,8 @@ public final class Main extends JavaPlugin {
     	config.options().copyDefaults(true);
     	this.saveConfig();
     	
-    	tools 		= new Tools();
+    	//This needs to be created after the config is created (See the variables RepeatDelay and RepeatPotionEffects)
+    	tools = new Tools();
     	
     	if(config.contains("enchantments"))
     		tools.convertOldConfig();

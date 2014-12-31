@@ -16,6 +16,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.Tools;
+
 
 
 public class Flamethrower extends CItem {
@@ -60,9 +62,8 @@ public class Flamethrower extends CItem {
 			} else {
 				final List<Location> list = getLinePlayer(player, FireBlocksPerBurst);
 				for(final Location l: list) {
-					if(l.getBlock().getType().equals(Material.AIR)) {
-					l.getBlock().setType(Material.FIRE);
-					}
+					if(l.getBlock().getType().equals(Material.AIR))
+						l.getBlock().setType(Material.FIRE);
 					l.getWorld().playEffect(l, Effect.SMOKE, 20);
 					final FallingBlock fire = l.getWorld().spawnFallingBlock(l, Material.FIRE.getId(), (byte) 0x00);
 					fire.setDropItem(false);
@@ -74,7 +75,7 @@ public class Flamethrower extends CItem {
 							list.add(fire.getLocation());
 							this.cancel();
 						} else {
-							if(fire.getLocation().getBlock().getType().equals(Material.WATER) || fire.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)) {
+							if(!Tools.checkBuildPermission(fire.getLocation(), player) || fire.getLocation().getBlock().getType().equals(Material.WATER) || fire.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)) {
 								fire.getWorld().playEffect(fire.getLocation(), Effect.EXTINGUISH, 60);
 								fire.remove();
 								this.cancel();

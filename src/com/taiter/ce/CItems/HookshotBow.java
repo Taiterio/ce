@@ -1,6 +1,7 @@
 package com.taiter.ce.CItems;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -40,14 +41,20 @@ public class HookshotBow extends CItem {
 			if(e.getAction().toString().startsWith("LEFT")) {
 				ItemStack item = player.getItemInHand();
 				ItemMeta im = item.getItemMeta();
-				List<String> lore = im.getLore();
+				List<String> lore = new ArrayList<String>();
+				if(im.hasLore())
+					lore =  im.getLore();
 				player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
 				String newMode = ChatColor.DARK_GRAY + "Push";
-				if(im.getLore().contains(PushLine)) {
+				if(lore.contains(PushLine)) {
 					lore.set(lore.size() - 1, PullLine);
 					newMode = ChatColor.DARK_GRAY + "Pull";
-				} else 
-					lore.set(lore.size() - 1, PushLine);
+				} else  {
+					if(lore.size() == 0)
+						lore.add(PushLine);
+					else
+						lore.set(lore.size()-1, PushLine);
+				}
 				
 				im.setLore(lore);
 				item.setItemMeta(im);

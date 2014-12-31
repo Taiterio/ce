@@ -11,7 +11,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 
 
 public class LivefireBoots extends CItem {
@@ -29,6 +31,10 @@ public class LivefireBoots extends CItem {
 	public boolean effect(Event event, final Player player) {
 		  final PlayerMoveEvent e = (PlayerMoveEvent) event;
 		  final Block b = e.getTo().getBlock();
+		  
+		  if(!Tools.checkWorldGuard(e.getTo(), player, DefaultFlag.PVP))
+			  return false;
+		  
 		  if(Main.tools.repeatPotionEffects)
 			  Main.tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.FIRE_RESISTANCE, FireResistanceLevel, this);
 		  else

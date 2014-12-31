@@ -109,12 +109,14 @@ public class CEListener implements Listener {
 			if(topInv.getTitle().equals(Main.tools.prefix + "Enchantments")) {
 				p.closeInventory();
 				p.openInventory(Main.tools.getEnchantmentMenu(p, clickedItem.getItemMeta().getDisplayName()));
+				return;
 			}
 			
 			//Opens the item inventory and loads the permissions if needed
-			if(topInv.getTitle().equals(Main.tools.prefix + "Items")) {
+			if(topInv.getTitle().equals(Main.tools.prefix + "Main Menu") && event.getRawSlot() == 4) {
 				p.closeInventory();
 				p.openInventory(Main.tools.getItemMenu(p));
+				return;
 			}
 
 			
@@ -133,7 +135,7 @@ public class CEListener implements Listener {
 			
 			//This opens the Item Creation Menu
 			if(topInv.getTitle().equals(Main.tools.prefix + "Items")) 
-				if(p.isOp() || p.hasPermission("ce.item." + (Main.tools.getEnchantmentByDisplayname(clickedItem.getItemMeta().getDisplayName()).getOriginalName()) )) {
+				if(p.isOp() || p.hasPermission("ce.item." + (Main.tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName()).getOriginalName()) )) {
 					
 					
 					Inventory approveMenu = Main.CEApproveMenu;

@@ -27,14 +27,15 @@ public class Lifesteal extends CEnchantment {
 		Player damager = (Player) event.getDamager();
 		if(damager.getGameMode().equals(GameMode.CREATIVE))
 			return;
-		heal += level;
+		
+		double newHeal = ((Damageable) damager).getHealth() + heal + level;
 
-
-		if((((Damageable) damager).getHealth() + heal) <= ((Damageable) damager).getMaxHealth())
-			damager.setHealth(((Damageable) damager).getHealth() + heal);
+		if(newHeal < ((Damageable) damager).getMaxHealth())
+			damager.setHealth(((Damageable) damager).getHealth() + newHeal);
 		else
 			damager.setHealth(((Damageable) damager).getMaxHealth());
 
+		
 	}
 
 	@Override
