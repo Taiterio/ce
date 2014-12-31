@@ -29,7 +29,7 @@ public class Poisoned extends CEnchantment {
 		LivingEntity target = (LivingEntity) event.getDamager();
 			target.addPotionEffect(
 				new PotionEffect(
-						PotionEffectType.SLOW, 
+						PotionEffectType.POISON, 
 						duration * level, //This value is counted in ticks, 1/20 of a second
 						strength + level));
 	}

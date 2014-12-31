@@ -79,8 +79,7 @@ public class BeastmastersBow extends CItem {
 			} else if (ent instanceof Player) {
 				for(int i = 0; i < MaximumMobs; i++) {
 					if(rand.nextInt(100) < MobAppearanceChance) {
-						Entity spawned = w.spawnEntity(loc, rand.nextInt(2) == 1 ? EntityType.SPIDER : EntityType.WOLF);
-						((Player) ent).damage((double) 0, spawned);
+						w.spawnEntity(loc, rand.nextInt(2) == 1 ? EntityType.SPIDER : EntityType.SLIME);
 						w.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 30);
 						w.playEffect(loc, Effect.SMOKE, 30);
 						w.playSound(loc, Sound.ANVIL_BREAK, 0.3f, 0.1f);

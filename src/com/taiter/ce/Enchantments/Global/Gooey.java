@@ -28,7 +28,7 @@ public class Gooey extends CEnchantment {
 
 			@Override
 			public void run() {
-				event.getEntity().setVelocity(event.getEntity().getVelocity().setY(strength + level));
+				event.getEntity().setVelocity(event.getEntity().getVelocity().setY((strength * level * 0.05) + 0.75));
 				event.getEntity().getWorld().playEffect(event.getEntity().getLocation(), Effect.SMOKE, 60);
 			}
 		}.runTaskLater(getPlugin(), 1l);

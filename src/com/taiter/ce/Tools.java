@@ -76,10 +76,19 @@ public class Tools {
 	}
 
 	
-	//INVENTORIES
+	
 	public CItem getItemByOriginalname(String name) {
 		for(CItem ci : Main.items)
 			if(ci.getOriginalName().equals(name))
+				return ci;
+		return null;
+	}
+	
+	//INVENTORIES
+	
+	public CItem getItemByDisplayname(String name) {
+		for(CItem ci : Main.items)
+			if(ci.getDisplayName().equals(name))
 				return ci;
 		return null;
 	}
@@ -125,12 +134,16 @@ public class Tools {
 	}
 
 	public Inventory getEnchantmentMenu(Player p, String name) {
-		if(!p.isOp()) {
-			Inventory enchantments = getNextInventory(name);
-			for(int i = 0; i < enchantments.getSize() - 2; i++)
+		if(!p.isOp() && !p.hasPermission("ce.ench.*")) {
+			Inventory lInv = getNextInventory(name);
+			Inventory enchantments =  Bukkit.createInventory(null, lInv.getSize(), lInv.getTitle());
+			enchantments.setContents(lInv.getContents());
+			for(int i = 0; i < enchantments.getSize() - 2; i++) {
+				ItemStack checkItem = enchantments.getItem(i);
+				if(checkItem == null || checkItem.getType().equals(Material.AIR))
+					continue;
 				for(CEnchantment ce : Main.enchantments) {
-					ItemStack checkItem = enchantments.getItem(i);
-					if(checkItem != null && !checkItem.getType().equals(Material.AIR) && checkItem.getItemMeta().getDisplayName().equals(ce.getDisplayName()))
+					if(checkItem.getItemMeta().getDisplayName().equals(ce.getDisplayName()))
 						if(!p.hasPermission("ce.ench." + ce.getOriginalName())) {
 							ItemStack item = enchantments.getItem(i);
 							ItemMeta im = item.getItemMeta();
@@ -140,7 +153,9 @@ public class Tools {
 							lore.add(ChatColor.RED + "You are not permitted to use this");
 							im.setLore(lore);
 							item.setItemMeta(im);
+							enchantments.setItem(i, item);
 						}
+				}
 				}
 			return enchantments;
 		}
@@ -149,23 +164,31 @@ public class Tools {
 	}
 
 	public Inventory getItemMenu(Player p) {
-		if(!p.isOp()) {
-			Inventory items = Main.CEItemMenu;
-			for(int i = 0; i < items.getSize() - 2; i++)
+		if(!p.isOp() && !p.hasPermission("ce.item.*")) {
+			Inventory lInv = Main.CEItemMenu;
+			Inventory items =  Bukkit.createInventory(null, lInv.getSize(), lInv.getTitle());
+			items.setContents(lInv.getContents());
+			for(int i = 0; i < items.getSize() - 2; i++) {
+				ItemStack item = items.getItem(i);
+				if(item == null || item.getType().equals(Material.AIR))
+					continue;
 				for(CItem ci : Main.items)
-					if(items.getItem(i).getItemMeta().getDisplayName().equals(ci.getDisplayName()))
+					if(item.getItemMeta().getDisplayName().equals(ci.getDisplayName())) {
 						if(!p.hasPermission("ce.item." + ci.getOriginalName())) {
-							ItemStack item = items.getItem(i);
 							ItemMeta im = item.getItemMeta();
-							List<String> lore = im.getLore();
+							List<String> lore = new ArrayList<String>();
+							if(im.hasLore())
+								lore = im.getLore();
 							lore.add(ChatColor.RED + "You are not permitted to use this");
 							im.setLore(lore);
 							item.setItemMeta(im);
 						}
-
+				}
+			}
 			return items;
 		}
-
+		
+		
 		return Main.CEItemMenu;
 	}
 
@@ -575,36 +598,7 @@ public class Tools {
 		return null;
 	}
 
-	public void handleEnchanting(EnchantItemEvent e, Random r) {
 
-		Player p = e.getEnchanter();
-		ItemStack i = e.getItem();
-		
-		if(i.getType().equals(Material.BOOK))
-			return;
-
-		int numberOfEnchantments = r.nextInt(4) + 1;
-		List<String> lore = new ArrayList<String>();
-				
-		while(numberOfEnchantments != 0) {
-		for(CEnchantment ce : getEnchantList(getApplicationByMaterial(i.getType()), p))
-			if(numberOfEnchantments == 0)
-				break;
-			else if(r.nextInt(100) < ce.getEnchantProbability()) {
-					ItemMeta im = i.getItemMeta();
-					if(im.hasLore())
-						lore = im.getLore();
-					lore.add(ce.getDisplayName() + " " + intToLevel(r.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
-					im.setLore(lore);
-					i.setItemMeta(im);
-					lore.clear();
-					numberOfEnchantments--;
-				}
-		}
-
-		p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
-
-	}
 
 	private List<CEnchantment> getEnchantList(Application app, Player p) {
 		List<CEnchantment> list = new ArrayList<CEnchantment>();
@@ -633,13 +627,29 @@ public class Tools {
 			return Application.TOOL;
 		return Application.GLOBAL;
 	}
+	
+	private Boolean checkForEnchantment(String toTest, CEnchantment ce) {
+		String next = "";
+		if(toTest.startsWith(Main.lorePrefix + ce.getOriginalName()))
+			next = Main.lorePrefix + ce.getOriginalName();
+		if(toTest.startsWith(ce.getDisplayName()))
+			next = ce.getDisplayName();
+		if(next.isEmpty())
+			return false;
+		String nextTest = toTest.replace(next, "");
+		
+		if(nextTest.startsWith(" ") || nextTest.isEmpty())
+			return true;
+		
+		return false;
+	}
 
 	public void handleEvent(Player toCheck, Event e, List<CEnchantment> list) {
 
 		long time = System.currentTimeMillis();
 		
 			for(ItemStack i : toCheck.getInventory().getArmorContents())
-				if(i.getType() != Material.AIR)
+				if(i.getType() != Material.AIR) 
 				  handleEventMain(toCheck, i, e, list);
 			handleEventMain(toCheck, toCheck.getItemInHand(), e, list);
 
@@ -648,6 +658,41 @@ public class Tools {
 			if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
 				Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process CE-Events.");
 		 }
+	}
+	
+	public void handleEnchanting(EnchantItemEvent e, Random r) {
+
+		Player p = e.getEnchanter();
+		ItemStack i = e.getItem();
+		
+		if(i.getType().equals(Material.BOOK))
+			return;
+
+		int numberOfEnchantments = r.nextInt(4) + 1;
+		List<String> lore = new ArrayList<String>();
+				
+		while(numberOfEnchantments != 0) {
+		for(CEnchantment ce : getEnchantList(getApplicationByMaterial(i.getType()), p))
+			if(numberOfEnchantments == 0)
+				break;
+			else if(r.nextInt(100) < ce.getEnchantProbability()) {
+					ItemMeta im = i.getItemMeta();
+					if(im.hasLore()) {
+						lore = im.getLore();
+						for(String s : lore)
+							if(s.startsWith(ce.getDisplayName()))
+								continue;
+					}
+					lore.add(ce.getDisplayName() + " " + intToLevel(r.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
+					im.setLore(lore);
+					i.setItemMeta(im);
+					lore.clear();
+					numberOfEnchantments--;
+				}
+		}
+
+		p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
+
 	}
 
 	public void handleMines(Player toCheck, PlayerMoveEvent e) {
@@ -704,9 +749,7 @@ public class Tools {
 					if(s.length() > 3) {
 						for(CEnchantment ce : list)
 							if(isApplicable(i, ce)) {
-								if( (s.startsWith(Main.lorePrefix + ce.getOriginalName()) || s.startsWith(ce.getDisplayName())) ||
-									(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.StrictEnchantmentChecking")) && (s.contains(Main.lorePrefix + ce.getOriginalName())   || s.contains(ce.getDisplayName())))
-										) {
+								if(checkForEnchantment(s, ce)) {
 									int level = getLevel(s);
 									if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.ench." + ce.getOriginalName()))
 										if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
@@ -813,11 +856,25 @@ public class Tools {
 	}
 	
 	public void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final boolean lock, final CEnchantment ce) {
-		int slot = 0;
-		for(int x = 0; x < p.getInventory().getSize(); x++)
-			if(i.equals(p.getInventory().getItem(x)))
+		int slot = -1;
+		boolean isArmor = false;
+		
+		ItemStack[] list = p.getInventory().getContents();
+		for(int x = 0; x < list.length; x++)
+			if(i.equals(list[x]))
 				slot = x;
+		
+		if(slot == -1) {
+			isArmor = true;
+			ItemStack[] aList = p.getInventory().getArmorContents();
+			for(int x = 0; x < aList.length; x++)
+				if(i.equals(aList[x]))
+					slot = x;
+		}
+		
 		final int lSlot = slot;
+		final boolean lIsArmor = isArmor;
+
 		if(lock)
 			p.setMetadata("ce." + ce.getOriginalName() + ".lock", new FixedMetadataValue(Main.plugin, null));
 		new BukkitRunnable() {
@@ -825,6 +882,8 @@ public class Tools {
 			@Override
 			public void run() {
 				ItemStack item = p.getInventory().getItem(lSlot);
+				if(lIsArmor)
+					item = p.getInventory().getArmorContents()[lSlot];
 				if(p != null && !p.isDead() && item != null && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
 					p.addPotionEffect(new PotionEffect(type, repeatDelay+100, strength, true), true);
 				else {

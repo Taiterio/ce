@@ -37,7 +37,7 @@ public class Stomp extends CEnchantment {
 				if(event.getEntity() instanceof Player) {
 					if (event.getDamage() > 0) {
 						Player player = (Player) event.getEntity();
-						List<Entity> entities = player.getNearbyEntities(0, 0, 0);
+						List<Entity> entities = player.getNearbyEntities(1, 0, 1);
 						if (!entities.isEmpty()) {
 							for (Entity ent : entities) {
 								if (ent instanceof LivingEntity) {

@@ -13,7 +13,7 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class Autorepair extends CEnchantment {
 	int	healAmount;
 	boolean healFully;
-
+	
 	public Autorepair(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
 		super(originalName,  app,  cause, enchantProbability, occurrenceChance);		
 		configEntries.add("HealAmount: 1");
@@ -25,6 +25,7 @@ public class Autorepair extends CEnchantment {
 		PlayerMoveEvent event = (PlayerMoveEvent) e;
 		Player owner = event.getPlayer();
 
+		
 		if(owner != null && owner.isOnline() && !owner.isDead()) {
 			if(healFully)
 				item.setDurability((short) 0);

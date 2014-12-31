@@ -26,9 +26,10 @@ public class Gears extends CEnchantment {
 	public void effect(Event e, ItemStack item, int level) {
 			PlayerMoveEvent event = (PlayerMoveEvent) e;
 			final Player player = event.getPlayer();
-			if(Main.tools.repeatPotionEffects)
+
+			if(Main.tools.repeatPotionEffects) {
 				Main.tools.repeatPotionEffect(item, player, PotionEffectType.SPEED, strength+level, true, this);
-			else {
+			} else {
 				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 120, strength + level), true);
 				generateCooldown(player, 100l);	
 			}
