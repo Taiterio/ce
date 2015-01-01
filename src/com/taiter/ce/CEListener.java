@@ -411,7 +411,7 @@ public class CEListener implements Listener {
 		
 		Location from 	= e.getFrom();
 		Location to 	= e.getTo();
-		
+				
 		if(from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ() ) {
 				
 		Main.tools.handleEvent(e.getPlayer(), e, moveEnchantments);

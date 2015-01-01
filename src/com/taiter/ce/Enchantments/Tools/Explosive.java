@@ -11,6 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
@@ -74,7 +75,7 @@ public class Explosive extends CEnchantment {
 
 				if(isUsable(iMat, bMat))
 					if(!loc.getBlock().getDrops(item).isEmpty())
-						if(Tools.checkBuildPermission(loc, player)) 
+						if(Tools.checkWorldGuard(loc, player, DefaultFlag.BUILD)) 
 							loc.getBlock().breakNaturally(item);
 			}
 						

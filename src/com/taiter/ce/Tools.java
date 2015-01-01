@@ -30,8 +30,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldguard.bukkit.RegionQuery;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.GlobalRegionManager;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
@@ -547,32 +546,14 @@ public class Tools {
 	}
 	
 	public static boolean checkWorldGuard(Location l, Player p, StateFlag f) {
-    	//TODO: This has to be commented out to allow versions below WorldGuard 6.0 to be compatible 
-			//WORLDGUARD 6.0+
-				if(Main.getWorldGuard() != null && Main.query != null && !((RegionQuery) Main.query).testState(l, p, f))
-					return false;
-			//WORLDGUARD Pre-6.0
-//				if(Main.getWorldGuard() != null) {
-//					ApplicableRegionSet rm = Main.getWorldGuard().getRegionManager(l.getWorld()).getApplicableRegions(l);
-//					if(rm != null && !rm.allows(f))
-//					return false;
-//				}
+		if(Main.getWorldGuard() != null) {
+			GlobalRegionManager grm = Main.getWorldGuard().getGlobalRegionManager();
+			if(grm != null && !grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
+				return false;
+			}
 		return true;
 	}
-	
-	public static boolean checkBuildPermission(Location l, Player p) {
-    	//TODO: This has to be commented out to allow versions below WorldGuard 6.0 to be compatible 
-			//WORLDGUARD 6.0+
-				if(Main.getWorldGuard() != null && Main.query != null && !((RegionQuery) Main.query).testBuild(l, p, DefaultFlag.BLOCK_BREAK))
-					return false;
-			//WORLDGUARD Pre-6.0
-//				if(Main.getWorldGuard() != null) {
-//					ApplicableRegionSet rm = Main.getWorldGuard().getRegionManager(l.getWorld()).getApplicableRegions(l);
-//					if(rm != null && !rm.canBuild((LocalPlayer) p))
-//						return false;
-//				}
-	    return true;
-	}
+
 
 	private List<CEnchantment> getAppropriateList(Cause c) {
 
