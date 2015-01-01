@@ -32,6 +32,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.protection.GlobalRegionManager;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
@@ -553,7 +554,6 @@ public class Tools {
 			}
 		return true;
 	}
-
 
 	private List<CEnchantment> getAppropriateList(Cause c) {
 
