@@ -18,7 +18,7 @@ public class Pyroaxe extends CItem {
 	
 	public Pyroaxe(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		configEntries.add("DamageMultiplier: 4");
+		configEntries.add("DamageMultiplier: 2");
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public class Pyroaxe extends CItem {
 		
 		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 		Entity entity = e.getEntity();
-		
+
 		if(entity.getFireTicks() > 0) {
 			e.setDamage(damageMultiplier * e.getDamage());
 			entity.getWorld().playEffect(entity.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);

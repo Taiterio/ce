@@ -6,11 +6,8 @@ import java.util.Random;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
-import com.taiter.ce.Main;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -26,9 +23,7 @@ public class Lightning extends CEnchantment {
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
-		if(e instanceof EntityShootBowEvent) {
-			((EntityShootBowEvent) e).getProjectile().setMetadata("ce.lightningArrow", new FixedMetadataValue(Main.plugin, level));
-		} else if(e instanceof EntityDamageByEntityEvent) {
+		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 		LivingEntity target = (LivingEntity) event.getEntity();
 		Random random = new Random();

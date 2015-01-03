@@ -39,7 +39,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
 
@@ -325,20 +324,9 @@ public class CEListener implements Listener {
 			Main.tools.handleEvent((Player) damaged, e, damageTakenEnchantments);
 		if(damager instanceof Player) 
 			Main.tools.handleEvent((Player) damager, e, damageGivenEnchantments); 
-		else if(damager instanceof Arrow) {
-			if(damager.hasMetadata("ce.bombardmentArrow"))
-				bowEnchantments.get(0).effect(e, null, damager.getMetadata("ce.bombardmentArrow").get(0).asInt()); //The first element of the bow enchantments is the Bombardment bow
-			if(damager.hasMetadata("ce.lightningArrow"))
-				bowEnchantments.get(2).effect(e, null, damager.getMetadata("ce.lightningArrow").get(0).asInt()); //The third element of the bow enchantments is the Lightning bow
-			if(damager.hasMetadata("ce.fireworkArrow")) {
-				if(Tools.checkWorldGuard(damaged.getLocation(), ((Player) ((Projectile) damager).getShooter()), DefaultFlag.TNT))  {
-					damaged.getWorld().createExplosion(damaged.getLocation(), damager.getMetadata("ce.fireworkArrow").get(0).asFloat());
-					damager.remove();
-				}
-			}
-			if(damager.hasMetadata("ce.bow"))
+		else if(damager instanceof Arrow)
+			if(damager.hasMetadata("ce.bow.item") || damager.hasMetadata("ce.bow.enchantment"))
 				Main.tools.handleBows((Player) ((Projectile) damager).getShooter(), e);
-		}
 		
 		
 	}

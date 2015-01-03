@@ -1,4 +1,6 @@
 Global:
+ Updates:
+  ShowPercentageOnUpdate: true
  Logging:
   Enabled: false
   MinimumMsForLog: 1000

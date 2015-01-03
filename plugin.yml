@@ -1,6 +1,6 @@
 name: CustomEnchantments
 main: com.taiter.ce.Main
-version: 2.1d
+version: 2.1e
 
 softdepend: [WorldGuard, WorldEdit, Vault]
 

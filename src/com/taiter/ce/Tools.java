@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -31,8 +32,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.protection.GlobalRegionManager;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
-
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
@@ -68,14 +69,29 @@ public class Tools {
 
 	public CEnchantment getEnchantmentByDisplayname(String name) {
 		for(CEnchantment ce : Main.enchantments) {
-			if(name.toLowerCase().contains(ChatColor.stripColor(ce.getDisplayName()).toLowerCase())){
-				return ce;
+			name = name.toLowerCase();
+			String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
+			if(name.toLowerCase().contains(enchantment)){
+				String newName = name.replace(enchantment, "");
+				if(newName.isEmpty() || newName.startsWith(" "))
+					return ce;
 			}
 		}
 		return null;
 	}
 
-	
+	public CEnchantment getEnchantmentByOriginalname(String name) {
+		for(CEnchantment ce : Main.enchantments) {
+			name = name.toLowerCase();
+			String enchantment = ChatColor.stripColor(ce.getOriginalName()).toLowerCase();
+			if(name.toLowerCase().contains(enchantment)){
+				String newName = name.replace(enchantment, "");
+				if(newName.isEmpty() || newName.startsWith(" "))
+					return ce;
+			}
+		}
+		return null;
+	}
 	
 	public CItem getItemByOriginalname(String name) {
 		for(CItem ci : Main.items)
@@ -549,9 +565,14 @@ public class Tools {
 	public static boolean checkWorldGuard(Location l, Player p, StateFlag f) {
 		if(Main.getWorldGuard() != null) {
 			GlobalRegionManager grm = Main.getWorldGuard().getGlobalRegionManager();
-			if(grm != null && !grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
-				return false;
-			}
+			if(f.equals(DefaultFlag.BUILD)) {
+				if(grm != null && !grm.canBuild(p, l))
+					return false;
+			} else {
+				if(grm != null && !grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
+					return false;
+				}
+			}	
 		return true;
 	}
 
@@ -586,11 +607,34 @@ public class Tools {
 	private List<CEnchantment> getEnchantList(Application app, Player p) {
 		List<CEnchantment> list = new ArrayList<CEnchantment>();
 
-		for(CEnchantment ce : Main.enchantments)
-			if(ce.getApplication() == app)
-				if(p.hasPermission("ce.ench." + ce.getOriginalName()))
+		
+		/* WARNING: Weird Code Behavior
+		 * 
+		 *          Checking for p.hasPermission in this for-loop WILL cause a server crash,
+		 *          due to the server being seemably unable to process it here.
+		 *          
+		 *          This has been tested with different copies of Main.enchantments,
+		 *          without the other code of the for-loop and different implementations of the loop.
+		 *          
+		 *          Checking the permission without a for-loop and using the function makePermissions
+		 *          works perfectly.
+		 */
+		for(CEnchantment ce : Main.enchantments) 
+			if(ce.getApplication() == app) 
 					list.add(ce);
-
+		
+		return correctList(list, p);
+	}
+	
+	private List<CEnchantment> correctList(List<CEnchantment> list, Player p) {
+	
+		int max = list.size() - 1;
+		
+		while(max >= 0) {
+			if(!p.hasPermission("ce.ench." + list.get(max).getOriginalName()))
+				list.remove(max);
+			max--;
+		}
 		return list;
 	}
 
@@ -648,24 +692,35 @@ public class Tools {
 		Player p = e.getEnchanter();
 		ItemStack i = e.getItem();
 		
+		
 		if(i.getType().equals(Material.BOOK))
 			return;
+		
+		List<CEnchantment> list = getEnchantList(getApplicationByMaterial(i.getType()), p);
 
+		if(list.isEmpty())
+			return;
+		
 		int numberOfEnchantments = r.nextInt(4) + 1;
-		List<String> lore = new ArrayList<String>();
 				
 		while(numberOfEnchantments != 0) {
-		for(CEnchantment ce : getEnchantList(getApplicationByMaterial(i.getType()), p))
-			if(numberOfEnchantments == 0)
-				break;
-			else if(r.nextInt(100) < ce.getEnchantProbability()) {
+			for(CEnchantment ce : list)
+				if(numberOfEnchantments == 0)
+					break;
+				else if(r.nextInt(100) < ce.getEnchantProbability()) {
 					ItemMeta im = i.getItemMeta();
+					List<String> lore = new ArrayList<String>();
+
 					if(im.hasLore()) {
 						lore = im.getLore();
+						Boolean hasFound = false;
 						for(String s : lore)
 							if(s.startsWith(ce.getDisplayName()))
-								continue;
+								hasFound = true;
+						if(hasFound)
+							continue;
 					}
+
 					lore.add(ce.getDisplayName() + " " + intToLevel(r.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
 					im.setLore(lore);
 					i.setItemMeta(im);
@@ -720,7 +775,18 @@ public class Tools {
 	}
 
 	public void handleBows(Player toCheck, EntityDamageByEntityEvent e) {
-		getItemByOriginalname(e.getDamager().getMetadata("ce.bow").get(0).asString()).effect(e, toCheck);
+		if(e.getDamager().hasMetadata("ce.bow.item")) {
+			getItemByOriginalname(e.getDamager().getMetadata("ce.bow.item").get(0).asString()).effect(e, toCheck);
+			e.getDamager().removeMetadata("ce.bow.item", Main.plugin);
+		}
+		
+		if(e.getDamager().hasMetadata("ce.bow.enchantment")) {
+			
+			String[] enchantment = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" : ");
+
+			getEnchantmentByOriginalname(enchantment[0]).effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
+		}
 	}
 
 	private void handleEventMain(Player toCheck, ItemStack i, Event e, List<CEnchantment> list) {
@@ -738,6 +804,10 @@ public class Tools {
 										if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
 										if(!ce.getHasCooldown(toCheck))
 											try {
+												if(e instanceof EntityShootBowEvent) {
+													((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
+
+												}
 												long time = System.currentTimeMillis();
 												if(random.nextInt(100) < ce.getOccurrenceChance())
 													ce.effect(e, i, level);
@@ -762,6 +832,8 @@ public class Tools {
 									if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
 										return;
 									try {
+										if(e instanceof EntityShootBowEvent) 
+											((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
 										long time = System.currentTimeMillis();
 										if(ci.effect(e, toCheck))
 											ci.generateCooldown(toCheck, ci.cooldownTime);
@@ -782,7 +854,8 @@ public class Tools {
 	}
 	
 	private boolean isApplicable(ItemStack i, CEnchantment ce) {
-		if( (ce.getApplication() == Application.ARMOR 			&& 
+		if( (ce.getApplication() == Application.ARMOR 			&&
+				ce.getApplication() != Application.GLOBAL       &&
 				(i.getType().toString().endsWith("HELMET") 		|| 
 				 i.getType().toString().endsWith("CHESTPLATE")	|| 
 				 i.getType().toString().endsWith("LEGGINGS") 	|| 

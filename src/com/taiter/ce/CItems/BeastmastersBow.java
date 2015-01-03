@@ -22,8 +22,6 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
 
 public class BeastmastersBow extends CItem {
@@ -54,8 +52,6 @@ public class BeastmastersBow extends CItem {
 
 	@Override
 	public boolean effect(Event event, Player player) {
-		if(event instanceof EntityShootBowEvent) {
-		  EntityShootBowEvent e = (EntityShootBowEvent) event;
 //		  List<String> lore = e.getBow().getItemMeta().getLore();
 //		  if(!lore.contains(placeHolder)) {
 //			  for(int i = descriptionSize; i != 0; i--)
@@ -64,8 +60,7 @@ public class BeastmastersBow extends CItem {
 //			  player.setMetadata("ce.CanUnleashBeasts", null);
 //		  } else
 //			  e.getProjectile().setMetadata("ce." + this.getOriginalName(), null);
-		  e.getProjectile().setMetadata("ce.bow", new FixedMetadataValue(main, this.getOriginalName()));
-		} else if(event instanceof EntityDamageByEntityEvent) {
+		  if(event instanceof EntityDamageByEntityEvent) {
 		  EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 		  Entity ent = e.getEntity();
 		  Location loc = ent.getLocation();

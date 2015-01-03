@@ -63,9 +63,11 @@ public class HookshotBow extends CItem {
 			}
 		} else if(event instanceof EntityShootBowEvent) {
 			EntityShootBowEvent e = (EntityShootBowEvent) event;
-			List<String> lore = e.getBow().getItemMeta().getLore();
+			ItemMeta im = e.getBow().getItemMeta();
+			if(!im.hasLore())
+				return false;
+			List<String> lore = im.getLore();
 			e.getProjectile().setMetadata("ce." + getOriginalName(), new FixedMetadataValue(main, ChatColor.stripColor(lore.get(lore.size() - 1)).split(": ")[1]));
-			e.getProjectile().setMetadata("ce.bow", new FixedMetadataValue(main, this.getOriginalName()));
 		} else if(event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 			Projectile pr = ((Projectile) e.getDamager());

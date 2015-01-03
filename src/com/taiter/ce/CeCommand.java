@@ -1,6 +1,7 @@
 package com.taiter.ce;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.CItems.Swimsuit;
@@ -21,7 +23,8 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class CeCommand {
 	
-	Main main;
+	private Main main;
+	private Boolean confirmUpdate = false; 
 	
 	public CeCommand(Main m) {
 		this.main = m;
@@ -67,7 +70,64 @@ public class CeCommand {
 				
 				return Success + "The Custom Enchantments config has been reloaded successfully.";
 
-			} else if(name.startsWith("g")) {
+			} else if(name.startsWith("u")) {
+				if(sender.equals(Bukkit.getConsoleSender())) {
+					
+					usageError += "update <check/applyupdate>";
+					
+					if(args.length >= 2) {
+						
+						String toDo = args[1].toLowerCase();
+						
+						if(toDo.startsWith("c")) {
+							if(!main.hasUpdated) {
+								try {
+									main.updateCheck();
+								} catch (IOException e) {
+									Error += "Failed to check for updates.";
+									return Error;
+								}
+								return "";
+							} else {
+								Error += "You are already using the newest Version.";
+								return Error;
+							}
+							
+						} else if(toDo.equals("applyupdate")) {
+							if(main.hasUpdate && !main.hasUpdated) {
+								if(!confirmUpdate) {
+									confirmUpdate = true;
+									sender.sendMessage(ChatColor.GOLD + "[CE] Rerun the command to confirm the update (This expires in 5 Minutes).");
+									new BukkitRunnable() {
+										
+										@Override
+										public void run() {
+											if(confirmUpdate)
+												confirmUpdate = false;
+										}
+										
+									}.runTaskLater(main, 6000l);
+									return "";
+								} else {
+									try {
+										main.update();
+									} catch (IOException e) {}
+									return "";
+								}
+							} else {
+								Error += "You are already using the newest Version.";
+								return Error;
+							}
+						}
+							
+					} else {
+						return usageError;
+					}
+				} else {
+					Error += "This command can only be run via Console";
+					return Error;
+				}
+		    } else if(name.startsWith("g")) {
 				usageError += "give <Player> <Material> <Enchantment:Level/Item> [Enchantment:Level] ...";
 				if(args.length >= 4) {
 					
@@ -745,7 +805,7 @@ public class CeCommand {
 
 		}
 
-		usageError += "<Reload/List/Enchant/Change/Give>";
+		usageError += "<Reload/List/Enchant/Change/Give/Update>";
 		return usageError;
 
 	}

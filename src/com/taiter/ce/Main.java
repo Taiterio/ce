@@ -1,5 +1,17 @@
 package com.taiter.ce;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +34,10 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.taiter.ce.CItems.AssassinsBlade;
@@ -124,6 +140,18 @@ public final class Main extends JavaPlugin {
 	public  static Plugin 			econPl;
 	//
 	
+	//Updater
+	private URL updateListURL;
+	private URL updateDownloadURL;
+	
+	private String currentVersion;
+	private String newVersion;
+	private String newMD5;
+	
+	public Boolean hasUpdate  = false;
+	public Boolean hasUpdated = false;
+	//
+	
     @Override
     public void onEnable(){
     	    	
@@ -163,13 +191,166 @@ public final class Main extends JavaPlugin {
 	    writePermissions();
 	    
 	    tools.generateInventories();
-
+	    
+	    currentVersion = plugin.getDescription().getVersion();
+		try {
+			updateListURL  = new URL("https://api.curseforge.com/servermods/files?projectIds=54406");
+		} catch (MalformedURLException e) {}
+	    
+	    new BukkitRunnable() {
+	    	
+	    	@Override
+	    	public void run() {
+	    			try {
+	    				updateCheck();
+	    			} catch(Exception ex){
+	    				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] There was an error while checking for new updates.");
+	    			}
+	    	}
+	    }.runTaskLater(plugin, 600l);
 
     }	
     
     @Override
     public void onDisable() {
     	getServer().getScheduler().cancelAllTasks();
+    }
+    
+    public void updateCheck() throws IOException {
+    		URLConnection connection = updateListURL.openConnection();
+    		connection.setConnectTimeout(5000);
+    		connection.addRequestProperty("User-Agent", "Custom Enchantments - Update Checker");
+    		connection.setDoOutput(true);
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    		String response = reader.readLine();
+    		JSONArray array = (JSONArray) JSONValue.parse(response);
+    		JSONObject newestUpdate = (JSONObject) array.get(array.size() - 1);
+    	
+    		newVersion = newestUpdate.get("name").toString().replace("Custom Enchantments ", "").trim();
+    		newMD5     = newestUpdate.get("md5").toString();
+    		
+    		int newLength     = newVersion.length();
+    		int currentLength = currentVersion.length();
+
+    		
+    		double versionNew;
+    		double versionCurrent;
+    		
+    		Boolean newHasSubVersion = false;
+    		Boolean currentHasSubVersion = false;
+
+    		try {
+    			versionNew = Double.parseDouble(newVersion);
+    		} catch(NumberFormatException ex) {
+    			newHasSubVersion = true;
+    			versionNew = Double.parseDouble(newVersion.substring(0, newVersion.length()-1));
+    		}
+    		
+
+    		try {
+    			versionCurrent = Double.parseDouble(currentVersion);
+    		} catch(NumberFormatException ex) {
+    			currentHasSubVersion = true;
+    			versionCurrent = Double.parseDouble(currentVersion.substring(0, currentVersion.length()-1));
+    		}
+    		
+    		if( ( versionNew > versionCurrent ) 
+    			|| ((versionNew == versionCurrent) && newHasSubVersion && currentHasSubVersion && ((byte) newVersion.toCharArray()[newLength-1] > (byte) currentVersion.toCharArray()[currentLength-1])) ) {
+    			hasUpdate = true;
+    			updateDownloadURL = new URL(newestUpdate.get("downloadUrl").toString().replace("\\.", ""));
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] A new update is available!");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] The new version is " + ChatColor.WHITE +  newVersion + ChatColor.GREEN + ".");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are currently using " + ChatColor.DARK_GRAY + currentVersion + ChatColor.GREEN + ".");
+    		} else {
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are using the latest Version of CE!");
+
+    		}
+    }
+    
+    public void update() throws IOException {
+    	
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Updating to Version " + newVersion  + " started");
+    	
+    	BufferedInputStream input = null;
+    	FileOutputStream   output = null;
+    	
+    	Boolean notify = Boolean.parseBoolean(config.getString("Global.Updates.UpdateNotifications"));
+    	
+    	try {
+
+    		int updateSize = updateDownloadURL.openConnection().getContentLength();
+    		File file = new File(plugin.getDataFolder().getParent(), "CustomEnchantments.jar");
+    		input = new BufferedInputStream(updateDownloadURL.openStream());
+    		output = new FileOutputStream(file);
+    		
+    		
+    		
+    		int bufferSize = (int) Math.ceil(updateSize / 100);
+    		
+    		byte[] data = new byte[bufferSize];
+    		
+    		int downloaded = 0;
+    		int cRead;
+    		
+    		while ((cRead = input.read(data, 0, bufferSize)) != -1) {
+    			
+    			output.write(data, 0, cRead);
+    			
+    			downloaded += cRead;
+    			
+    			if(notify) {
+    				int percentage = ((downloaded*100)/updateSize);
+    				if(percentage % 25 == 0)
+    					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Downloaded " + percentage + "% (" + downloaded + "/" + updateSize + " Bytes).");
+    			}
+    		}
+    		
+    		testFile(file, bufferSize);
+
+    		
+			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Update " + newVersion +  " successfully downloaded. Restart/Reload the Server to apply changes.");
+			hasUpdated = true;
+    		
+			
+    		input.close();
+    		output.close();
+    		
+    		
+    	} catch(Exception e) {
+    		if(input != null)
+    			input.close();
+    		if(output != null)
+    			output.close();
+    		e.printStackTrace();
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Updating to Version " + newVersion + " failed");
+    	}
+    }
+    
+
+    private boolean testFile(File f, int bufferSize) throws Exception {
+    	
+        InputStream fis =  new FileInputStream(f);
+
+        byte[] buffer = new byte[bufferSize];
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        int cRead;
+
+        while((cRead = fis.read(buffer)) != -1)
+        	md.update(buffer, 0, cRead);
+
+        fis.close();
+        
+        byte[] result = md.digest();
+        
+        String md5 = "";
+
+        for (int i=0; i < result.length; i++)
+        	md5 += Integer.toString( ( result[i] & 0xff ) + 0x100, 16).substring( 1 );
+                
+        if(md5.equals(newMD5))
+        	return true;
+        
+        return false;
     }
     
     public static WorldGuardPlugin getWorldGuard() {
