@@ -1,5 +1,24 @@
 package com.taiter.ce.Enchantments;
 
+/*
+* This file is part of Custom Enchantments
+* Copyright (C) Taiterio 2015
+*
+* This program is free software: you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as published by the
+* Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+* for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,15 +33,15 @@ import com.taiter.ce.Main;
 public abstract class CEnchantment extends CBasic  {
 
 	static public enum Cause {
-		MOVE, 			//Move 					event
-		CLICK,			//Interact				event
-		INTERACT,		//Interact WITH ENTITY 	event	
-		DAMAGETAKEN,	//Damage taken			event	
-		DAMAGEGIVEN,	//Damage caused			event
-		BOW,			//Bow shot				event
-		DEATH,			//Death					event
-		BLOCKPLACE,		//Block place			event
-		BLOCKBREAK		//Block break			event
+		MOVE,		//Move event
+		CLICK,		//Interact event
+		INTERACT,	//Interact WITH ENTITY event
+		DAMAGETAKEN,//Damage taken event
+		DAMAGEGIVEN,//Damage caused event
+		BOW,		//Bow shot event
+		DEATH,		//Death event
+		BLOCKPLACE,	//Block place event
+		BLOCKBREAK	//Block break event
 	}
 	
 	static public enum Application {
@@ -34,20 +53,20 @@ public abstract class CEnchantment extends CBasic  {
 		TOOL
 	}
 	
-	Cause 			 			cause;
-	Application			 		app;
-	int 						enchantProbability;
-	int 						enchantmentMaxLevel;
-	int 						occurrenceChance;
-	private boolean				hasRetriedConfig;
-	public Application 			getApplication() 					{   return this.app;				}
-	public Cause 				getCause() 							{	return this.cause;				}
-	public int 					getEnchantProbability() 			{	return this.enchantProbability;	}
-	public int 					getEnchantmentMaxLevel() 			{	return this.enchantmentMaxLevel;}
-	public int 					getOccurrenceChance() 				{	return this.occurrenceChance;	}
+	Cause				cause;
+	Application			app;
+	int 				enchantProbability;
+	int 				enchantmentMaxLevel;
+	int 				occurrenceChance;
+	private boolean		hasRetriedConfig;
+	public Application 	getApplication()		{   return this.app;				}
+	public Cause 		getCause() 				{	return this.cause;				}
+	public int 			getEnchantProbability()	{	return this.enchantProbability;	}
+	public int			getEnchantmentMaxLevel(){	return this.enchantmentMaxLevel;}
+	public int 			getOccurrenceChance() 	{	return this.occurrenceChance;	}
 
 	@Override
-	public double getCost() {	return Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".Cost"));}
+	public double getCost() { return Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".Cost"));}
 	
 	public CEnchantment(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
 		this.typeString = "Enchantment";

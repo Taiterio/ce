@@ -1,5 +1,24 @@
 package com.taiter.ce;
 
+/*
+* This file is part of Custom Enchantments
+* Copyright (C) Taiterio 2015
+*
+* This program is free software: you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as published by the
+* Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+* for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -104,14 +123,14 @@ public final class Main extends JavaPlugin {
 	public static FileConfiguration config;
 	public static Tools 			tools;
 	public static CEListener        listener;
-	public static CeCommand        	commandC;
+	public static CeCommand         commandC;
 
 	
 	
 	public static String 			lorePrefix;
-	public static List<CItem> 		items 			;
-	public static List<CEnchantment>enchantments 	;
-	public static int 				maxEnchants	 	= -1;
+	public static List<CItem> 		items;
+	public static List<CEnchantment>enchantments;
+	public static int 				maxEnchants = -1;
 	
 	
 	//The inventories for the Enchantment Menu
@@ -154,12 +173,12 @@ public final class Main extends JavaPlugin {
 	
     @Override
     public void onEnable(){
-    	    	
-    	plugin			= this;
-    	commandC		= new CeCommand(this);
+    	    
+    	plugin		= this;
+    	commandC	= new CeCommand(this);
     	
-    	items		 	= new ArrayList<CItem>();
-    	enchantments 	= new ArrayList<CEnchantment>();
+    	items		 = new ArrayList<CItem>();
+    	enchantments = new ArrayList<CEnchantment>();
     	
         
     	this.saveDefaultConfig();
@@ -181,35 +200,35 @@ public final class Main extends JavaPlugin {
     	//Set the Loreprefix
     	lorePrefix = tools.resolveEnchantmentColor();
 	    
-	    //Check and set up the Economy
-	    if(setupEconomy()) 
+    	//Check and set up the Economy
+    	if(setupEconomy()) 
 	    	hasEconomy = true;
-	
-		//Make the list of Enchantments
-	    makeLists(true, true);
-	    
-	    writePermissions();
-	    
-	    tools.generateInventories();
-	    
-	    currentVersion = plugin.getDescription().getVersion();
-		try {
-			updateListURL  = new URL("https://api.curseforge.com/servermods/files?projectIds=54406");
-		} catch (MalformedURLException e) {}
-	    
-	    new BukkitRunnable() {
+    	
+    	//Make the list of Enchantments
+    	makeLists(true, true);
+    
+    	writePermissions();
+    
+    	tools.generateInventories();
+    
+    	currentVersion = plugin.getDescription().getVersion();
+    	try {
+    		updateListURL  = new URL("https://api.curseforge.com/servermods/files?projectIds=54406");
+    	} catch (MalformedURLException e) {}
+    
+    	new BukkitRunnable() {
 	    	
 	    	@Override
 	    	public void run() {
-	    			try {
-	    				updateCheck();
-	    			} catch(Exception ex){
-	    				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] There was an error while checking for new updates.");
+	    		try {
+	    			updateCheck();
+	    		} catch(Exception ex){
+	    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] There was an error while checking for new updates.");
 	    			}
 	    	}
 	    }.runTaskLater(plugin, 600l);
 
-    }	
+    }
     
     @Override
     public void onDisable() {
@@ -236,8 +255,8 @@ public final class Main extends JavaPlugin {
     		double versionNew;
     		double versionCurrent;
     		
-    		Boolean newHasSubVersion = false;
-    		Boolean currentHasSubVersion = false;
+    		Boolean newHasSubVersion 		= false;
+    		Boolean currentHasSubVersion 	= false;
 
     		try {
     			versionNew = Double.parseDouble(newVersion);

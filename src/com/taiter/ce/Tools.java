@@ -1,5 +1,24 @@
 package com.taiter.ce;
 
+/*
+* This file is part of Custom Enchantments
+* Copyright (C) Taiterio 2015
+*
+* This program is free software: you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as published by the
+* Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+* for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +62,8 @@ import com.taiter.ce.Enchantments.CEnchantment.Cause;
 
 public class Tools {
 
-	public 			String	prefix	= "CE - ";
-	public			Random  random = new Random();
+	public			String	prefix				= "CE - ";
+	public			Random  random 				= new Random();
 	public          Boolean repeatPotionEffects = Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RepeatPotionEffects"));
 	public          int     repeatDelay         = Integer.parseInt(Main.config.getString("Global.Enchantments.RepeatDelay"));
 
@@ -791,87 +810,85 @@ public class Tools {
 
 	private void handleEventMain(Player toCheck, ItemStack i, Event e, List<CEnchantment> list) {
 		if(i.hasItemMeta()) {
-			ItemMeta im = i.getItemMeta();
-			if(!list.isEmpty())
-			 if(im.hasLore())
-				for(String s : im.getLore())
-					if(s.length() > 3) {
-						for(CEnchantment ce : list)
-							if(isApplicable(i, ce)) {
-								if(checkForEnchantment(s, ce)) {
-									int level = getLevel(s);
-									if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.ench." + ce.getOriginalName()))
-										if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
-										if(!ce.getHasCooldown(toCheck))
-											try {
-												if(e instanceof EntityShootBowEvent) {
-													((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
-
-												}
-												long time = System.currentTimeMillis();
-												if(random.nextInt(100) < ce.getOccurrenceChance())
-													ce.effect(e, i, level);
-												if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
-													long timeF = (System.currentTimeMillis() - time);
-													if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-														Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + " (" + ce.getOriginalName() + ")" + ChatColor.RESET + ".");
-												}
-											} catch (Exception ex) {
-												if(!(ex instanceof ClassCastException))
-													Bukkit.getConsoleSender().sendMessage(ex.getMessage());
-											}
-								}
-							}
+		ItemMeta im = i.getItemMeta();
+		if(!list.isEmpty())
+		if(im.hasLore())
+			for(String s : im.getLore())
+			if(s.length() > 3) {
+			for(CEnchantment ce : list)
+				if(isApplicable(i, ce)) {
+				if(checkForEnchantment(s, ce)) {
+				int level = getLevel(s);
+				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.ench." + ce.getOriginalName()))
+				if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
+				if(!ce.getHasCooldown(toCheck))
+					try {
+						if(e instanceof EntityShootBowEvent)
+							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
+						long time = System.currentTimeMillis();
+						if(random.nextInt(100) < ce.getOccurrenceChance())
+							ce.effect(e, i, level);
+						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
+							long timeF = (System.currentTimeMillis() - time);
+							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
+								Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + " (" + ce.getOriginalName() + ")" + ChatColor.RESET + ".");
+						}
+					} catch (Exception ex) {
+						if(!(ex instanceof ClassCastException))
+							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
 					}
+				}
+				}
+			}
 			if(im.hasDisplayName())
 				for(CItem ci : Main.items)
-					if(im.getDisplayName().equals(ci.getDisplayName())) {
-						if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.item." + ci.getOriginalName()))
-							if(!ci.getHasCooldown(toCheck))
-								if(!toCheck.hasMetadata("ce." + ci.getOriginalName() + ".lock")) {
-									if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
-										return;
-									try {
-										if(e instanceof EntityShootBowEvent) 
-											((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
-										long time = System.currentTimeMillis();
-										if(ci.effect(e, toCheck))
-											ci.generateCooldown(toCheck, ci.cooldownTime);
-										if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
-											long timeF = (System.currentTimeMillis() - time);
-											if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-												Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
-										}
-									} catch (Exception ex) {
-										if(!(ex instanceof ClassCastException))
-											Bukkit.getConsoleSender().sendMessage(ex.getMessage());
-									}
-								}
-						return; // Stops going through the list of items as it
-								// is not needed anymore
+				if(im.getDisplayName().equals(ci.getDisplayName())) {
+				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.item." + ci.getOriginalName()))
+				if(!ci.getHasCooldown(toCheck))
+				if(!toCheck.hasMetadata("ce." + ci.getOriginalName() + ".lock")) {
+						if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
+							return;
+					try {
+						if(e instanceof EntityShootBowEvent) 
+							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
+						long time = System.currentTimeMillis();
+						if(ci.effect(e, toCheck))
+							ci.generateCooldown(toCheck, ci.cooldownTime);
+						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
+							long timeF = (System.currentTimeMillis() - time);
+							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
+								Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
+						}
+					} catch (Exception ex) {
+						if(!(ex instanceof ClassCastException))
+							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
 					}
+				}
+				return; // Stops going through the list of items as it
+						// is not needed anymore
+				}
 		}
 	}
 	
 	private boolean isApplicable(ItemStack i, CEnchantment ce) {
-		if( (ce.getApplication() == Application.ARMOR 			&&
+		if( (ce.getApplication() == Application.ARMOR			&&
 				ce.getApplication() != Application.GLOBAL       &&
-				(i.getType().toString().endsWith("HELMET") 		|| 
+				(i.getType().toString().endsWith("HELMET")		|| 
 				 i.getType().toString().endsWith("CHESTPLATE")	|| 
-				 i.getType().toString().endsWith("LEGGINGS") 	|| 
-				 i.getType().toString().endsWith("BOOTS"))) 	
-				 				 								|| 
-			(ce.getApplication() == Application.TOOL 			&& 
+				 i.getType().toString().endsWith("LEGGINGS")	|| 
+				 i.getType().toString().endsWith("BOOTS")))		
+				 												|| 
+			(ce.getApplication() == Application.TOOL			&& 
 				(i.getType().toString().endsWith("PICKAXE")		||
 				 i.getType().toString().endsWith("SPADE")		|| 
-				 i.getType().toString().endsWith("AXE") 		|| 
-				 i.getType().toString().endsWith("HOE"))) 	
+				 i.getType().toString().endsWith("AXE")			|| 
+				 i.getType().toString().endsWith("HOE")))
 				 												|| 
-			(ce.getApplication() == Application.HELMET 			&& 		i.getType().toString().endsWith("HELMET")) 	
+			(ce.getApplication() == Application.HELMET			&&	i.getType().toString().endsWith("HELMET")) 	
 																|| 
-			(ce.getApplication() == Application.BOOTS 			&& 		i.getType().toString().endsWith("BOOTS")) 
+			(ce.getApplication() == Application.BOOTS			&&	i.getType().toString().endsWith("BOOTS")) 
 																|| 
-			(ce.getApplication() == Application.BOW 			&& 		i.getType().equals(Material.BOW)) 
+			(ce.getApplication() == Application.BOW 			&&	i.getType().equals(Material.BOW)) 
 																|| 
 			ce.getApplication() == Application.GLOBAL)
 			return true;
@@ -957,7 +974,7 @@ public class Tools {
 		target.setMetadata("ce.bleed", new FixedMetadataValue(Main.plugin, null));
 		new BukkitRunnable() {
 
-			int	seconds	= bleedDuration;
+			int	seconds = bleedDuration;
 
 			@Override
 			public void run() {
