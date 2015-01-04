@@ -376,7 +376,7 @@ public class CEListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void EntityShootBowEvent(EntityShootBowEvent e) {
-		
+
 		Entity 		shooter 	= e.getEntity();
 		
 		if(shooter instanceof Player)
@@ -416,8 +416,12 @@ public class CEListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void PlayerMoveEvent(PlayerMoveEvent e) {
 		
+		
+		
 		Location from 	= e.getFrom();
 		Location to 	= e.getTo();
+
+
 				
 		if(from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ() ) {
 				

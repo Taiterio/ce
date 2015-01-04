@@ -90,6 +90,8 @@ public class HookshotBow extends CItem {
 		} else if(event instanceof EntityDamageByEntityEvent) {
 			EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 			Projectile pr = ((Projectile) e.getDamager());
+			if(pr.getShooter() != player)
+				return false;
 			Entity target = e.getEntity();
 			
 			Location targetLocation = target.getLocation();

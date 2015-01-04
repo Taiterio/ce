@@ -168,7 +168,7 @@ public final class Main extends JavaPlugin {
 	private String newMD5;
 	
 	public Boolean hasUpdate  = false;
-	public Boolean hasUpdated = false;
+	public Boolean hasChecked = false;
 	//
 	
     @Override
@@ -216,17 +216,15 @@ public final class Main extends JavaPlugin {
     		updateListURL  = new URL("https://api.curseforge.com/servermods/files?projectIds=54406");
     	} catch (MalformedURLException e) {}
     
-    	new BukkitRunnable() {
-	    	
-	    	@Override
-	    	public void run() {
-	    		try {
-	    			updateCheck();
-	    		} catch(Exception ex){
-	    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] There was an error while checking for new updates.");
-	    			}
-	    	}
-	    }.runTaskLater(plugin, 600l);
+    	if(Boolean.parseBoolean(config.getString("Global.Updates.CheckOnStartup"))) {
+    		new BukkitRunnable() {
+    			@Override
+    			public void run() {
+	    			if(!hasChecked)
+	    				updateCheck();
+	    		}
+    		}.runTaskLater(plugin, Integer.parseInt(config.getString("Global.Updates.CheckDelay")));
+    	}
 
     }
     
@@ -235,7 +233,11 @@ public final class Main extends JavaPlugin {
     	getServer().getScheduler().cancelAllTasks();
     }
     
-    public void updateCheck() throws IOException {
+    public void updateCheck() {
+    	try {
+    		
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Checking for updates...");
+    		
     		URLConnection connection = updateListURL.openConnection();
     		connection.setConnectTimeout(5000);
     		connection.addRequestProperty("User-Agent", "Custom Enchantments - Update Checker");
@@ -278,24 +280,31 @@ public final class Main extends JavaPlugin {
     			hasUpdate = true;
     			updateDownloadURL = new URL(newestUpdate.get("downloadUrl").toString().replace("\\.", ""));
     			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] A new update is available!");
-    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] The new version is " + ChatColor.WHITE +  newVersion + ChatColor.GREEN + ".");
-    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are currently using " + ChatColor.DARK_GRAY + currentVersion + ChatColor.GREEN + ".");
-    		} else {
-    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are using the latest Version of CE!");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] The new version is " + ChatColor.AQUA +  newVersion + ChatColor.GREEN + ".");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are currently using " + ChatColor.AQUA + currentVersion + ChatColor.GREEN + ".");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You can use '/ce update applyupdate' to update automatically.");
 
+    		} else {
+    			hasUpdate = false;
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] You are using the latest Version of CE!");
     		}
+    		hasChecked = true;
+    	} catch (IOException ioex) {
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Failed to check for updates");
+    	}
+    	
     }
     
-    public void update() throws IOException {
+    public void update() {
     	
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Updating to Version " + newVersion  + " started");
     	
     	BufferedInputStream input = null;
     	FileOutputStream   output = null;
-    	
-    	Boolean notify = Boolean.parseBoolean(config.getString("Global.Updates.UpdateNotifications"));
-    	
+    	    	
     	try {
+    		
+        	Boolean notify = Boolean.parseBoolean(config.getString("Global.Updates.UpdateNotifications"));
 
     		int updateSize = updateDownloadURL.openConnection().getContentLength();
     		File file = new File(plugin.getDataFolder().getParent(), "CustomEnchantments.jar");
@@ -328,7 +337,8 @@ public final class Main extends JavaPlugin {
 
     		
 			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Update " + newVersion +  " successfully downloaded. Restart/Reload the Server to apply changes.");
-			hasUpdated = true;
+			currentVersion = newVersion;
+			hasUpdate = false;
     		
 			
     		input.close();
@@ -336,11 +346,12 @@ public final class Main extends JavaPlugin {
     		
     		
     	} catch(Exception e) {
+    		try {
     		if(input != null)
     			input.close();
     		if(output != null)
     			output.close();
-    		e.printStackTrace();
+    		} catch (IOException ex){}
     		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Updating to Version " + newVersion + " failed");
     	}
     }

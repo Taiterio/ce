@@ -49,10 +49,10 @@ public class AssassinsBlade extends CItem {
 
 	@Override
 	public boolean effect(Event event, final Player player) {
-		  if(event instanceof PlayerInteractEvent)
-			  if(!player.hasMetadata("ce.assassin"))
-				  if(player.isSneaking())
-					  if(((PlayerInteractEvent) event).getAction().toString().startsWith("RIGHT")) {
+		if(event instanceof PlayerInteractEvent)
+			if(!player.hasMetadata("ce.assassin"))
+				if(player.isSneaking())
+					if(((PlayerInteractEvent) event).getAction().toString().startsWith("RIGHT")) {
 						  player.setMetadata("ce.assassin", new FixedMetadataValue(main, null));
 						  player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, InvisibilityDuration, 0, true), true);
 						  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You hide in the shadows.");
@@ -67,17 +67,17 @@ public class AssassinsBlade extends CItem {
 						  }.runTaskLater(main, InvisibilityDuration);
 						  return true;
 					  }
-					  if(event instanceof EntityDamageByEntityEvent) {
-						 EntityDamageByEntityEvent e = ((EntityDamageByEntityEvent) event);
-						   if(player.hasMetadata("ce.assassin")) {
-							  e.setDamage(e.getDamage() * AmbushDmgMultiplier);
-							  player.removeMetadata("ce.assassin", main);
-							  player.removePotionEffect(PotionEffectType.INVISIBILITY);
-							  player.getWorld().playSound(e.getEntity().getLocation(), Sound.ZOMBIE_METAL, 0.4f, 0.1f);
-							  player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, WeaknessLength, WeaknessLevel, false), true);
-							  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You are no longer hidden!");
-						   }
-					  }
+		if(event instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent e = ((EntityDamageByEntityEvent) event);
+			if(e.getDamager() == player && player.hasMetadata("ce.assassin")) {
+				  e.setDamage(e.getDamage() * AmbushDmgMultiplier);
+				  player.removeMetadata("ce.assassin", main);
+				  player.removePotionEffect(PotionEffectType.INVISIBILITY);
+				  player.getWorld().playSound(e.getEntity().getLocation(), Sound.ZOMBIE_METAL, 0.4f, 0.1f);
+				  player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, WeaknessLength, WeaknessLevel, false), true);
+				  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You are no longer hidden!");
+		   }
+		}
 		 return false;
 	}
 

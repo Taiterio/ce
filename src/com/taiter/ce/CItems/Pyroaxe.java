@@ -45,8 +45,9 @@ public class Pyroaxe extends CItem {
 		
 		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 		Entity entity = e.getEntity();
+		
 
-		if(entity.getFireTicks() > 0) {
+		if(e.getDamager() == player && entity.getFireTicks() > 0) {
 			e.setDamage(damageMultiplier * e.getDamage());
 			entity.getWorld().playEffect(entity.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
 			entity.getWorld().playSound(entity.getLocation(), Sound.ANVIL_LAND, 1f, 0.001f);

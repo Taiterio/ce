@@ -1,6 +1,8 @@
 Global:
  Updates:
   ShowPercentageOnUpdate: true
+  CheckOnStartup: true
+  CheckDelay: 300
  Logging:
   Enabled: false
   MinimumMsForLog: 1000
@@ -14,5 +16,5 @@ Global:
   MaximumCustomEnchantments: 1000
   RequirePermissions: true
   RepeatPotionEffects: true
-  RepeatDelay: 600
+  RepeatDelay: 1000
 Enchantments:

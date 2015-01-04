@@ -41,7 +41,7 @@ public class HealingShovel extends CItem {
 	@Override
 	public boolean effect(Event event, Player player) {
 		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
-		if(e.getEntity() instanceof Player) {
+		if(e.getDamager() == player && e.getEntity() instanceof Player) {
 		Player damaged = (Player) e.getEntity();
 		e.setDamage((double) 0);
 		damaged.getWorld().playSound(

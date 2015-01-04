@@ -81,6 +81,8 @@ public class BeastmastersBow extends CItem {
 //			  e.getProjectile().setMetadata("ce." + this.getOriginalName(), null);
 		  if(event instanceof EntityDamageByEntityEvent) {
 		  EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
+		  if(e.getDamager() != player)
+			  return false;
 		  Entity ent = e.getEntity();
 		  Location loc = ent.getLocation();
 		  World w = ent.getWorld();

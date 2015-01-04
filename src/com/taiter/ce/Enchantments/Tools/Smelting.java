@@ -44,6 +44,8 @@ public class Smelting extends CEnchantment {
 		BlockBreakEvent event = (BlockBreakEvent) e;
 		Player player = event.getPlayer();
 						
+		if(!event.getBlock().getDrops(item).isEmpty()) {
+		
 			ItemStack itemToDrop = null;
 			Material drop = null;
 			MaterialData md = null;
@@ -80,6 +82,8 @@ public class Smelting extends CEnchantment {
 				player.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 12);
 				b.setType(Material.AIR);
 			}
+			
+		}
 		
 	}
 	

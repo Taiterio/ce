@@ -919,7 +919,7 @@ public class Tools {
 			public void run() {
 				ItemStack item = p.getInventory().getItem(lSlot);
 				if(p != null && !p.isDead() && item != null && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, repeatDelay+100, strength, true), true);
+					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
 				else {
 					this.cancel();
 				}
@@ -958,7 +958,7 @@ public class Tools {
 				if(lIsArmor)
 					item = p.getInventory().getArmorContents()[lSlot];
 				if(p != null && !p.isDead() && item != null && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, repeatDelay+100, strength, true), true);
+					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
 				else {
 					if(lock)
 						p.removeMetadata("ce." + ce.getOriginalName() + ".lock", Main.plugin);

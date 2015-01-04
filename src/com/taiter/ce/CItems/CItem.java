@@ -37,21 +37,21 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.taiter.ce.CBasic;
 import com.taiter.ce.Main;
 
-public abstract class CItem extends CBasic {	
+public abstract class CItem extends CBasic {
 	
-	private boolean				hasRetriedConfig = false;
+	private boolean		hasRetriedConfig = false;
 	
-	Material	 		 		itemMaterial;
-	List<String>				description;
+	Material            itemMaterial;
+	List<String>        description;
 	
-	public long			 		cooldownTime;
-	public ChatColor			itemColor;
+	public long         cooldownTime;
+	public ChatColor    itemColor;
 
 	
-	public Material 			getMaterial() 						{	return this.itemMaterial;	}
-	public List<String>			getDescription() 					{	return this.description;	}
+	public Material 	getMaterial()	{	return this.itemMaterial;	}
+	public List<String>	getDescription(){	return this.description;	}
 	@Override
-	public double				getCost() 							{	return Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));}
+	public double		getCost()		{	return Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));}
 	
 	
 	public CItem(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {

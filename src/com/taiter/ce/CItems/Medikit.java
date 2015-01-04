@@ -60,7 +60,7 @@ public class Medikit extends CItem {
 				toHeal = ((PlayerInteractEntityEvent) event).getPlayer();
 			} else if(event instanceof EntityDamageByEntityEvent) {
 				EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
-				if(e.getEntity() instanceof Player) {
+				if(e.getDamager() == player && e.getEntity() instanceof Player) {
 					e.setDamage((double) 0);
 					toHeal = (Player) e.getEntity();
 				}

@@ -20,7 +20,6 @@ package com.taiter.ce;
 
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,24 +98,20 @@ public class CeCommand {
 						String toDo = args[1].toLowerCase();
 						
 						if(toDo.startsWith("c")) {
-							if(!main.hasUpdated) {
-								try {
-									main.updateCheck();
-								} catch (IOException e) {
-									Error += "Failed to check for updates.";
-									return Error;
-								}
+								new BukkitRunnable() {
+									@Override
+									public void run() {
+										main.updateCheck();
+									}
+								}.runTaskLater(Main.plugin, 1l);
 								return "";
-							} else {
-								Error += "You are already using the newest Version.";
-								return Error;
-							}
-							
 						} else if(toDo.equals("applyupdate")) {
-							if(main.hasUpdate && !main.hasUpdated) {
+							if(!main.hasChecked)
+								return Error + "You need to check for an update first using '/ce update check'.";
+							if(main.hasUpdate) {
 								if(!confirmUpdate) {
 									confirmUpdate = true;
-									sender.sendMessage(ChatColor.GOLD + "[CE] Rerun the command to confirm the update (This expires in 5 Minutes).");
+									sender.sendMessage(ChatColor.AQUA + "[CE] Rerun the command to confirm the update (This expires in 5 Minutes).");
 									new BukkitRunnable() {
 										
 										@Override
@@ -124,17 +119,20 @@ public class CeCommand {
 											if(confirmUpdate)
 												confirmUpdate = false;
 										}
-										
 									}.runTaskLater(main, 6000l);
 									return "";
 								} else {
-									try {
-										main.update();
-									} catch (IOException e) {}
+									new BukkitRunnable() { 
+										
+										@Override
+										public void run() {
+											main.update();
+										}
+									}.runTaskLater(main, 1l);
 									return "";
 								}
 							} else {
-								Error += "You are already using the newest Version.";
+								Error += "You are already using the latest version of CE.";
 								return Error;
 							}
 						}
