@@ -217,13 +217,14 @@ public final class Main extends JavaPlugin {
     	} catch (MalformedURLException e) {}
     
     	if(Boolean.parseBoolean(config.getString("Global.Updates.CheckOnStartup"))) {
-    		new BukkitRunnable() {
+    		this.getServer().getScheduler().scheduleAsyncDelayedTask(this,
+    		  new BukkitRunnable() {
     			@Override
     			public void run() {
 	    			if(!hasChecked)
 	    				updateCheck();
 	    		}
-    		}.runTaskLater(plugin, Integer.parseInt(config.getString("Global.Updates.CheckDelay")));
+    		  }, Integer.parseInt(config.getString("Global.Updates.CheckDelay")));
     	}
 
     }

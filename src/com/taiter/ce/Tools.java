@@ -52,6 +52,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.protection.GlobalRegionManager;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
@@ -581,17 +582,20 @@ public class Tools {
 			getAppropriateList(ce.getCause()).add(ce);
 	}
 	
-	public static boolean checkWorldGuard(Location l, Player p, StateFlag f) {
+	public static boolean checkWorldGuard(Location l, Player p, String fs) {
 		if(Main.getWorldGuard() != null) {
 			GlobalRegionManager grm = Main.getWorldGuard().getGlobalRegionManager();
-			if(f.equals(DefaultFlag.BUILD)) {
+			StateFlag f = null;
+			for(Flag<?> df : DefaultFlag.flagsList)
+				if(fs.equalsIgnoreCase(df.getName())) 
+					f = (StateFlag) df;
+			if(f.equals(DefaultFlag.BUILD))
 				if(grm != null && !grm.canBuild(p, l))
 					return false;
-			} else {
+			else
 				if(grm != null && !grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
 					return false;
-				}
-			}	
+		}	
 		return true;
 	}
 
@@ -706,32 +710,34 @@ public class Tools {
 		 }
 	}
 	
-	public void handleEnchanting(EnchantItemEvent e, Random r) {
+	public void handleEnchanting(EnchantItemEvent e) {
 
 		Player p = e.getEnchanter();
 		ItemStack i = e.getItem();
-		
 		
 		if(i.getType().equals(Material.BOOK))
 			return;
 		
 		List<CEnchantment> list = getEnchantList(getApplicationByMaterial(i.getType()), p);
-
+		
 		if(list.isEmpty())
 			return;
 		
-		int numberOfEnchantments = r.nextInt(4) + 1;
+		ItemMeta im = i.getItemMeta();
+		List<String> lore = new ArrayList<String>();
+		
+		if(im.hasLore())
+			lore = im.getLore();
+		
+		int numberOfEnchantments = random.nextInt(4) + 1;
 				
-		while(numberOfEnchantments != 0) {
+		while(numberOfEnchantments > 0) {
 			for(CEnchantment ce : list)
-				if(numberOfEnchantments == 0)
+				if(numberOfEnchantments < 0)
 					break;
-				else if(r.nextInt(100) < ce.getEnchantProbability()) {
-					ItemMeta im = i.getItemMeta();
-					List<String> lore = new ArrayList<String>();
-
-					if(im.hasLore()) {
-						lore = im.getLore();
+				else if(random.nextInt(100) < ce.getEnchantProbability()) {
+					
+					if(!lore.isEmpty()) {
 						Boolean hasFound = false;
 						for(String s : lore)
 							if(s.startsWith(ce.getDisplayName()))
@@ -740,13 +746,13 @@ public class Tools {
 							continue;
 					}
 
-					lore.add(ce.getDisplayName() + " " + intToLevel(r.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
-					im.setLore(lore);
-					i.setItemMeta(im);
-					lore.clear();
+					lore.add(ce.getDisplayName() + " " + intToLevel(random.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
 					numberOfEnchantments--;
 				}
 		}
+		
+		im.setLore(lore);
+		i.setItemMeta(im);
 
 		p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
 
@@ -835,7 +841,8 @@ public class Tools {
 						}
 					} catch (Exception ex) {
 						if(!(ex instanceof ClassCastException))
-							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
+							ex.printStackTrace();
+//							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
 					}
 				}
 				}
@@ -1059,7 +1066,7 @@ public class Tools {
 				ft = Type.STAR;
 				break;
 		}
-		FireworkEffect effect = FireworkEffect.builder().flicker(rand.nextBoolean()).withColor(fireworkColor(rand.nextInt(16) + 1)).withFade(fireworkColor(rand.nextInt(16) + 1)).trail(rand.nextBoolean()).with(ft).trail(rand.nextBoolean()).build();
+		FireworkEffect effect =  FireworkEffect.builder().flicker(rand.nextBoolean()).withColor(fireworkColor(rand.nextInt(16) + 1)).withFade(fireworkColor(rand.nextInt(16) + 1)).trail(rand.nextBoolean()).with(ft).trail(rand.nextBoolean()).build();
 		meta.addEffect(effect);
 		firework.setFireworkMeta(meta);
 		return firework;

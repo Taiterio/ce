@@ -30,7 +30,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
@@ -51,7 +50,7 @@ public class LivefireBoots extends CItem {
 		  final PlayerMoveEvent e = (PlayerMoveEvent) event;
 		  final Block b = e.getTo().getBlock();
 		  
-		  if(!Tools.checkWorldGuard(e.getTo(), player, DefaultFlag.PVP))
+		  if(!Tools.checkWorldGuard(e.getTo(), player, "PVP"))
 			  return false;
 		  
 		  if(Main.tools.repeatPotionEffects)

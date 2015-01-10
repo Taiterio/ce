@@ -29,7 +29,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Tools;
 
 
@@ -50,23 +49,23 @@ public class ThorsAxe extends CItem {
 					if(e.getClickedBlock() != null) {
 						Location loc = e.getClickedBlock().getLocation();
 						loc.setY(loc.getY() +1);
-					if(Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) {
+					if(Tools.checkWorldGuard(loc, player, "PVP")) {
 						player.getWorld().strikeLightning(e.getClickedBlock().getLocation());
 						if(loc.getBlock().getType().equals(Material.AIR)) {
 							loc.getBlock().setType(Material.FIRE);
 						}
 						loc.setX(loc.getX() +1);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setX(loc.getX() -2);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setX(loc.getX() +1);
 						loc.setZ(loc.getZ() +1);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setZ(loc.getZ() -2);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
 							loc.getBlock().setType(Material.FIRE);
 					
 						player.getWorld().playSound(e.getClickedBlock().getLocation(), Sound.ENDERDRAGON_GROWL, 3f, 1f);

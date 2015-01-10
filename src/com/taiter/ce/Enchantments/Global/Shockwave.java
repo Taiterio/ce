@@ -34,7 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -73,7 +72,7 @@ public class Shockwave extends CEnchantment {
 			final org.bukkit.block.Block block = l.getBlock();
 			Material blockMat = block.getType();
 			if(!ForbiddenMaterials.contains(blockMat)) {
-				if(!Tools.checkWorldGuard(l, damager, DefaultFlag.PVP))
+				if(!Tools.checkWorldGuard(l, damager, "PVP"))
 					return;
 				final Material mat = blockMat;
 				final FallingBlock b = l.getWorld().spawnFallingBlock(l, mat, block.getData());

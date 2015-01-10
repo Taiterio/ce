@@ -60,13 +60,7 @@ public class Stomp extends CEnchantment {
 						if (!entities.isEmpty()) {
 							for (Entity ent : entities) {
 								if (ent instanceof LivingEntity) {
-									double damage = event.getDamage()/damageApplicationFraction;
-									if( ((Damageable) ent).getHealth() - damage > 0)
-										((LivingEntity) ent).damage(damage, player);
-									else  {
-										ent.setLastDamageCause(event);
-										((Damageable) ent).setHealth(0);
-									}
+										((LivingEntity) ent).damage(event.getDamage()/damageApplicationFraction, player);
 									
 								}
 							}

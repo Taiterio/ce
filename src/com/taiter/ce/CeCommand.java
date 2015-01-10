@@ -112,6 +112,7 @@ public class CeCommand {
 								if(!confirmUpdate) {
 									confirmUpdate = true;
 									sender.sendMessage(ChatColor.AQUA + "[CE] Rerun the command to confirm the update (This expires in 5 Minutes).");
+						    		Main.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(Main.plugin,
 									new BukkitRunnable() {
 										
 										@Override
@@ -119,16 +120,17 @@ public class CeCommand {
 											if(confirmUpdate)
 												confirmUpdate = false;
 										}
-									}.runTaskLater(main, 6000l);
+									}, 6000l);
 									return "";
 								} else {
+						    		Main.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(Main.plugin,
 									new BukkitRunnable() { 
 										
 										@Override
 										public void run() {
 											main.update();
 										}
-									}.runTaskLater(main, 1l);
+									}, 1l);
 									return "";
 								}
 							} else {

@@ -37,7 +37,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Tools;
 
 
@@ -120,7 +119,7 @@ public class NecromancersStaff extends CItem {
 				
 				// Apply effect
 				if(spell == 0) {
-					if(Tools.checkWorldGuard(l, player, DefaultFlag.TNT)) {
+					if(Tools.checkWorldGuard(l, player, "TNT")) {
 						player.launchProjectile(WitherSkull.class).setVelocity(l.getDirection().multiply(2));
 						player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
 					} else {
@@ -132,7 +131,7 @@ public class NecromancersStaff extends CItem {
 				} else if(spell == 2) {
 					Location target = player.getTargetBlock(null, 20).getLocation();
 					player.getWorld().strikeLightning(target);
-					if(Tools.checkWorldGuard(l, player, DefaultFlag.TNT))
+					if(Tools.checkWorldGuard(l, player, "TNT"))
 							player.getWorld().createExplosion(target, 1);
 					player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
 				}

@@ -32,7 +32,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.taiter.ce.Tools;
 
 
@@ -66,7 +65,7 @@ public class Landmine extends CItem {
 			b.getRelative(0,1,0).removeMetadata("ce.mine.secondary", main);
 			player.removeMetadata("ce.mine", main);
 			
-			if(!b.getType().equals(Material.AIR) && !b.getType().equals(Material.WATER) && !b.getType().equals(Material.LAVA) && Tools.checkWorldGuard(loc, player, DefaultFlag.PVP)) { 
+			if(!b.getType().equals(Material.AIR) && !b.getType().equals(Material.WATER) && !b.getType().equals(Material.LAVA) && Tools.checkWorldGuard(loc, player, "PVP")) { 
 				b.setType(Material.AIR);
 				w.createExplosion(loc, ExplosionStrength);
 			}

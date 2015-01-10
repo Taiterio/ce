@@ -482,7 +482,7 @@ public class CEListener implements Listener {
 	public void EnchantItemEvent(EnchantItemEvent e) {
 		
 		if(Main.tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability")))) {
-			Main.tools.handleEnchanting(e, Main.tools.random);
+			Main.tools.handleEnchanting(e);
 		}
 		
 			
