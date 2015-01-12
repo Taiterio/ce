@@ -43,7 +43,7 @@ public class HealingShovel extends CItem {
 		EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 		if(e.getDamager() == player && e.getEntity() instanceof Player) {
 		Player damaged = (Player) e.getEntity();
-		e.setDamage((double) 0);
+		e.setDamage(0);
 		damaged.getWorld().playSound(
 				damaged.getLocation(),
 				Sound.ORB_PICKUP, 0.5f, 1f);

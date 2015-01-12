@@ -50,7 +50,7 @@ public class Lifesteal extends CEnchantment {
 		double newHeal = ((Damageable) damager).getHealth() + heal + level;
 
 		if(newHeal < ((Damageable) damager).getMaxHealth())
-			damager.setHealth(((Damageable) damager).getHealth() + newHeal);
+			damager.setHealth(newHeal);
 		else
 			damager.setHealth(((Damageable) damager).getMaxHealth());
 

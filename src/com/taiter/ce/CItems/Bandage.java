@@ -65,7 +65,7 @@ public class Bandage extends CItem {
 			} else if(event instanceof EntityDamageByEntityEvent) {
 				EntityDamageByEntityEvent e = (EntityDamageByEntityEvent) event;
 				if(e.getDamager() == player && e.getEntity() instanceof Player) {
-					e.setDamage((double) 0);
+					e.setDamage(0);
 					toHeal = (Player) e.getEntity();
 				}
 			}

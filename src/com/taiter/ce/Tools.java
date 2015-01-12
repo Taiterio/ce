@@ -730,21 +730,24 @@ public class Tools {
 			lore = im.getLore();
 		
 		int numberOfEnchantments = random.nextInt(4) + 1;
+		
+		if(list.size() < numberOfEnchantments)
+			numberOfEnchantments = list.size();
 				
 		while(numberOfEnchantments > 0) {
-			for(CEnchantment ce : list)
-				if(numberOfEnchantments < 0)
+			for(CEnchantment ce : list) {
+				if(numberOfEnchantments <= 0)
 					break;
 				else if(random.nextInt(100) < ce.getEnchantProbability()) {
-					
 					if(!lore.isEmpty()) {
 						Boolean hasFound = false;
 						for(String s : lore)
-							if(s.startsWith(ce.getDisplayName()))
+							if(s.startsWith(ce.getDisplayName()) || ChatColor.stripColor(s).startsWith(ce.getOriginalName()))
 								hasFound = true;
 						if(hasFound)
 							continue;
 					}
+				}
 
 					lore.add(ce.getDisplayName() + " " + intToLevel(random.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
 					numberOfEnchantments--;
