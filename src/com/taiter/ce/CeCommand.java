@@ -378,7 +378,7 @@ public class CeCommand {
 					String targetNotification = ChatColor.GOLD + "[CE] ";
 					
 					if(custom != null) {
-						if(target.hasPermission("ce.items." + custom.getOriginalName())) {
+						if(Main.tools.checkPermission(custom, target)) {
 						CItem cust = Main.items.get(Main.items.indexOf(custom));
 						im.setDisplayName(cust.getDisplayName());
 						im.setLore(cust.getDescription());
@@ -487,14 +487,14 @@ public class CeCommand {
 						if(toList.startsWith("i") ) {
 							p.sendMessage(ChatColor.GOLD + "-------------Item List-------------");
 							for(CItem ci : Main.items)
-								if( p.isOp() || p.hasPermission("ce.item." + ci.getOriginalName()))
+								if( p.isOp() || Main.tools.checkPermission(ci, p))
 									p.sendMessage("   " + ci.getDisplayName());
 							p.sendMessage(ChatColor.GOLD + "-----------------------------------");
 							return "";
 						} else if(toList.startsWith("e")) {
 							p.sendMessage(ChatColor.GOLD + "----------Enchantment List-----------");
 							for(CEnchantment ce : Main.enchantments)
-								if( p.isOp() || p.hasPermission("ce.ench." + ce.getOriginalName()))
+								if( p.isOp() ||  Main.tools.checkPermission(ce, p))
 									p.sendMessage("   " + ce.getDisplayName());
 							p.sendMessage(ChatColor.GOLD + "------------------------------------");
 							return "";
@@ -562,7 +562,7 @@ public class CeCommand {
 								return Error;
 							}
 							
-							if(!p.hasPermission("ce." + (name.startsWith("i") ? "item":"ench") + "." + custom.getOriginalName())) {
+							if(!Main.tools.checkPermission(custom, p)) {
 								Error += "You do not have permission to use '" + customName + "'.";
 								return Error;
 							}
@@ -571,8 +571,21 @@ public class CeCommand {
 							
 							ItemMeta im = item.getItemMeta();
 							
-							if(item.hasItemMeta() && item.getItemMeta().hasLore())
+							if(item.hasItemMeta() && item.getItemMeta().hasLore()) {
 								lore = item.getItemMeta().getLore();
+								if(custom instanceof CEnchantment) { 
+									if(Main.tools.checkForEnchantments(lore, (CEnchantment) custom))
+										return Error + "You already have this Enchantment!";
+									int number = Main.maxEnchants;
+									for(CEnchantment ce : Main.enchantments)
+										if(number > 0) {
+											if(Main.tools.checkForEnchantments(lore, ce))
+												number--;
+										} else {
+											return Error += "You already have the maximum number of Enchantments on your item!";
+										}
+								}
+							}
 							
 							if(custom instanceof CEnchantment) {
 								lore.add(custom.getDisplayName() + " " + Main.tools.intToLevel(level));
@@ -674,8 +687,7 @@ public class CeCommand {
 
 									}
 									
-								if(item.hasItemMeta()) {
-									if(im.hasDisplayName()) {
+									if(item.hasItemMeta() && im.hasDisplayName()) {
 
 										if(option.startsWith("c")) {
 
@@ -716,13 +728,6 @@ public class CeCommand {
 										return Error + "Your item does not have a name to be changed, use '/ce change name set' first.";
 
 									}
-
-								} else {
-
-									return Error + "Your item does not have a name to be changed, use '/ce change name set' first.";
-
-								}
-
 								return usageError;
 
 							} else if(toChange.startsWith("l")) {
@@ -748,8 +753,7 @@ public class CeCommand {
 
 									}
 									
-								if(item.hasItemMeta()) {
-									if(item.getItemMeta().hasLore()) {
+									if(item.hasItemMeta() || item.getItemMeta().hasLore()) {
 
 										List<String> lore = im.getLore();
 
@@ -799,8 +803,6 @@ public class CeCommand {
 										return Error + "Your item does not have a lore to be changed, use '/ce change lore set' first.";
 
 									}
-
-								}
 
 							}
 

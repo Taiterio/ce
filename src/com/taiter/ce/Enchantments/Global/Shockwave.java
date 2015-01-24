@@ -47,7 +47,7 @@ public class Shockwave extends CEnchantment {
 	public Shockwave(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
 		super(originalName, app,  cause, enchantProbability, occurrenceChance);
 		configEntries.add("Cooldown: 200");
-		configEntries.add("ForbiddenMaterials: AIR, BEDROCK, WATER, STATIONARY_WATER, LAVA, STATIONARY_LAVA, CACTUS, CAKE_BLOCK, CROPS, TORCH, ENDER_PORTAL, PISTON_MOVING_PIECE, MELON_STEM, NETHER_WARTS, MOB_SPAWNER, CHEST, SIGN, SIGN_POST, ITEM_FRAME");
+		configEntries.add("ForbiddenMaterials: BEDROCK, WATER, STATIONARY_WATER, LAVA, STATIONARY_LAVA, CACTUS, CAKE_BLOCK, CROPS, TORCH, ENDER_PORTAL, PISTON_MOVING_PIECE, MELON_STEM, NETHER_WARTS, MOB_SPAWNER, CHEST, SIGN, WALL_SIGN, SIGN_POST, ITEM_FRAME");
 	}
 
 	@Override
@@ -71,7 +71,8 @@ public class Shockwave extends CEnchantment {
 		for(final Location l : list) {
 			final org.bukkit.block.Block block = l.getBlock();
 			Material blockMat = block.getType();
-			if(!ForbiddenMaterials.contains(blockMat)) {
+			if(!ForbiddenMaterials.contains(blockMat) && checkSurrounding(block)) {
+				
 				if(!Tools.checkWorldGuard(l, damager, "PVP"))
 					return;
 				final Material mat = blockMat;
@@ -101,21 +102,39 @@ public class Shockwave extends CEnchantment {
 	@Override
 	public void initConfigEntries() {
 		cooldown = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
-		ForbiddenMaterials = getMats();
+		makeList();
 	}
 	
-	private List<Material> getMats() {
-		List<Material> mats = new ArrayList<Material>();
+	private boolean checkSurrounding(org.bukkit.block.Block block) {
+
+		if(!block.getRelative(0, 1, 0).getType().isSolid())
+			return false;
+		if(!block.getRelative(1, 0, 0).getType().isSolid())
+			return false;
+		if(!block.getRelative(-1, 0, 0).getType().isSolid())
+			return false;
+		if(!block.getRelative(0, 0, 1).getType().isSolid())
+			return false;
+		if(!block.getRelative(0, 0, -1).getType().isSolid())
+			return false;
+		return true;
+	}
+	
+	private void makeList() {
+		ForbiddenMaterials = new ArrayList<Material>();
 		String mS = getConfig().getString("Enchantments." + getOriginalName() + ".ForbiddenMaterials");
-		mS.replace(" ", "");
+		mS = mS.replace(" ", "");
+
 		String[] s = mS.split(",");
+		
 		for(int i = 0; i < s.length;i++)
 			try {
-				mats.add(Material.getMaterial(Integer.parseInt(s[i])));
+				ForbiddenMaterials.add(Material.getMaterial(Integer.parseInt(s[i])));
 			} catch(NumberFormatException ex) {
-			    mats.add(Material.getMaterial(s[i].toUpperCase()));
+				ForbiddenMaterials.add(Material.getMaterial(s[i].toUpperCase()));
 			}
-		return mats;
+		if(ForbiddenMaterials.contains(Material.AIR))
+			ForbiddenMaterials.remove(Material.AIR);
 	}
 	
 }

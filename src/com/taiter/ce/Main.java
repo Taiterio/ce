@@ -201,8 +201,13 @@ public final class Main extends JavaPlugin {
     	lorePrefix = tools.resolveEnchantmentColor();
 	    
     	//Check and set up the Economy
-    	if(setupEconomy()) 
+    	if(setupEconomy()) {
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Vault has been detected!");
 	    	hasEconomy = true;
+    	}
+    	
+    	if(Main.getWorldGuard() != null)
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] WorldGuard has been detected!");
     	
     	//Make the list of Enchantments
     	makeLists(true, true);
@@ -448,13 +453,13 @@ public final class Main extends JavaPlugin {
     	Bukkit.getServer().getPluginManager().addPermission(cmdEnchant);
     	
     	for(CItem ci : items) {
-    		Permission itemTemp = new Permission("ce.item." + ci.getOriginalName(), "The permission for the CE Item '" + ci.getOriginalName() + "'.");
+    		Permission itemTemp = new Permission("ce.item." + ci.getOriginalName().replace(" ", "").replace("'", ""), "The permission for the CE Item '" + ci.getOriginalName() + "'.");
     		itemTemp.addParent(itemNode, true);
     		Bukkit.getServer().getPluginManager().addPermission(itemTemp);
     	}
     	
     	for(CEnchantment ce : enchantments) {
-    		Permission itemTemp = new Permission("ce.ench." + ce.getOriginalName(), "The permission for the CE Enchantment '" + ce.getOriginalName() + "'.");
+    		Permission itemTemp = new Permission("ce.ench." + ce.getOriginalName().replace(" ", "").replace("'", ""), "The permission for the CE Enchantment '" + ce.getOriginalName() + "'.");
     		itemTemp.addParent(itemNode, true);
     		Bukkit.getServer().getPluginManager().addPermission(itemTemp);
     	}
@@ -539,7 +544,7 @@ public final class Main extends JavaPlugin {
     		tools.resolveEnchantmentLists();
     		
     		if(printSuccess)
-    			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] All Enchantments have been loaded.");
+    			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] All Enchantments have been loaded.");
     		
     		//ITEMS
         	
@@ -594,13 +599,13 @@ public final class Main extends JavaPlugin {
         			ci.finalizeItem();
     		
         	if(printSuccess)
-        		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] All Items have been loaded.");
+        		Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] All Items have been loaded.");
         	
         	deleteInactive();
         	
         	if(printSuccess)
         		if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled"))) 
-        			Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Took " + (System.currentTimeMillis() - time) +"ms to initialize Custom Enchantments.");
+        			Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Took " + (System.currentTimeMillis() - time) +"ms to initialize Custom Enchantments.");
     		 
         	
     }

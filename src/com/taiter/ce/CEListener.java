@@ -140,7 +140,7 @@ public class CEListener implements Listener {
 			
 			//These are the specific menus, clicking one of them will lead to the enchanting menu, which needs to be 'notified' of the enchantment to give and it's cost
 			if(topInv.getTitle().equals(Main.tools.prefix + "Global") || topInv.getTitle().equals(Main.tools.prefix + "Bow") || topInv.getTitle().equals(Main.tools.prefix + "Armor") || topInv.getTitle().equals(Main.tools.prefix + "Helmet") || topInv.getTitle().equals(Main.tools.prefix + "Boots") || topInv.getTitle().equals(Main.tools.prefix + "Tool")) 
-				if(p.isOp() || p.hasPermission("ce.ench." + (Main.tools.getEnchantmentByDisplayname(clickedItem.getItemMeta().getDisplayName()).getOriginalName()) )) {
+				if(p.isOp() || Main.tools.checkPermission(Main.tools.getEnchantmentByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
 					Inventory enchantingMenu = Main.CEEnchantingMenu;
 					enchantingMenu.setItem(0, clickedItem);
 					p.closeInventory();
@@ -153,7 +153,7 @@ public class CEListener implements Listener {
 			
 			//This opens the Item Creation Menu
 			if(topInv.getTitle().equals(Main.tools.prefix + "Items")) 
-				if(p.isOp() || p.hasPermission("ce.item." + (Main.tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName()).getOriginalName()) )) {
+				if(p.isOp() || Main.tools.checkPermission(Main.tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
 					
 					
 					Inventory approveMenu = Main.CEApproveMenu;
@@ -192,7 +192,7 @@ public class CEListener implements Listener {
 						int number = 0;
 						for(String s : lore) {
 							CEnchantment c = Main.tools.getEnchantmentByDisplayname(s);
-							if(c != null && c.getClass() == ce.getClass()) {
+							if(c != null && Main.tools.checkForEnchantment(s, c)) {
 								p.sendMessage(ChatColor.RED + "[CE] This item already has this enchantment!");
 								return;
 							}
@@ -213,6 +213,7 @@ public class CEListener implements Listener {
 					
 				} else if(topInv.getTitle().equals(Main.tools.prefix + "Item Creation")) {
 					item = topInv.getContents()[0];
+					cost = Main.tools.getItemByDisplayname(item.getItemMeta().getDisplayName()).getCost();
 //					if(item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(swimsuit.getDisplayName())) { //TODO: Always keep the position of the Swimsuit updated
 //						
 //						

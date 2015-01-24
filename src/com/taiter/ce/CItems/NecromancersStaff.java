@@ -20,6 +20,7 @@ package com.taiter.ce.CItems;
 
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class NecromancersStaff extends CItem {
 		this.configEntries.add("FireballCost: 35");
 		this.configEntries.add("FireballCooldown: 60");
 		this.configEntries.add("LightningCost: 20");
-		this.configEntries.add("LightningCooldown: 2400");
+		this.configEntries.add("LightningCooldown: 240");
 		
 	}
 
@@ -70,7 +71,13 @@ public class NecromancersStaff extends CItem {
 	public boolean effect(Event event, Player player) {
 		PlayerInteractEvent e = (PlayerInteractEvent) event;
 		ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
-		List<String> lore = im.getLore();
+		List<String> lore = new ArrayList<String>();
+		if(!im.hasLore()) {
+			lore.add(spells.get(0));
+			im.setLore(lore);
+			e.getPlayer().getItemInHand().setItemMeta(im);
+		}
+		lore = im.getLore();
 		int lastElement = lore.size() - 1;
 
 		if(e.getAction().toString().startsWith("LEFT")) {
@@ -83,6 +90,8 @@ public class NecromancersStaff extends CItem {
 			String nextSpell = spells.get(nextSpellIndex);
 
 			lore.set(lastElement, nextSpell);
+			im.setLore(lore);
+			e.getPlayer().getItemInHand().setItemMeta(im);
 
 			player.sendMessage(ChatColor.GRAY + "Changed Spell to " + nextSpell.split(": ")[1] + ChatColor.GRAY + ".");
 			player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);

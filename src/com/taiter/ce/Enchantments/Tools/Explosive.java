@@ -96,8 +96,6 @@ public class Explosive extends CEnchantment {
 						if(Tools.checkWorldGuard(loc, player, "BUILD")) 
 							loc.getBlock().breakNaturally(item);
 			}
-						
-				
 			
 					
 		
@@ -121,7 +119,8 @@ public class Explosive extends CEnchantment {
 				bMat.equals("GRAVEL")				||
 				bMat.equals("GRASS")))       		||
 			(iMat.endsWith("_AXE") 					&& 
-				bMat.equals("LOG"))	        		||
+				bMat.contains("LOG")        		||
+				bMat.contains("PLANKS"))       		||
 			(iMat.endsWith("HOE") 					&& 
 				(bMat.equals("CROPS")				||
 				bMat.equals("POTATO")				||

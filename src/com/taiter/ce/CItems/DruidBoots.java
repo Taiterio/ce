@@ -26,8 +26,6 @@ import org.bukkit.event.Event;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.taiter.ce.Main;
-
 
 public class DruidBoots extends CItem {
 
@@ -45,23 +43,14 @@ public class DruidBoots extends CItem {
 	}
 
 	@Override
-	public boolean effect(Event event, Player player) {
-		if(player.hasPotionEffect(PotionEffectType.SPEED) && player.hasPotionEffect(PotionEffectType.REGENERATION))
-			return false;
+	public boolean effect(Event event, final Player player) {
+		
 		Material t = player.getLocation().getBlock().getRelative(0,-1,0).getLocation().getBlock().getType();
-		if(t.equals(Material.GRASS) || t.equals(Material.DIRT) || t.equals(Material.LEAVES)){
-			if(Main.tools.repeatPotionEffects) {
-				Main.tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.SPEED, SpeedLevel, this);
-				Main.tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.REGENERATION, RegenerationLevel, this);
-			} else {
-				if(!player.hasPotionEffect(PotionEffectType.SPEED))
-					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, SpeedDuration , SpeedLevel), true);
-				if(!player.hasPotionEffect(PotionEffectType.REGENERATION))
-					player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, RegenerationDuration , RegenerationLevel), true);
-			}
-			
-				
+		if(t.equals(Material.GRASS) || t.equals(Material.DIRT) || t.equals(Material.LEAVES)) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, SpeedDuration , SpeedLevel), true);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, RegenerationDuration , RegenerationLevel), true);
 		}
+			
 		return true;
 	}
 

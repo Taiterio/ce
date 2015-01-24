@@ -74,6 +74,8 @@ public abstract class CItem extends CBasic {
 	}
 	public void generateCooldown(final Player p, long cooldownT) {
 	  if(cooldownT != 0) {
+			cooldown.add(p);
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -111,7 +113,7 @@ public abstract class CItem extends CBasic {
 			description.set(description.indexOf(s), ChatColor.GRAY + "" + ChatColor.ITALIC + s);
 		//If the item has a special line, this whitespace is required
 		this.description.add("");
-		this.cooldownTime= Main.config.getLong("Items." + getOriginalName() + ".Cooldown");
+		this.cooldownTime= Long.parseLong(Main.config.getString("Items." + getOriginalName() + ".Cooldown"));
 		try {
 		initConfigEntries();
 		} catch(Exception e) {

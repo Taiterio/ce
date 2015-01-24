@@ -89,26 +89,20 @@ public class Tools {
 
 	public CEnchantment getEnchantmentByDisplayname(String name) {
 		for(CEnchantment ce : Main.enchantments) {
-			name = name.toLowerCase();
+			name = ChatColor.stripColor(name).toLowerCase();
 			String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
-			if(name.toLowerCase().contains(enchantment)){
-				String newName = name.replace(enchantment, "");
-				if(newName.isEmpty() || newName.startsWith(" "))
+			if(name.equals(enchantment))
 					return ce;
-			}
 		}
 		return null;
 	}
 
 	public CEnchantment getEnchantmentByOriginalname(String name) {
 		for(CEnchantment ce : Main.enchantments) {
-			name = name.toLowerCase();
+			name = ChatColor.stripColor(name).toLowerCase();
 			String enchantment = ChatColor.stripColor(ce.getOriginalName()).toLowerCase();
-			if(name.toLowerCase().contains(enchantment)){
-				String newName = name.replace(enchantment, "");
-				if(newName.isEmpty() || newName.startsWith(" "))
+			if(name.equals(enchantment))
 					return ce;
-			}
 		}
 		return null;
 	}
@@ -127,6 +121,45 @@ public class Tools {
 			if(ci.getDisplayName().equals(name))
 				return ci;
 		return null;
+	}
+	
+	public Boolean checkForEnchantments(List<String> toTest) {
+		for(String s : toTest)
+			if(checkForEnchantments(s))
+				return true;
+		return false;
+	}
+	
+	public Boolean checkForEnchantments(String toTest) {
+		for(CEnchantment ce : Main.enchantments) {
+		   if(checkForEnchantment(toTest, ce))
+			   return true;
+		}
+		return false;
+	}
+	
+	public Boolean checkForEnchantments(List<String> toTest, CEnchantment ce) {
+		for(String s : toTest)
+			if(checkForEnchantment(s, ce))
+				return true;
+		return false;
+	}
+	
+	
+	public Boolean checkForEnchantment(String toTest, CEnchantment ce) {
+		String next = "";
+		if(toTest.startsWith(Main.lorePrefix + ce.getOriginalName()))
+			next = Main.lorePrefix + ce.getOriginalName();
+		if(toTest.startsWith(ce.getDisplayName()))
+			next = ce.getDisplayName();
+		if(next.isEmpty())
+			return false;
+		String nextTest = toTest.replace(next, "");
+		
+		if(nextTest.startsWith(" ") || nextTest.isEmpty())
+			return true;
+		
+		return false;
 	}
 
 	public Inventory getPreviousInventory(String name) {
@@ -168,6 +201,24 @@ public class Tools {
 			tempInv.remove(6);
 		p.openInventory(tempInv);
 	}
+	
+	public boolean checkPermission(CBasic cb, Player p) {
+		String name = "ce.";
+		if(cb instanceof CItem)
+			name += "item.";
+		else
+			name += "ench.";
+		name += cb.getOriginalName();
+		if(p.hasPermission(name))
+			return true;
+		name = name.replace(" ", "");
+		if(p.hasPermission(name))
+			return true;
+		name = name.replace("'", "");
+		if(p.hasPermission(name))
+			return true;
+		return false;
+	}
 
 	public Inventory getEnchantmentMenu(Player p, String name) {
 		if(!p.isOp() && !p.hasPermission("ce.ench.*")) {
@@ -180,7 +231,7 @@ public class Tools {
 					continue;
 				for(CEnchantment ce : Main.enchantments) {
 					if(checkItem.getItemMeta().getDisplayName().equals(ce.getDisplayName()))
-						if(!p.hasPermission("ce.ench." + ce.getOriginalName())) {
+						if(!checkPermission(ce, p)) {
 							ItemStack item = enchantments.getItem(i);
 							ItemMeta im = item.getItemMeta();
 							List<String> lore = new ArrayList<String>();
@@ -210,7 +261,7 @@ public class Tools {
 					continue;
 				for(CItem ci : Main.items)
 					if(item.getItemMeta().getDisplayName().equals(ci.getDisplayName())) {
-						if(!p.hasPermission("ce.item." + ci.getOriginalName())) {
+						if(!checkPermission(ci, p)) {
 							ItemMeta im = item.getItemMeta();
 							List<String> lore = new ArrayList<String>();
 							if(im.hasLore())
@@ -654,7 +705,7 @@ public class Tools {
 		int max = list.size() - 1;
 		
 		while(max >= 0) {
-			if(!p.hasPermission("ce.ench." + list.get(max).getOriginalName()))
+			if(!checkPermission(list.get(max), p))
 				list.remove(max);
 			max--;
 		}
@@ -677,22 +728,7 @@ public class Tools {
 			return Application.TOOL;
 		return Application.GLOBAL;
 	}
-	
-	private Boolean checkForEnchantment(String toTest, CEnchantment ce) {
-		String next = "";
-		if(toTest.startsWith(Main.lorePrefix + ce.getOriginalName()))
-			next = Main.lorePrefix + ce.getOriginalName();
-		if(toTest.startsWith(ce.getDisplayName()))
-			next = ce.getDisplayName();
-		if(next.isEmpty())
-			return false;
-		String nextTest = toTest.replace(next, "");
-		
-		if(nextTest.startsWith(" ") || nextTest.isEmpty())
-			return true;
-		
-		return false;
-	}
+
 
 	public void handleEvent(Player toCheck, Event e, List<CEnchantment> list) {
 
@@ -828,7 +864,7 @@ public class Tools {
 				if(isApplicable(i, ce)) {
 				if(checkForEnchantment(s, ce)) {
 				int level = getLevel(s);
-				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.ench." + ce.getOriginalName()))
+				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ce, toCheck))
 				if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
 				if(!ce.getHasCooldown(toCheck))
 					try {
@@ -840,20 +876,25 @@ public class Tools {
 						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
 							long timeF = (System.currentTimeMillis() - time);
 							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-								Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + " (" + ce.getOriginalName() + ")" + ChatColor.RESET + ".");
+								Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + ChatColor.RESET +  "(" + ce.getOriginalName() + ").");
 						}
 					} catch (Exception ex) {
 						if(!(ex instanceof ClassCastException))
-							ex.printStackTrace();
-//							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
-					}
+							for(StackTraceElement element : ex.getStackTrace()) {
+								String className = element.getClassName();
+								if(className.contains("com.taiter.ce")) {
+									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
+									break;
+								}
+							}
+						}
 				}
 				}
 			}
 			if(im.hasDisplayName())
 				for(CItem ci : Main.items)
 				if(im.getDisplayName().equals(ci.getDisplayName())) {
-				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || toCheck.hasPermission("ce.item." + ci.getOriginalName()))
+				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ci, toCheck))
 				if(!ci.getHasCooldown(toCheck))
 				if(!toCheck.hasMetadata("ce." + ci.getOriginalName() + ".lock")) {
 						if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
@@ -862,6 +903,7 @@ public class Tools {
 						if(e instanceof EntityShootBowEvent) 
 							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
 						long time = System.currentTimeMillis();
+
 						if(ci.effect(e, toCheck))
 							ci.generateCooldown(toCheck, ci.cooldownTime);
 						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
@@ -871,7 +913,13 @@ public class Tools {
 						}
 					} catch (Exception ex) {
 						if(!(ex instanceof ClassCastException))
-							Bukkit.getConsoleSender().sendMessage(ex.getMessage());
+							for(StackTraceElement element : ex.getStackTrace()) {
+								String className = element.getClassName();
+								if(className.contains("com.taiter.ce")) {
+									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
+									break;
+								}
+							}
 					}
 				}
 				return; // Stops going through the list of items as it
@@ -928,7 +976,7 @@ public class Tools {
 			@Override
 			public void run() {
 				ItemStack item = p.getInventory().getItem(lSlot);
-				if(p != null && !p.isDead() && item != null && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
 					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
 				else {
 					this.cancel();
@@ -967,7 +1015,7 @@ public class Tools {
 				ItemStack item = p.getInventory().getItem(lSlot);
 				if(lIsArmor)
 					item = p.getInventory().getArmorContents()[lSlot];
-				if(p != null && !p.isDead() && item != null && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
 					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
 				else {
 					if(lock)
