@@ -39,6 +39,7 @@ public abstract class CBasic {
 	
 	
 	protected List<Player> 	cooldown = new ArrayList<Player>();
+	protected List<Player> 	lockList = new ArrayList<Player>();
 	protected String		displayName;
 	protected String 		originalName;
 	protected String 		typeString;

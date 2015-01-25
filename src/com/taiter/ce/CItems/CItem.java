@@ -31,7 +31,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.taiter.ce.CBasic;
@@ -86,11 +85,11 @@ public abstract class CItem extends CBasic {
 	}
 	
 	public void addLock(Player p) {
-		p.setMetadata("ce." + getOriginalName() + ".lock", new FixedMetadataValue(Main.plugin, null));
+		lockList.add(p);
 	}
 	
 	public void removeLock(Player p) {
-		p.removeMetadata("ce." + getOriginalName() + ".lock", main);
+		lockList.remove(p);
 	}
 	
 	public abstract boolean effect(Event event, Player owner); // The boolean represents whether the cooldown is to be applied or not

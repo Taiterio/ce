@@ -40,6 +40,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -339,6 +340,7 @@ public class CEListener implements Listener {
 		
 		Entity 		damager = e.getDamager();
 		Entity 		damaged = e.getEntity();
+
 		
 		if(damaged instanceof Player)
 			Main.tools.handleEvent((Player) damaged, e, damageTakenEnchantments);
@@ -449,6 +451,9 @@ public class CEListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void BlockBreakEvent(BlockBreakEvent e) {
 		
+		if(e.getBlock().hasMetadata("ce.Ice"))
+			e.setCancelled(true);
+		
 		Main.tools.handleEvent(e.getPlayer(), e, blockBreakEnchantments);
 		if(e.getBlock().hasMetadata("ce.mine")) {
 			Block b = e.getBlock();
@@ -471,6 +476,14 @@ public class CEListener implements Listener {
 				}
 			}
 		}
+		
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void BlockFromToEvent(BlockFromToEvent e) {
+		
+		if(e.getBlock().hasMetadata("ce.Ice"))
+			e.setCancelled(true);
 		
 	}
 	

@@ -58,6 +58,10 @@ import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
 import com.taiter.ce.Enchantments.CEnchantment.Cause;
+import com.taiter.ce.Enchantments.Global.Blind;
+import com.taiter.ce.Enchantments.Global.Ice;
+import com.taiter.ce.Enchantments.Global.Lifesteal;
+import com.taiter.ce.Enchantments.Global.Poison;
 
 
 
@@ -147,6 +151,8 @@ public class Tools {
 	
 	
 	public Boolean checkForEnchantment(String toTest, CEnchantment ce) {
+		if(toTest.startsWith(ChatColor.YELLOW + "" + ChatColor.ITALIC + "\""))
+			toTest = Main.lorePrefix + ChatColor.stripColor(toTest.replace("\"", ""));
 		String next = "";
 		if(toTest.startsWith(Main.lorePrefix + ce.getOriginalName()))
 			next = Main.lorePrefix + ce.getOriginalName();
@@ -158,7 +164,6 @@ public class Tools {
 		
 		if(nextTest.startsWith(" ") || nextTest.isEmpty())
 			return true;
-		
 		return false;
 	}
 
@@ -555,7 +560,7 @@ public class Tools {
 
 		// ITEM CREATION MENU
 		Inventory ItemApproveMenu = Bukkit.createInventory(null, 9, prefix + "Item Creation");
-		EnchantingMenu.setItem(8, backButton);
+		ItemApproveMenu.setItem(8, backButton);
 		ItemStack ItemInfo = new ItemStack(Material.ANVIL);
 
 		tempMeta.setDisplayName(ChatColor.MAGIC + "Item Creation");
@@ -629,8 +634,11 @@ public class Tools {
 	}
 
 	public void resolveEnchantmentLists() {
-		for(CEnchantment ce : Main.enchantments)
+		for(CEnchantment ce : Main.enchantments) {
+			if(ce instanceof Poison || ce instanceof Blind || ce instanceof Lifesteal || ce instanceof Ice)
+				Main.listener.bowEnchantments.add(ce);
 			getAppropriateList(ce.getCause()).add(ce);
+		}
 	}
 	
 	public static boolean checkWorldGuard(Location l, Player p, String fs) {
@@ -864,8 +872,9 @@ public class Tools {
 				if(isApplicable(i, ce)) {
 				if(checkForEnchantment(s, ce)) {
 				int level = getLevel(s);
+
 				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ce, toCheck))
-				if(!toCheck.hasMetadata("ce." + ce.getOriginalName() + ".lock")) 
+				if(!ce.lockList.contains(toCheck)) 
 				if(!ce.getHasCooldown(toCheck))
 					try {
 						if(e instanceof EntityShootBowEvent)
@@ -896,7 +905,7 @@ public class Tools {
 				if(im.getDisplayName().equals(ci.getDisplayName())) {
 				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ci, toCheck))
 				if(!ci.getHasCooldown(toCheck))
-				if(!toCheck.hasMetadata("ce." + ci.getOriginalName() + ".lock")) {
+				if(!ci.lockList.contains(toCheck)) {
 						if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
 							return;
 					try {
@@ -1007,7 +1016,7 @@ public class Tools {
 		final boolean lIsArmor = isArmor;
 
 		if(lock)
-			p.setMetadata("ce." + ce.getOriginalName() + ".lock", new FixedMetadataValue(Main.plugin, null));
+			ce.lockList.add(p);
 		new BukkitRunnable() {
 
 			@Override
@@ -1019,7 +1028,7 @@ public class Tools {
 					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
 				else {
 					if(lock)
-						p.removeMetadata("ce." + ce.getOriginalName() + ".lock", Main.plugin);
+						ce.lockList.remove(p);
 					this.cancel();
 				}
 			}

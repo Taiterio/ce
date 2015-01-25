@@ -20,55 +20,40 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
-import org.bukkit.GameMode;
 import org.bukkit.Sound;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Lifesteal extends CEnchantment {
+public class Blind extends CEnchantment {
 
-	public double	heal;
+	int	duration;
+	int	strength;
 
-	public Lifesteal(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
-		configEntries.add("Heal: 2");
-	}
+	public Blind(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
+		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+		configEntries.add("Duration: 100");
+		}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		Player damager = null;
-		
-		if(event.getDamager() instanceof Player)
-			damager = (Player) event.getDamager();
-		else
-			damager = (Player) ((Arrow) event.getDamager()).getShooter();
-		
-		if(damager.getGameMode().equals(GameMode.CREATIVE))
-			return;
-		
-		double newHeal = ((Damageable) damager).getHealth() + heal + level;
+		LivingEntity target = (LivingEntity) event.getEntity();
 
-		if(newHeal < ((Damageable) damager).getMaxHealth())
-			damager.setHealth(newHeal);
-		else
-			damager.setHealth(((Damageable) damager).getMaxHealth());
-		
-		damager.getWorld().playSound(damager.getLocation(), Sound.ORB_PICKUP, 0.3f, 1f);
+			target.getWorld().playSound(target.getLocation(), Sound.HURT_FLESH, 1f, 0.1f);
+			target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration + 20 * level, 0));
 
-		
 	}
 
 	@Override
 	public void initConfigEntries() {
-		heal = Double.parseDouble(getConfig().getString("Enchantments." + getOriginalName() + ".Heal"));		
+		duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
 	}
 }

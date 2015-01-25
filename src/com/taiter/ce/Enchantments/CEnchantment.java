@@ -24,7 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.taiter.ce.CBasic;
@@ -96,6 +95,7 @@ public abstract class CEnchantment extends CBasic  {
 		}.runTaskLater(main, time);
 	}
 	
+	
 	public void finalizeEnchantment() {
 		if(!getConfig().contains("Enchantments." + getOriginalName()))
 			getTools().writeConfigEntry(this);
@@ -119,9 +119,6 @@ public abstract class CEnchantment extends CBasic  {
 		}
 	}
 	
-	protected void addLock(Player p, String errorMessage) {
-		p.setMetadata("ce." + this.getOriginalName() + ".lock", new FixedMetadataValue(Main.plugin, errorMessage));
-	}
 	
 	public abstract void effect(Event event, ItemStack triggerItem, int level);
 	public abstract void initConfigEntries();

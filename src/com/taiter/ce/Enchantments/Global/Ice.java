@@ -20,19 +20,26 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -42,6 +49,7 @@ public class Ice extends CEnchantment {
 	int		SlowStrength;
 	int		SlowDuration;
 	int		chanceFreeze;
+	int     SpecialFreezeDuration;
 	int		chanceSpecialFreeze;
 	boolean	specialFreeze;
 
@@ -51,6 +59,7 @@ public class Ice extends CEnchantment {
 		configEntries.add("SlowDuration: 40");
 		configEntries.add("ChanceFreeze: 60");
 		configEntries.add("SpecialFreeze: true");
+		configEntries.add("SpecialFreezeDuration: 60");
 		configEntries.add("ChanceSpecialFreeze: 10");
 	}
 
@@ -65,108 +74,60 @@ public class Ice extends CEnchantment {
 		}
 		if(specialFreeze) {
 			if(i < chanceSpecialFreeze) {
+				if(event.getEntity() instanceof LivingEntity) {
+				LivingEntity ent = (LivingEntity) event.getEntity();
 
-				if(event.getEntity() instanceof Player) {
-					((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 10));
+				ent.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SpecialFreezeDuration + 20, 10));
 
-					Location loc = event.getEntity().getLocation();
-					loc.setY(loc.getY() + 1);
-					Location loc1 = event.getEntity().getLocation();
-					Location loc2 = event.getEntity().getLocation();
-					Location loc3 = event.getEntity().getLocation();
-					Location loc4 = event.getEntity().getLocation();
-					Location loc5 = event.getEntity().getLocation();
-					Location loc6 = event.getEntity().getLocation();
-					Location loc7 = event.getEntity().getLocation();
-					Location loc8 = event.getEntity().getLocation();
-					Location loc9 = event.getEntity().getLocation();
-					Location loc10 = event.getEntity().getLocation();
-					loc1.setY(loc1.getY() - 1);
-					loc2.setX(loc2.getX() - 1);
-					loc3.setX(loc3.getX() + 1);
-					loc4.setY(loc4.getY() + 2);
-					loc5.setZ(loc5.getZ() - 1);
-					loc6.setZ(loc6.getZ() + 1);
-					final Material mat1 = loc1.getBlock().getType();
-					final Material mat2 = loc2.getBlock().getType();
-					final Material mat3 = loc3.getBlock().getType();
-					final Material mat4 = loc4.getBlock().getType();
-					final Material mat5 = loc5.getBlock().getType();
-					final Material mat6 = loc6.getBlock().getType();
-					loc1.getBlock().setType(Material.ICE);
-					loc2.getBlock().setType(Material.ICE);
-					loc3.getBlock().setType(Material.ICE);
-					loc4.getBlock().setType(Material.ICE);
-					loc5.getBlock().setType(Material.ICE);
-					loc6.getBlock().setType(Material.ICE);
-					loc7 = loc2.clone();
-					loc7.setY(loc7.getY() + 1);
-					loc8 = loc3.clone();
-					loc8.setY(loc8.getY() + 1);
-					loc9 = loc5.clone();
-					loc9.setY(loc9.getY() + 1);
-					loc10 = loc6.clone();
-					loc10.setY(loc10.getY() + 1);
-					final Material mat7 = loc7.getBlock().getType();
-					final Material mat8 = loc8.getBlock().getType();
-					final Material mat9 = loc9.getBlock().getType();
-					final Material mat10 = loc10.getBlock().getType();
+				final HashMap<Block, Material> list = getIgloo(ent.getLocation(), 3, (Player) event.getDamager());
 
-					loc7.getBlock().setType(Material.ICE);
-					loc8.getBlock().setType(Material.ICE);
-					loc9.getBlock().setType(Material.ICE);
-					loc10.getBlock().setType(Material.ICE);
+				generateCooldown((Player) event.getDamager(), SpecialFreezeDuration);
+				
+				new BukkitRunnable() {
 
-					event.getEntity().getWorld().playSound(loc, Sound.ITEM_BREAK, 1000f, 1f);
-
-					final Location loc11 = loc1.clone();
-					final Location loc12 = loc2.clone();
-					final Location loc13 = loc3.clone();
-					final Location loc14 = loc4.clone();
-					final Location loc15 = loc5.clone();
-					final Location loc16 = loc6.clone();
-					final Location loc17 = loc7.clone();
-					final Location loc18 = loc8.clone();
-					final Location loc19 = loc9.clone();
-					final Location loc20 = loc10.clone();
-
-					new BukkitRunnable() {
-
-						@Override
-						public void run() {
-							if(mat1 != Material.ICE)
-								loc11.getBlock().setType(mat1);
-							if(mat2 != Material.ICE)
-								loc12.getBlock().setType(mat2);
-							if(mat3 != Material.ICE)
-								loc13.getBlock().setType(mat3);
-							if(mat4 != Material.ICE)
-								loc14.getBlock().setType(mat4);
-							if(mat5 != Material.ICE)
-								loc15.getBlock().setType(mat5);
-							if(mat6 != Material.ICE)
-								loc16.getBlock().setType(mat6);
-							if(mat7 != Material.ICE)
-								loc17.getBlock().setType(mat7);
-							if(mat8 != Material.ICE)
-								loc18.getBlock().setType(mat8);
-							if(mat9 != Material.ICE)
-								loc19.getBlock().setType(mat9);
-							if(mat10 != Material.ICE)
-								loc20.getBlock().setType(mat10);
-							this.cancel();
+					@Override
+					public void run() {
+						for(Entry<Block, Material> b : list.entrySet()) {
+							b.getKey().setType(b.getValue());
+							b.getKey().removeMetadata("c.Ice", getPlugin());
 						}
-					}.runTaskLater(getPlugin(), 40l);
+					}
+				}.runTaskLater(getPlugin(), SpecialFreezeDuration);
 				}
 			}
 		}
 	}
+	
+	
+
+private HashMap<Block, Material> getIgloo(Location start, int size, Player p) {
+HashMap<Block, Material> list = new HashMap<Block, Material>();
+int bx = start.getBlockX();
+int by = start.getBlockY();
+int bz = start.getBlockZ();
+
+for(int x = bx-size; x <= bx+size; x++)
+for(int y = by-size; y <= by+size; y++)
+for(int z = bz-size; z <= bz+size; z++) {
+	double distancesquared = (bx-x)*(bx-x) + ((bz-z)*(bz-z)) + ((by-y)*(by-y));
+	if(distancesquared < (size*size) && distancesquared >= ((size-1)*(size-1))) {
+		org.bukkit.block.Block b = new Location(start.getWorld(), x, y, z).getBlock();
+		if((b.getType() == Material.AIR || (!b.getType().equals(Material.CARROT) && !b.getType().equals(Material.POTATO) && !b.getType().equals(Material.CROPS) && !b.getType().toString().contains("SIGN") && !b.getType().isSolid())) && Tools.checkWorldGuard(b.getLocation(), p, "BUILD")) {
+			list.put(b, b.getType());
+			b.setType(Material.ICE);
+			b.setMetadata("ce.Ice", new FixedMetadataValue(getPlugin(), null));
+		}
+	}
+}
+return list;
+}
 
 	@Override
 	public void initConfigEntries() {
 		SlowStrength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SlowStrength"));
 		SlowDuration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SlowDuration"));
 		chanceFreeze = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".ChanceFreeze"));
+		SpecialFreezeDuration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SpecialFreezeDuration"));
 		chanceSpecialFreeze = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".ChanceSpecialFreeze"));
 		specialFreeze = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".SpecialFreeze"));
 	}

@@ -67,7 +67,7 @@ public class Flamethrower extends CItem {
 					@Override
 					public void run() {
 						if(player.getItemInHand().getDurability() == 0) {
-							player.removeMetadata("ce." + getOriginalName() + ".lock", main);
+							removeLock(player);
 							player.getWorld().playEffect(player.getLocation(), Effect.CLICK2, 2);
 							this.cancel();
 						} else {

@@ -90,7 +90,9 @@ import com.taiter.ce.Enchantments.Armor.Enlighted;
 import com.taiter.ce.Enchantments.Armor.Frozen;
 import com.taiter.ce.Enchantments.Armor.Hardened;
 import com.taiter.ce.Enchantments.Armor.Molten;
+import com.taiter.ce.Enchantments.Armor.ObsidianShield;
 import com.taiter.ce.Enchantments.Armor.Poisoned;
+import com.taiter.ce.Enchantments.Armor.Shielded;
 import com.taiter.ce.Enchantments.Boots.Gears;
 import com.taiter.ce.Enchantments.Boots.Springs;
 import com.taiter.ce.Enchantments.Boots.Stomp;
@@ -159,6 +161,8 @@ public final class Main extends JavaPlugin {
 	public  static Plugin 			econPl;
 	//
 	
+	public static Boolean 			hasRPGItems 	= false;
+	
 	//Updater
 	private URL updateListURL;
 	private URL updateDownloadURL;
@@ -208,6 +212,9 @@ public final class Main extends JavaPlugin {
     	
     	if(Main.getWorldGuard() != null)
     		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] WorldGuard has been detected!");
+    	
+    	if(this.getServer().getPluginManager().getPlugin("RPG_Items") != null)
+    		hasRPGItems = true;
     	
     	//Make the list of Enchantments
     	makeLists(true, true);
@@ -516,6 +523,8 @@ public final class Main extends JavaPlugin {
     	enchantments.add(new Hardened("Hardened",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
     	enchantments.add(new Molten("Molten",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
     	enchantments.add(new Poisoned("Poisoned",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
+    	enchantments.add(new Shielded("Shielded",Application.ARMOR,Cause.MOVE,4,100));
+    	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,Cause.MOVE,4,100));
     	
     	//Bow Enchantments, 17 - 19
     	enchantments.add(new Bombardment("Bombardment",Application.BOW,Cause.BOW,10,100));
