@@ -27,8 +27,10 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -57,7 +59,7 @@ public class Firework extends CEnchantment {
 				if(fireworkLivingTime > 0) {
 					Location loc = event.getProjectile().getLocation();
 					if(event.getProjectile() != null && !event.getProjectile().isDead()) {
-						getTools().shootFirework(loc, new Random());
+						Tools.shootFirework(loc, new Random());
 
 						fireworkLivingTime--;
 						return;
@@ -70,7 +72,8 @@ public class Firework extends CEnchantment {
 		}.runTaskTimer(getPlugin(), 0l, delay);
 		} else if(e instanceof EntityDamageByEntityEvent){
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-			event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 2);
+			event.getEntity().setMetadata("ce.Firework", new FixedMetadataValue(main, null));
+			event.getEntity().getWorld().createExplosion(event.getEntity().getLocation(), 0);
 		}
 		
 	}

@@ -36,9 +36,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
-import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -66,7 +64,7 @@ public class Ice extends CEnchantment {
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		int i = Main.tools.random.nextInt(100);
+		int i = Tools.random.nextInt(100);
 
 		if(i < chanceFreeze) {
 			((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SlowDuration, SlowStrength, false), true);

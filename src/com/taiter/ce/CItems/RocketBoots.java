@@ -194,8 +194,7 @@ public class RocketBoots extends CItem {
 
 	@Override
 	public void initConfigEntries() {
-		this.description.add(states[0]);
-
+		addToDescription(states[0]);
 	}
 	
 	private boolean isRocketBoots(ItemStack item) {

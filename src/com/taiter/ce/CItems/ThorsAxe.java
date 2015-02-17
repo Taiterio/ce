@@ -50,7 +50,7 @@ public class ThorsAxe extends CItem {
 						Location loc = e.getClickedBlock().getLocation();
 						loc.setY(loc.getY() +1);
 					if(Tools.checkWorldGuard(loc, player, "PVP")) {
-						player.getWorld().strikeLightning(e.getClickedBlock().getLocation());
+						player.getWorld().strikeLightning(loc);
 						if(loc.getBlock().getType().equals(Material.AIR)) {
 							loc.getBlock().setType(Material.FIRE);
 						}

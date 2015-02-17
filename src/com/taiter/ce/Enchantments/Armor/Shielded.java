@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -43,8 +44,8 @@ public class Shielded extends CEnchantment {
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
 		PlayerMoveEvent event = (PlayerMoveEvent) e;
-		if(Main.tools.repeatPotionEffects)
-			Main.tools.repeatPotionEffect(item, event.getPlayer(), PotionEffectType.ABSORPTION, (strength + level) -1, true, this);
+		if(Main.repeatPotionEffects)
+			Tools.repeatPotionEffect(item, event.getPlayer(), PotionEffectType.ABSORPTION, (strength + level) -1, true, this);
 		else {
 			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 600, strength + level), true);
 			generateCooldown(event.getPlayer(), 400l);	

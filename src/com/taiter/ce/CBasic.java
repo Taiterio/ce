@@ -22,6 +22,7 @@ package com.taiter.ce;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -31,18 +32,32 @@ import org.bukkit.plugin.Plugin;
 
 public abstract class CBasic {
 	
-	
+	static public enum Trigger {
+		INTERACT,
+		INTERACT_ENTITY,
+		INTERACT_LEFT,
+		INTERACT_RIGHT,
+		MOVE,
+		DAMAGE_GIVEN,
+		DAMAGE_RECEIVED,
+		BLOCK_PLACED,
+		BLOCK_BROKEN,
+		SHOOT_BOW,
+		THROW,
+		DEATH
+	}
 	
 	
 	protected Plugin	main	= Main.plugin;
-	protected Tools		tools	= Main.tools;
 	
 	
-	protected List<Player> 	cooldown = new ArrayList<Player>();
-	protected List<Player> 	lockList = new ArrayList<Player>();
-	protected String		displayName;
-	protected String 		originalName;
-	protected String 		typeString;
+	protected HashSet<Player>  cooldown = new HashSet<Player>();
+	protected HashSet<Player>  lockList = new HashSet<Player>();
+	protected HashSet<Trigger> triggers = new HashSet<Trigger>();
+
+	protected String          displayName;
+	protected String          originalName;
+	protected String          typeString;
 	
 	
 	protected List<String>	configEntries = new ArrayList<String>(Arrays.asList(new String[]{"Enabled: true"}));
@@ -50,7 +65,6 @@ public abstract class CBasic {
 	
 	
 	public Plugin	getPlugin()	{	return this.main;	}
-	public Tools 	getTools()	{	return this.tools;	}
 	
 	public String	getDisplayName()		{	return this.displayName;	}
 	

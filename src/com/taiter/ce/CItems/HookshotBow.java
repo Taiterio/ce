@@ -120,7 +120,7 @@ public class HookshotBow extends CItem {
 
 	@Override
 	public void initConfigEntries() {
-		this.description.add(PushLine);
+		addToDescription(PushLine);
 	}
 
 }

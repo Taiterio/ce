@@ -53,8 +53,8 @@ public class LivefireBoots extends CItem {
 		  if(!Tools.checkWorldGuard(e.getTo(), player, "PVP"))
 			  return false;
 		  
-		  if(Main.tools.repeatPotionEffects)
-			  Main.tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.FIRE_RESISTANCE, FireResistanceLevel, this);
+		  if(Main.repeatPotionEffects)
+			  Tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.FIRE_RESISTANCE, FireResistanceLevel, this);
 		  else
 			  player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, FlameDuration + 20, FireResistanceLevel, true), true);
 		if(b.getType().equals(Material.AIR)) {

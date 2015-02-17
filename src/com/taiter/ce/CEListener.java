@@ -120,28 +120,28 @@ public class CEListener implements Listener {
 			//This is the back-button, located in the very last spot of each inventory
 			if((event.getRawSlot() == topInv.getSize()-1) && event.getCurrentItem().getType() != Material.AIR) { 
 				p.closeInventory();
-				p.openInventory(Main.tools.getPreviousInventory(topInv.getTitle()));
+				p.openInventory(Tools.getPreviousInventory(topInv.getTitle()));
 				return;
 			}
 			
 			//Opens the clicked Enchantments inventory and loads the permissions if needed
-			if(topInv.getTitle().equals(Main.tools.prefix + "Enchantments")) {
+			if(topInv.getTitle().equals(Tools.prefix + "Enchantments")) {
 				p.closeInventory();
-				p.openInventory(Main.tools.getEnchantmentMenu(p, clickedItem.getItemMeta().getDisplayName()));
+				p.openInventory(Tools.getEnchantmentMenu(p, clickedItem.getItemMeta().getDisplayName()));
 				return;
 			}
 			
 			//Opens the item inventory and loads the permissions if needed
-			if(topInv.getTitle().equals(Main.tools.prefix + "Main Menu") && event.getRawSlot() == 4) {
+			if(topInv.getTitle().equals(Tools.prefix + "Main Menu") && event.getRawSlot() == 4) {
 				p.closeInventory();
-				p.openInventory(Main.tools.getItemMenu(p));
+				p.openInventory(Tools.getItemMenu(p));
 				return;
 			}
 
 			
 			//These are the specific menus, clicking one of them will lead to the enchanting menu, which needs to be 'notified' of the enchantment to give and it's cost
-			if(topInv.getTitle().equals(Main.tools.prefix + "Global") || topInv.getTitle().equals(Main.tools.prefix + "Bow") || topInv.getTitle().equals(Main.tools.prefix + "Armor") || topInv.getTitle().equals(Main.tools.prefix + "Helmet") || topInv.getTitle().equals(Main.tools.prefix + "Boots") || topInv.getTitle().equals(Main.tools.prefix + "Tool")) 
-				if(p.isOp() || Main.tools.checkPermission(Main.tools.getEnchantmentByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
+			if(topInv.getTitle().equals(Tools.prefix + "Global") || topInv.getTitle().equals(Tools.prefix + "Bow") || topInv.getTitle().equals(Tools.prefix + "Armor") || topInv.getTitle().equals(Tools.prefix + "Helmet") || topInv.getTitle().equals(Tools.prefix + "Boots") || topInv.getTitle().equals(Tools.prefix + "Tool")) 
+				if(p.isOp() || Tools.checkPermission(Tools.getEnchantmentByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
 					Inventory enchantingMenu = Main.CEEnchantingMenu;
 					enchantingMenu.setItem(0, clickedItem);
 					p.closeInventory();
@@ -153,8 +153,8 @@ public class CEListener implements Listener {
 				}
 			
 			//This opens the Item Creation Menu
-			if(topInv.getTitle().equals(Main.tools.prefix + "Items")) 
-				if(p.isOp() || Main.tools.checkPermission(Main.tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
+			if(topInv.getTitle().equals(Tools.prefix + "Items")) 
+				if(p.isOp() || Tools.checkPermission(Tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName()), p)) {
 					
 					
 					Inventory approveMenu = Main.CEApproveMenu;
@@ -168,7 +168,7 @@ public class CEListener implements Listener {
 				}
 			
 			
-			if(topInv.getTitle().equals(Main.tools.prefix + "Enchanting") || topInv.getTitle().equals(Main.tools.prefix + "Item Creation")) {
+			if(topInv.getTitle().equals(Tools.prefix + "Enchanting") || topInv.getTitle().equals(Tools.prefix + "Item Creation")) {
 				double cost = 0;
 				ItemStack item = clickedItem;
 				ItemMeta im = item.getItemMeta();
@@ -177,12 +177,12 @@ public class CEListener implements Listener {
 				Boolean itemSet = false; //TODO: Solve this by adding item-types
 				//Swimsuit swimsuit = (Swimsuit) Main.items.get(9);
 
-				if(topInv.getTitle().equals(Main.tools.prefix + "Enchanting")) {
+				if(topInv.getTitle().equals(Tools.prefix + "Enchanting")) {
 					if(event.getRawSlot() > topInv.getSize() && event.isLeftClick()) {
-					CEnchantment ce = Main.tools.getEnchantmentByDisplayname(topInv.getContents()[0].getItemMeta().getDisplayName());
+					CEnchantment ce = Tools.getEnchantmentByDisplayname(topInv.getContents()[0].getItemMeta().getDisplayName());
 					cost = ce.getCost();
 					type = "enchantment " + ce.getDisplayName();
-					if(!ce.getApplication().equals(Application.GLOBAL) && !Main.tools.isApplicationCorrect(ce.getApplication(), clickedItem.getType())) {
+					if(!ce.getApplication().equals(Application.GLOBAL) && !Tools.isApplicationCorrect(ce.getApplication(), clickedItem.getType())) {
 						String appS = ce.getApplication().toString().toLowerCase();
 						p.sendMessage(ChatColor.RED + "[CE] This enchantment can only be applied to " + ChatColor.GRAY + (appS.endsWith("s") ? appS : appS + "s") + ChatColor.RED + ".");
 						return;
@@ -192,8 +192,8 @@ public class CEListener implements Listener {
 						lore = clickedItem.getItemMeta().getLore();
 						int number = 0;
 						for(String s : lore) {
-							CEnchantment c = Main.tools.getEnchantmentByDisplayname(s);
-							if(c != null && Main.tools.checkForEnchantment(s, c)) {
+							CEnchantment c = Tools.getEnchantmentByDisplayname(s);
+							if(c != null && Tools.checkForEnchantment(s, c)) {
 								p.sendMessage(ChatColor.RED + "[CE] This item already has this enchantment!");
 								return;
 							}
@@ -212,9 +212,9 @@ public class CEListener implements Listener {
 					} else
 						return;
 					
-				} else if(topInv.getTitle().equals(Main.tools.prefix + "Item Creation")) {
+				} else if(topInv.getTitle().equals(Tools.prefix + "Item Creation")) {
 					item = topInv.getContents()[0];
-					cost = Main.tools.getItemByDisplayname(item.getItemMeta().getDisplayName()).getCost();
+					cost = Tools.getItemByDisplayname(item.getItemMeta().getDisplayName()).getCost();
 //					if(item.hasItemMeta() && item.getItemMeta().hasDisplayName() && item.getItemMeta().getDisplayName().equals(swimsuit.getDisplayName())) { //TODO: Always keep the position of the Swimsuit updated
 //						
 //						
@@ -309,7 +309,7 @@ public class CEListener implements Listener {
 			
 			p.closeInventory();
 			try {
-			p.openInventory(Main.tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
+			p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
 			} catch (Exception e) {
 				p.sendMessage(ChatColor.RED + "[CE] This feature is disabled.");
 			}
@@ -343,15 +343,16 @@ public class CEListener implements Listener {
 
 		
 		if(damaged instanceof Player)
-			Main.tools.handleEvent((Player) damaged, e, damageTakenEnchantments);
+			CEventHandler.handleEvent((Player) damaged, e, damageTakenEnchantments);
 		if(damager instanceof Player) 
-			Main.tools.handleEvent((Player) damager, e, damageGivenEnchantments); 
+			CEventHandler.handleEvent((Player) damager, e, damageGivenEnchantments); 
 		else if(damager instanceof Arrow)
 			if(damager.hasMetadata("ce.bow.item") || damager.hasMetadata("ce.bow.enchantment"))
-				Main.tools.handleBows((Player) ((Projectile) damager).getShooter(), e);
+				CEventHandler.handleBows((Player) ((Projectile) damager).getShooter(), e);
 		
 		
 	}
+
 	
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -361,7 +362,7 @@ public class CEListener implements Listener {
 		
 		if(damaged instanceof Player) {
 			
-			Main.tools.handleEvent((Player) damaged, e, damageTakenEnchantments);
+			CEventHandler.handleEvent((Player) damaged, e, damageTakenEnchantments);
 			
 			if(damaged.hasMetadata("ce.springs")) {
 				e.setCancelled(true);
@@ -383,7 +384,7 @@ public class CEListener implements Listener {
 		Entity 		shooter 	= e.getEntity();
 		
 		if(shooter instanceof Player)
-			Main.tools.handleEvent((Player) shooter, e, bowEnchantments);
+			CEventHandler.handleEvent((Player) shooter, e, bowEnchantments);
 		
 	}
 	
@@ -394,25 +395,25 @@ public class CEListener implements Listener {
 //	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 //	public void PlayerDeathEvent(PlayerDeathEvent e) {
 //		
-//		Main.tools.handleEvent(e.getEntity(), e, deathEnchantments);
+//		CEventHandler.handleEvent(e.getEntity(), e, deathEnchantments);
 //		
 //	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerInteractEvent(PlayerInteractEvent e) {
 				
-		Main.tools.handleEvent(e.getPlayer(), e, clickEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, clickEnchantments);
 		
 		if(e.getClickedBlock() != null && e.getClickedBlock() instanceof Sign) 
 			if(((Sign) e.getClickedBlock()).getLine(0).equals("[CustomEnchant]"))
-				Main.tools.openCEMenu(e.getPlayer());
+				Tools.openCEMenu(e.getPlayer());
 		
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void PlayerInteractEntityEvent(PlayerInteractEntityEvent e) {
 				
-		Main.tools.handleEvent(e.getPlayer(), e, interactEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, interactEnchantments);
 		
 	}
 	
@@ -428,8 +429,8 @@ public class CEListener implements Listener {
 				
 		if(from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ() ) {
 				
-		Main.tools.handleEvent(e.getPlayer(), e, moveEnchantments);
-		Main.tools.handleMines(e.getPlayer(), e);
+		CEventHandler.handleEvent(e.getPlayer(), e, moveEnchantments);
+		CEventHandler.handleMines(e.getPlayer(), e);
 		
 		}
 		
@@ -443,7 +444,7 @@ public class CEListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void BlockPlaceEvent(BlockPlaceEvent e) {
 		
-		Main.tools.handleEvent(e.getPlayer(), e, blockPlaceEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, blockPlaceEnchantments);
 		
 	}
 	
@@ -454,7 +455,7 @@ public class CEListener implements Listener {
 		if(e.getBlock().hasMetadata("ce.Ice"))
 			e.setCancelled(true);
 		
-		Main.tools.handleEvent(e.getPlayer(), e, blockBreakEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, blockBreakEnchantments);
 		if(e.getBlock().hasMetadata("ce.mine")) {
 			Block b = e.getBlock();
 			b.removeMetadata("ce.mine", Main.plugin);
@@ -495,8 +496,8 @@ public class CEListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void EnchantItemEvent(EnchantItemEvent e) {
 		
-		if(Main.tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability")))) {
-			Main.tools.handleEnchanting(e);
+		if(Tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability")))) {
+			CEventHandler.handleEnchanting(e);
 		}
 		
 			

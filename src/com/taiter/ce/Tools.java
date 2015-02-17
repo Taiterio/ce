@@ -31,16 +31,9 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -67,14 +60,12 @@ import com.taiter.ce.Enchantments.Global.Poison;
 
 public class Tools {
 
-	public			String	prefix				= "CE - ";
-	public			Random  random 				= new Random();
-	public          Boolean repeatPotionEffects = Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RepeatPotionEffects"));
-	public          int     repeatDelay         = Integer.parseInt(Main.config.getString("Global.Enchantments.RepeatDelay"));
-
-
+	public static String prefix = "CE - ";
+	public static Random random = new Random();
+	
+	
 	//ENCHANTMENTS
-	public boolean isApplicationCorrect(Application app, Material matToApplyTo) {
+	public static boolean isApplicationCorrect(Application app, Material matToApplyTo) {
 
 		String mat = matToApplyTo.toString();
 		
@@ -91,7 +82,7 @@ public class Tools {
 		return false;
 	}
 
-	public CEnchantment getEnchantmentByDisplayname(String name) {
+	public static CEnchantment getEnchantmentByDisplayname(String name) {
 		for(CEnchantment ce : Main.enchantments) {
 			name = ChatColor.stripColor(name).toLowerCase();
 			String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
@@ -101,7 +92,7 @@ public class Tools {
 		return null;
 	}
 
-	public CEnchantment getEnchantmentByOriginalname(String name) {
+	public static CEnchantment getEnchantmentByOriginalname(String name) {
 		for(CEnchantment ce : Main.enchantments) {
 			name = ChatColor.stripColor(name).toLowerCase();
 			String enchantment = ChatColor.stripColor(ce.getOriginalName()).toLowerCase();
@@ -111,7 +102,7 @@ public class Tools {
 		return null;
 	}
 	
-	public CItem getItemByOriginalname(String name) {
+	public static CItem getItemByOriginalname(String name) {
 		for(CItem ci : Main.items)
 			if(ci.getOriginalName().equals(name))
 				return ci;
@@ -120,21 +111,21 @@ public class Tools {
 	
 	//INVENTORIES
 	
-	public CItem getItemByDisplayname(String name) {
+	public static CItem getItemByDisplayname(String name) {
 		for(CItem ci : Main.items)
 			if(ci.getDisplayName().equals(name))
 				return ci;
 		return null;
 	}
 	
-	public Boolean checkForEnchantments(List<String> toTest) {
+	public static Boolean checkForEnchantments(List<String> toTest) {
 		for(String s : toTest)
 			if(checkForEnchantments(s))
 				return true;
 		return false;
 	}
 	
-	public Boolean checkForEnchantments(String toTest) {
+	public static Boolean checkForEnchantments(String toTest) {
 		for(CEnchantment ce : Main.enchantments) {
 		   if(checkForEnchantment(toTest, ce))
 			   return true;
@@ -142,7 +133,7 @@ public class Tools {
 		return false;
 	}
 	
-	public Boolean checkForEnchantments(List<String> toTest, CEnchantment ce) {
+	public static Boolean checkForEnchantments(List<String> toTest, CEnchantment ce) {
 		for(String s : toTest)
 			if(checkForEnchantment(s, ce))
 				return true;
@@ -150,7 +141,7 @@ public class Tools {
 	}
 	
 	
-	public Boolean checkForEnchantment(String toTest, CEnchantment ce) {
+	public static Boolean checkForEnchantment(String toTest, CEnchantment ce) {
 		if(toTest.startsWith(ChatColor.YELLOW + "" + ChatColor.ITALIC + "\""))
 			toTest = Main.lorePrefix + ChatColor.stripColor(toTest.replace("\"", ""));
 		String next = "";
@@ -167,7 +158,7 @@ public class Tools {
 		return false;
 	}
 
-	public Inventory getPreviousInventory(String name) {
+	public static Inventory getPreviousInventory(String name) {
 		if(name.equals(prefix + "Enchantments") || name.equals(prefix + "Items") || name.equals(prefix + "Config"))
 			return Main.CEMainMenu;
 		else if(name.equals(prefix + "Enchanting") || name.equals(prefix + "Armor") || name.equals(prefix + "Bow") || name.equals(prefix + "Tool") || name.equals(prefix + "Global") || name.equals(prefix + "Helmet") || name.equals(prefix + "Boots"))
@@ -177,7 +168,7 @@ public class Tools {
 		return null;
 	}
 
-	public Inventory getNextInventory(String name) {
+	public static Inventory getNextInventory(String name) {
 
 		if(name.equals("Enchantments"))
 			return Main.CEEnchantmentMainMenu;
@@ -200,14 +191,14 @@ public class Tools {
 		return null;
 	}
 
-	public void openCEMenu(Player p) {
+	public static void openCEMenu(Player p) {
 		Inventory tempInv = Main.CEMainMenu;
 		if(!p.isOp())
 			tempInv.remove(6);
 		p.openInventory(tempInv);
 	}
 	
-	public boolean checkPermission(CBasic cb, Player p) {
+	public static boolean checkPermission(CBasic cb, Player p) {
 		String name = "ce.";
 		if(cb instanceof CItem)
 			name += "item.";
@@ -225,7 +216,7 @@ public class Tools {
 		return false;
 	}
 
-	public Inventory getEnchantmentMenu(Player p, String name) {
+	public static Inventory getEnchantmentMenu(Player p, String name) {
 		if(!p.isOp() && !p.hasPermission("ce.ench.*")) {
 			Inventory lInv = getNextInventory(name);
 			Inventory enchantments =  Bukkit.createInventory(null, lInv.getSize(), lInv.getTitle());
@@ -255,7 +246,7 @@ public class Tools {
 		return getNextInventory(name);
 	}
 
-	public Inventory getItemMenu(Player p) {
+	public static Inventory getItemMenu(Player p) {
 		if(!p.isOp() && !p.hasPermission("ce.item.*")) {
 			Inventory lInv = Main.CEItemMenu;
 			Inventory items =  Bukkit.createInventory(null, lInv.getSize(), lInv.getTitle());
@@ -284,7 +275,7 @@ public class Tools {
 		return Main.CEItemMenu;
 	}
 
-	public void generateInventories() {
+	public static void generateInventories() {
 
 		ItemStack backButton = new ItemStack(Material.NETHER_STAR);
 
@@ -294,7 +285,7 @@ public class Tools {
 		tempMeta.setDisplayName(ChatColor.AQUA + "Back");
 		backButton.setItemMeta(tempMeta);
 
-		// All inventories are public and the owner is null
+		// All inventories are public static and the owner is null
 
 		// MAIN MENU
 		Inventory MainMenu = Bukkit.createInventory(null, 9, prefix + "Main Menu");
@@ -522,8 +513,9 @@ public class Tools {
 		Inventory ItemMenu = Bukkit.createInventory(null, 36, prefix + "Items");
 		ItemMenu.setItem(35, backButton);
 
-		for(int i = 0; i < Main.items.size(); i++) {
-			CItem ci = Main.items.get(i);
+		int currentItemSlot = 0;
+		
+		for(CItem ci : Main.items) {
 			ItemStack newItem = new ItemStack(ci.getMaterial());
 			tempMeta.setDisplayName(ci.getDisplayName());
 			List<String> temp = ci.getDescription();
@@ -532,7 +524,8 @@ public class Tools {
 				temp.add(ChatColor.GRAY + "Cost: " + ci.getCost());
 			tempMeta.setLore(temp);
 			newItem.setItemMeta(tempMeta);
-			ItemMenu.setItem(i, newItem);
+			ItemMenu.setItem(currentItemSlot, newItem);
+			currentItemSlot++;
 		}
 		
 		tempLore.clear();
@@ -578,7 +571,7 @@ public class Tools {
 	}
 
 	//CONFIG
-	public void convertOldConfig() {
+	public static void convertOldConfig() {
 		Main.plugin.getConfig().set("Global.Enchantments.CEnchantmentColor", (Boolean.parseBoolean(Main.config.getString("enchantments.lore.disableItalic")) ? "" : "ITALIC;") + ChatColor.valueOf(Main.config.getString("enchantments.lore.color")));
 		Main.plugin.getConfig().set("Global.Enchantments.CEnchantmentTable", Boolean.parseBoolean(Main.config.getString("enchantmentTable")));
 		Main.plugin.getConfig().set("Global.Enchantments.CEnchantingProbability", Integer.parseInt(Main.config.getString("enchantmentTableProbability")));
@@ -598,7 +591,7 @@ public class Tools {
 		Main.config = Main.plugin.getConfig();
 	}
 
-	public void writeConfigEntry(CBasic ce) {
+	public static void writeConfigEntry(CBasic ce) {
 		for(String entry : ce.configEntries) {
 			int start = entry.indexOf(": ");
 			String path = entry.substring(0, start);
@@ -612,7 +605,7 @@ public class Tools {
 	}
 
 	//MISC
-	public String resolveEnchantmentColor() {
+	public static String resolveEnchantmentColor() {
 		String color = Main.plugin.getConfig().getString("Global.Enchantments.CEnchantmentColor");
 		if(color.contains(";")) {
 			String[] temp = color.split(";");
@@ -633,7 +626,7 @@ public class Tools {
 		return color;
 	}
 
-	public void resolveEnchantmentLists() {
+	public static void resolveEnchantmentLists() {
 		for(CEnchantment ce : Main.enchantments) {
 			if(ce instanceof Poison || ce instanceof Blind || ce instanceof Lifesteal || ce instanceof Ice)
 				Main.listener.bowEnchantments.add(ce);
@@ -644,21 +637,25 @@ public class Tools {
 	public static boolean checkWorldGuard(Location l, Player p, String fs) {
 		if(Main.getWorldGuard() != null) {
 			GlobalRegionManager grm = Main.getWorldGuard().getGlobalRegionManager();
+			
+			if(grm == null)
+				return true;
+			
 			StateFlag f = null;
 			for(Flag<?> df : DefaultFlag.flagsList)
 				if(fs.equalsIgnoreCase(df.getName())) 
 					f = (StateFlag) df;
-			if(f.equals(DefaultFlag.BUILD))
-				if(grm != null && !grm.canBuild(p, l))
+			
+			if(f.equals(DefaultFlag.BUILD)) {
+				if(!grm.canBuild(p, l))
 					return false;
-			else
-				if(grm != null && !grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
-					return false;
+			} else if(!grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
+				return false;
 		}	
 		return true;
 	}
 
-	private List<CEnchantment> getAppropriateList(Cause c) {
+	private static List<CEnchantment> getAppropriateList(Cause c) {
 
 		if(c == Cause.BLOCKBREAK)
 			return Main.listener.blockBreakEnchantments;
@@ -686,7 +683,7 @@ public class Tools {
 	
 	
 
-	private List<CEnchantment> getEnchantList(Application app, Player p) {
+	public static List<CEnchantment> getEnchantList(Application app, Player p) {
 		List<CEnchantment> list = new ArrayList<CEnchantment>();
 
 		
@@ -708,7 +705,7 @@ public class Tools {
 		return correctList(list, p);
 	}
 	
-	private List<CEnchantment> correctList(List<CEnchantment> list, Player p) {
+	private static List<CEnchantment> correctList(List<CEnchantment> list, Player p) {
 	
 		int max = list.size() - 1;
 		
@@ -720,7 +717,7 @@ public class Tools {
 		return list;
 	}
 
-	private Application getApplicationByMaterial(Material material) {
+	public static Application getApplicationByMaterial(Material material) {
 		
 		String mat = material.toString();
 		
@@ -738,206 +735,9 @@ public class Tools {
 	}
 
 
-	public void handleEvent(Player toCheck, Event e, List<CEnchantment> list) {
-
-		long time = System.currentTimeMillis();
-		
-			for(ItemStack i : toCheck.getInventory().getArmorContents())
-				if(i.getType() != Material.AIR) 
-				  handleEventMain(toCheck, i, e, list);
-			handleEventMain(toCheck, toCheck.getItemInHand(), e, list);
-
-		if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEvents"))) {
-			long timeF = (System.currentTimeMillis() - time);
-			if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-				Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process CE-Events.");
-		 }
-	}
 	
-	public void handleEnchanting(EnchantItemEvent e) {
-
-		Player p = e.getEnchanter();
-		ItemStack i = e.getItem();
-		
-		if(i.getType().equals(Material.BOOK))
-			return;
-		
-		List<CEnchantment> list = getEnchantList(getApplicationByMaterial(i.getType()), p);
-		
-		if(list.isEmpty())
-			return;
-		
-		ItemMeta im = i.getItemMeta();
-		List<String> lore = new ArrayList<String>();
-		
-		if(im.hasLore())
-			lore = im.getLore();
-		
-		int numberOfEnchantments = random.nextInt(4) + 1;
-		
-		if(list.size() < numberOfEnchantments)
-			numberOfEnchantments = list.size();
-				
-		while(numberOfEnchantments > 0) {
-			for(CEnchantment ce : list) {
-				if(numberOfEnchantments <= 0)
-					break;
-				else if(random.nextInt(100) < ce.getEnchantProbability()) {
-					if(!lore.isEmpty()) {
-						Boolean hasFound = false;
-						for(String s : lore)
-							if(s.startsWith(ce.getDisplayName()) || ChatColor.stripColor(s).startsWith(ce.getOriginalName()))
-								hasFound = true;
-						if(hasFound)
-							continue;
-					}
-				}
-
-					lore.add(ce.getDisplayName() + " " + intToLevel(random.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
-					numberOfEnchantments--;
-				}
-		}
-		
-		im.setLore(lore);
-		i.setItemMeta(im);
-
-		p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
-
-	}
-
-	public void handleMines(Player toCheck, PlayerMoveEvent e) {
-
-		Block b = toCheck.getLocation().getBlock();
-
-		if(b.hasMetadata("ce.mine") || b.hasMetadata("ce.mine.secondary")) {
-
-			String locString = b.getX() + " " + b.getY() + " " + b.getZ();
-
-			if(b.hasMetadata("ce.mine.secondary")) {
-				locString = b.getMetadata("ce.mine.secondary").get(0).asString();
-				String[] s = locString.split(" ");
-				b = new Location(toCheck.getWorld(), Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2])).getBlock();
-			}
-			
-			if(b.getType().equals(Material.AIR)) {
-				b.removeMetadata("ce.mine", Main.plugin);
-				Block[] blocks = {
-						b.getRelative(0,1,0),
-						b.getRelative(1,0,0),
-						b.getRelative(-1,0,0),
-						b.getRelative(0,0,1),
-						b.getRelative(0,0,-1)
-						};
-				
-				for(Block block : blocks) {
-					if(block.hasMetadata("ce.mine.secondary")) {
-						String[] s = block.getMetadata("ce.mine.secondary").get(0).asString().split(" ");
-						Location loc = new Location(e.getPlayer().getWorld(), Integer.parseInt(s[0]), Integer.parseInt(s[1]), Integer.parseInt(s[2]));
-						Location blockLoc = b.getLocation();
-						if(loc.getBlockX() == blockLoc.getBlockX() && loc.getBlockY() == blockLoc.getBlockY() && loc.getBlockZ() == blockLoc.getBlockZ())
-							block.removeMetadata("ce.mine.secondary", Main.plugin);
-					}
-				}
-			}
-			toCheck.setMetadata("ce.mine", new FixedMetadataValue(Main.plugin, locString));
-			if(b.hasMetadata("ce.mine"))
-				getItemByOriginalname(b.getMetadata("ce.mine").get(0).asString()).effect(e, toCheck);
-		}
-
-	}
-
-	public void handleBows(Player toCheck, EntityDamageByEntityEvent e) {
-		if(e.getDamager().hasMetadata("ce.bow.item")) {
-			getItemByOriginalname(e.getDamager().getMetadata("ce.bow.item").get(0).asString()).effect(e, toCheck);
-			e.getDamager().removeMetadata("ce.bow.item", Main.plugin);
-		}
-		
-		if(e.getDamager().hasMetadata("ce.bow.enchantment")) {
-			
-			String[] enchantment = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" : ");
-
-			getEnchantmentByOriginalname(enchantment[0]).effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
-			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
-		}
-	}
-
-	private void handleEventMain(Player toCheck, ItemStack i, Event e, List<CEnchantment> list) {
-		if(i.hasItemMeta()) {
-		ItemMeta im = i.getItemMeta();
-		if(!list.isEmpty())
-		if(im.hasLore())
-			for(String s : im.getLore())
-			if(s.length() > 3) {
-			for(CEnchantment ce : list)
-				if(isApplicable(i, ce)) {
-				if(checkForEnchantment(s, ce)) {
-				int level = getLevel(s);
-
-				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ce, toCheck))
-				if(!ce.lockList.contains(toCheck)) 
-				if(!ce.getHasCooldown(toCheck))
-					try {
-						if(e instanceof EntityShootBowEvent)
-							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
-						long time = System.currentTimeMillis();
-						if(random.nextInt(100) < ce.getOccurrenceChance())
-							ce.effect(e, i, level);
-						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
-							long timeF = (System.currentTimeMillis() - time);
-							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-								Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + ChatColor.RESET +  "(" + ce.getOriginalName() + ").");
-						}
-					} catch (Exception ex) {
-						if(!(ex instanceof ClassCastException))
-							for(StackTraceElement element : ex.getStackTrace()) {
-								String className = element.getClassName();
-								if(className.contains("com.taiter.ce")) {
-									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
-									break;
-								}
-							}
-						}
-				}
-				}
-			}
-			if(im.hasDisplayName())
-				for(CItem ci : Main.items)
-				if(im.getDisplayName().equals(ci.getDisplayName())) {
-				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ci, toCheck))
-				if(!ci.getHasCooldown(toCheck))
-				if(!ci.lockList.contains(toCheck)) {
-						if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
-							return;
-					try {
-						if(e instanceof EntityShootBowEvent) 
-							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
-						long time = System.currentTimeMillis();
-
-						if(ci.effect(e, toCheck))
-							ci.generateCooldown(toCheck, ci.cooldownTime);
-						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
-							long timeF = (System.currentTimeMillis() - time);
-							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-								Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
-						}
-					} catch (Exception ex) {
-						if(!(ex instanceof ClassCastException))
-							for(StackTraceElement element : ex.getStackTrace()) {
-								String className = element.getClassName();
-								if(className.contains("com.taiter.ce")) {
-									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
-									break;
-								}
-							}
-					}
-				}
-				return; // Stops going through the list of items as it
-						// is not needed anymore
-				}
-		}
-	}
 	
-	private boolean isApplicable(ItemStack i, CEnchantment ce) {
+	public static boolean isApplicable(ItemStack i, CEnchantment ce) {
 		if( (ce.getApplication() == Application.ARMOR			&&
 				ce.getApplication() != Application.GLOBAL       &&
 				(i.getType().toString().endsWith("HELMET")		|| 
@@ -964,7 +764,7 @@ public class Tools {
 
 	// General stuff
 
-	public int Positive(int i) {
+	public static int Positive(int i) {
 		if(i < 0) {
 			int b = i * (-1);
 			return b;
@@ -972,100 +772,11 @@ public class Tools {
 		return i;
 	}
 
-	public void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final CItem ci) {
-		if(p.hasPotionEffect(type))
-			return;
-		int slot = 0;
-		for(int x = 0; x < p.getInventory().getSize(); x++)
-			if(i.equals(p.getInventory().getItem(x)))
-				slot = x;
-		final int lSlot = slot;
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				ItemStack item = p.getInventory().getItem(lSlot);
-				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
-				else {
-					this.cancel();
-				}
-			}
-			
-		}.runTaskTimer(Main.plugin, 0l, repeatDelay);
-	}
 	
-	public void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final boolean lock, final CEnchantment ce) {
-		int slot = -1;
-		boolean isArmor = false;
-		
-		ItemStack[] list = p.getInventory().getContents();
-		for(int x = 0; x < list.length; x++)
-			if(i.equals(list[x]))
-				slot = x;
-		
-		if(slot == -1) {
-			isArmor = true;
-			ItemStack[] aList = p.getInventory().getArmorContents();
-			for(int x = 0; x < aList.length; x++)
-				if(i.equals(aList[x]))
-					slot = x;
-		}
-		
-		final int lSlot = slot;
-		final boolean lIsArmor = isArmor;
-
-		if(lock)
-			ce.lockList.add(p);
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				ItemStack item = p.getInventory().getItem(lSlot);
-				if(lIsArmor)
-					item = p.getInventory().getArmorContents()[lSlot];
-				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, repeatDelay+200, strength, true), true);
-				else {
-					if(lock)
-						ce.lockList.remove(p);
-					this.cancel();
-				}
-			}
-			
-		}.runTaskTimer(Main.plugin, 0l, repeatDelay);
-	}
-	
-	public void applyBleed(final Player target, final int bleedDuration) {
-		target.sendMessage(ChatColor.RED + "You are Bleeding!");
-		target.setMetadata("ce.bleed", new FixedMetadataValue(Main.plugin, null));
-		new BukkitRunnable() {
-
-			int	seconds = bleedDuration;
-
-			@Override
-			public void run() {
-				if(seconds >= 0) {
-					if(!target.isDead() && target.hasMetadata("ce.bleed")) {
-						target.damage(1 + (((Damageable)target).getHealth() / 15));
-						seconds--;
-					} else {
-						target.removeMetadata("ce.bleed", Main.plugin);
-						this.cancel();
-					}
-				} else {
-					target.removeMetadata("ce.bleed", Main.plugin);
-					target.sendMessage(ChatColor.GREEN + "You have stopped Bleeding!");
-					this.cancel();
-				}
-			}
-		}.runTaskTimer(Main.plugin, 0l, 20l);
-
-	}
 
 	// Firework
 
-	private Color fireworkColor(int i) {
+	private static Color fireworkColor(int i) {
 		switch (i) {
 			default:
 			case 1:
@@ -1104,7 +815,7 @@ public class Tools {
 		}
 	}
 
-	public Firework shootFirework(Location loc, Random rand) {
+	public static Firework shootFirework(Location loc, Random rand) {
 		int type = rand.nextInt(5) + 1;
 		Firework firework = loc.getWorld().spawn(loc, Firework.class);
 		FireworkMeta meta = firework.getFireworkMeta();
@@ -1131,10 +842,101 @@ public class Tools {
 		firework.setFireworkMeta(meta);
 		return firework;
 	}
+	
+	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final CItem ci) {
+		if(p.hasPotionEffect(type))
+			return;
+		int slot = 0;
+		for(int x = 0; x < p.getInventory().getSize(); x++)
+			if(i.equals(p.getInventory().getItem(x)))
+				slot = x;
+		final int lSlot = slot;
+		new BukkitRunnable() {
 
+			@Override
+			public void run() {
+				ItemStack item = p.getInventory().getItem(lSlot);
+				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
+				else {
+					this.cancel();
+				}
+			}
+			
+		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
+	}
+	
+	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final boolean lock, final CEnchantment ce) {
+		int slot = -1;
+		boolean isArmor = false;
+		
+		ItemStack[] list = p.getInventory().getContents();
+		for(int x = 0; x < list.length; x++)
+			if(i.equals(list[x]))
+				slot = x;
+		
+		if(slot == -1) {
+			isArmor = true;
+			ItemStack[] aList = p.getInventory().getArmorContents();
+			for(int x = 0; x < aList.length; x++)
+				if(i.equals(aList[x]))
+					slot = x;
+		}
+		
+		final int lSlot = slot;
+		final boolean lIsArmor = isArmor;
+
+		if(lock)
+			ce.lockList.add(p);
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				ItemStack item = p.getInventory().getItem(lSlot);
+				if(lIsArmor)
+					item = p.getInventory().getArmorContents()[lSlot];
+				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
+				else {
+					if(lock)
+						ce.lockList.remove(p);
+					this.cancel();
+				}
+			}
+			
+		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
+	}
+
+	public static void applyBleed(final Player target, final int bleedDuration) {
+		target.sendMessage(ChatColor.RED + "You are Bleeding!");
+		target.setMetadata("ce.bleed", new FixedMetadataValue(Main.plugin, null));
+		new BukkitRunnable() {
+
+			int	seconds = bleedDuration;
+
+			@Override
+			public void run() {
+				if(seconds >= 0) {
+					if(!target.isDead() && target.hasMetadata("ce.bleed")) {
+						target.damage(1 + (((Damageable)target).getHealth() / 15));
+						seconds--;
+					} else {
+						target.removeMetadata("ce.bleed", Main.plugin);
+						this.cancel();
+					}
+				} else {
+					target.removeMetadata("ce.bleed", Main.plugin);
+					target.sendMessage(ChatColor.GREEN + "You have stopped Bleeding!");
+					this.cancel();
+				}
+			}
+		}.runTaskTimer(Main.plugin, 0l, 20l);
+
+	}
+	
 	// Position
 
-	private String getPlayerDirection(Location loc) {
+	private static String getPlayerDirection(Location loc) {
 		double rotation = (loc.getYaw() - 90) % 360;
 		if(rotation < 0) {
 			rotation += 360.0;
@@ -1162,7 +964,7 @@ public class Tools {
 		}
 	}
 
-	public List<Location> getLinePlayer(Player player, int length) {
+	public static List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
 		for(int amount = length; amount > 0; amount--) {
 			list.add(player.getTargetBlock(null, amount).getLocation());
@@ -1170,7 +972,7 @@ public class Tools {
 		return list;
 	}
 
-	public List<Location> getCone(Location loc) {
+	public static List<Location> getCone(Location loc) {
 		List<Location> locs = new ArrayList<Location>();
 		String direction = getPlayerDirection(loc);
 
@@ -1363,7 +1165,7 @@ public class Tools {
 	/* 
 	 * This returns the enchantment level of the CE 'checkEnchant'.
 	 */
-	public int getLevel(String checkEnchant) {
+	public static int getLevel(String checkEnchant) {
 		int level = 1;
 		if(checkEnchant.contains(" ")) {
 			String[] splitName = checkEnchant.split(" ");
@@ -1373,7 +1175,7 @@ public class Tools {
 		return level;
 	}
 
-	public String intToLevel(int i) {
+	public static String intToLevel(int i) {
 		String level = "";
 
 		if(i == 1)
@@ -1400,7 +1202,7 @@ public class Tools {
 		return level;
 	}
 	
-	public int levelToInt(String level) {
+	public static int levelToInt(String level) {
 		int levelI = 1;
 
 		if(level.equals("II"))

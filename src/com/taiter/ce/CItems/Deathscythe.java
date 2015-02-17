@@ -34,6 +34,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.taiter.ce.Tools;
+
 
 public class Deathscythe extends CItem {
 
@@ -112,7 +114,7 @@ public class Deathscythe extends CItem {
 
 			for(Entity ent : ents) {
 				Location entLoc = ent.getLocation();
-				if( getTools().Positive(entLoc.getBlockX() - loc.getBlockX()) < 2 && getTools().Positive(entLoc.getBlockY() - loc.getBlockY()) < 2 &&getTools().Positive(entLoc.getBlockZ() - loc.getBlockZ()) < 2) {
+				if( Tools.Positive(entLoc.getBlockX() - loc.getBlockX()) < 2 && Tools.Positive(entLoc.getBlockY() - loc.getBlockY()) < 2 &&Tools.Positive(entLoc.getBlockZ() - loc.getBlockZ()) < 2) {
 					ent.getWorld().playSound(ent.getLocation(), Sound.ZOMBIE_METAL, 0.1f, 0.3f);
 					player.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "You caught a Soul!");
 					player.setMetadata("ce." + getOriginalName(), new FixedMetadataValue(main, ent.getEntityId()));
@@ -125,7 +127,7 @@ public class Deathscythe extends CItem {
 							}
 						}
 					}.runTaskLater(main, MaximumHookTime);
-					return true;
+					return false;
 				}
 			}
 		}

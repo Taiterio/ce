@@ -31,7 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.milkbowl.vault.economy.Economy;
@@ -42,6 +42,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -100,6 +101,7 @@ import com.taiter.ce.Enchantments.Bow.Bombardment;
 import com.taiter.ce.Enchantments.Bow.Firework;
 import com.taiter.ce.Enchantments.Bow.Lightning;
 import com.taiter.ce.Enchantments.Global.Autorepair;
+import com.taiter.ce.Enchantments.Global.Blind;
 import com.taiter.ce.Enchantments.Global.Block;
 import com.taiter.ce.Enchantments.Global.Cripple;
 import com.taiter.ce.Enchantments.Global.Deathbringer;
@@ -123,16 +125,19 @@ public final class Main extends JavaPlugin {
 	
 	public static Plugin 			plugin;
 	public static FileConfiguration config;
-	public static Tools 			tools;
 	public static CEListener        listener;
 	public static CeCommand         commandC;
 
 	
 	
-	public static String 			lorePrefix;
-	public static List<CItem> 		items;
-	public static List<CEnchantment>enchantments;
-	public static int 				maxEnchants = -1;
+	public static String                lorePrefix;
+	public static HashSet<CItem>        items;
+	public static HashSet<CEnchantment> enchantments;
+	public static int                   maxEnchants = -1;
+	
+	public static Boolean repeatPotionEffects;
+	public static int     repeatDelay;
+
 	
 	
 	//The inventories for the Enchantment Menu
@@ -181,8 +186,8 @@ public final class Main extends JavaPlugin {
     	plugin		= this;
     	commandC	= new CeCommand(this);
     	
-    	items		 = new ArrayList<CItem>();
-    	enchantments = new ArrayList<CEnchantment>();
+    	items         = new HashSet<CItem>();
+    	enchantments  = new HashSet<CEnchantment>();
     	
         
     	this.saveDefaultConfig();
@@ -190,19 +195,22 @@ public final class Main extends JavaPlugin {
     	config.options().copyDefaults(true);
     	this.saveConfig();
     	
-    	//This needs to be created after the config is created (See the variables RepeatDelay and RepeatPotionEffects)
-    	tools = new Tools();
-    	
     	if(config.contains("enchantments"))
-    		tools.convertOldConfig();
+    		Tools.convertOldConfig();
     	
+    	
+    	//Start the listener
     	initializeListener();
+    	
+    	//The Config options for the potion effect repeating
+    	repeatPotionEffects  = Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RepeatPotionEffects"));
+    	repeatDelay          = Integer.parseInt(Main.config.getString("Global.Enchantments.RepeatDelay"));
     	
     	//Get the maximum amount of Enchantments on an Item
     	maxEnchants = Integer.parseInt(config.getString("Global.Enchantments.MaximumCustomEnchantments"));
     	
     	//Set the Loreprefix
-    	lorePrefix = tools.resolveEnchantmentColor();
+    	lorePrefix = Tools.resolveEnchantmentColor();
 	    
     	//Check and set up the Economy
     	if(setupEconomy()) {
@@ -219,9 +227,13 @@ public final class Main extends JavaPlugin {
     	//Make the list of Enchantments
     	makeLists(true, true);
     
-    	writePermissions();
+    	try {
+    	    writePermissions();
+    	} catch(IllegalArgumentException ex) {
+    		ex.printStackTrace();
+    	}
     
-    	tools.generateInventories();
+    	Tools.generateInventories();
     
     	currentVersion = plugin.getDescription().getVersion();
     	try {
@@ -405,6 +417,8 @@ public final class Main extends JavaPlugin {
     
     public void initializeListener() {
     	
+    	HandlerList.unregisterAll(listener);
+    	
     	listener = new CEListener();
     	
     	//Register the events
@@ -503,21 +517,23 @@ public final class Main extends JavaPlugin {
     	
     	long time = System.currentTimeMillis();
     	
-    	//Global Enchantments, 0 - 11
-    	enchantments.add(new Lifesteal("Lifesteal",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Gooey("Gooey",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Deathbringer("Deathbringer",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Poison("Poison",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Block("Block",Application.GLOBAL,Cause.CLICK,5,100));
-    	enchantments.add(new Shockwave("Shockwave",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Deepwounds("Deep Wounds",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
+    	//Global Enchantments
+    	enchantments.add(new Lifesteal("Lifesteal", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Gooey("Gooey", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Deathbringer("Deathbringer", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Poison("Poison", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Block("Block", Application.GLOBAL,Cause.CLICK,5,100));
+    	enchantments.add(new Shockwave("Shockwave",       Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Deepwounds("Deep Wounds",    Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
     	enchantments.add(new Thunderingblow("Thunderingblow",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
     	enchantments.add(new Cripple("Crippling Strike",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
     	enchantments.add(new Ice("Ice Aspect",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
     	enchantments.add(new Autorepair("Autorepair",Application.GLOBAL,Cause.MOVE,5,100));
     	enchantments.add(new Vampire("Vampire",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Blind("Blind",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
+
     	
-    	//Armor Enchantments, 12 - 16
+    	//Armor Enchantments
     	enchantments.add(new Enlighted("Enlighted",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
     	enchantments.add(new Frozen("Frozen",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
     	enchantments.add(new Hardened("Hardened",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
@@ -526,31 +542,27 @@ public final class Main extends JavaPlugin {
     	enchantments.add(new Shielded("Shielded",Application.ARMOR,Cause.MOVE,4,100));
     	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,Cause.MOVE,4,100));
     	
-    	//Bow Enchantments, 17 - 19
+    	//Bow Enchantments
     	enchantments.add(new Bombardment("Bombardment",Application.BOW,Cause.BOW,10,100));
     	enchantments.add(new Firework("Firework",Application.BOW,Cause.BOW,20,100));
     	enchantments.add(new Lightning("Lightning",Application.BOW,Cause.BOW,10,100));
     	
-    	//Tool Enchantments, 20 - 22
+    	//Tool Enchantments
     	enchantments.add(new Smelting("Smelting",Application.TOOL,Cause.BLOCKBREAK,50,100));
     	enchantments.add(new Explosive("Explosive",Application.TOOL,Cause.BLOCKBREAK,50,100));
     	
-    	//Special Enchantments
+    	//Boots Enchantments
+		enchantments.add(new Gears("Gears",Application.BOOTS,Cause.MOVE,4,100));
+		enchantments.add(new Springs("Springs",Application.BOOTS,Cause.MOVE,4,100));
+		enchantments.add(new Stomp("Stomp",Application.BOOTS,Cause.DAMAGETAKEN,4,100));
     	
-    		//Boots
-			enchantments.add(new Gears("Gears",Application.BOOTS,Cause.MOVE,4,100));
-			enchantments.add(new Springs("Springs",Application.BOOTS,Cause.MOVE,4,100));
-			enchantments.add(new Stomp("Stomp",Application.BOOTS,Cause.DAMAGETAKEN,4,100));
-    	
-    		//Helmet
-    		enchantments.add(new Glowing("Glowing",Application.HELMET,Cause.MOVE,4,100));
-    		enchantments.add(new Implants("Implants",Application.HELMET,Cause.MOVE,4,100));
+    	//Helmet Enchantments
+    	enchantments.add(new Glowing("Glowing",Application.HELMET,Cause.MOVE,4,100));
+    	enchantments.add(new Implants("Implants",Application.HELMET,Cause.MOVE,4,100));
     		
     		if(finalize)
     		for(CEnchantment ce : enchantments) 
     			ce.finalizeEnchantment();
-    		
-    		tools.resolveEnchantmentLists();
     		
     		if(printSuccess)
     			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] All Enchantments have been loaded.");
@@ -619,21 +631,23 @@ public final class Main extends JavaPlugin {
         	
     }
     
-    private static void deleteInactive() {
-    	for(int i = 0; i < enchantments.size(); i++) {
-    		CEnchantment ce = enchantments.get(i);
+    @SuppressWarnings("unchecked")
+	private static void deleteInactive() {
+    	HashSet<CEnchantment> e = (HashSet<CEnchantment>) enchantments.clone();
+    	HashSet<CItem> i = (HashSet<CItem>) items.clone();
+    	for(CEnchantment ce : e) {
     		if(!Boolean.parseBoolean(config.getString("Enchantments." + ce.getOriginalName() + ".Enabled"))) {
-    			enchantments.remove(i);
+    			enchantments.remove(ce);
     			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Enchantment " + ce.getOriginalName() + " is disabled in the config.");
     		}
     	}
-    	for(int i = 0; i < items.size(); i++) {
-    		CItem ci = items.get(i);
+    	for(CItem ci : i) {
     		if(!Boolean.parseBoolean(config.getString("Items." + ci.getOriginalName() + ".Enabled"))) {
-    			items.remove(i);
+    			items.remove(ci);
     			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Item " + ci.getOriginalName() + " is disabled in the config.");
     		}
     	}
+    	Tools.resolveEnchantmentLists();
     }
     
 

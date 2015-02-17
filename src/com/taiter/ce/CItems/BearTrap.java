@@ -33,6 +33,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.taiter.ce.Tools;
+
 
 public class BearTrap extends CItem {
 
@@ -86,7 +88,7 @@ public class BearTrap extends CItem {
 				} else {
 					player.sendMessage(ChatColor.RED + "You triggered a trap, leaving you vulnerable!");
 				}
-				getTools().applyBleed(player, BleedDuration);
+				Tools.applyBleed(player, BleedDuration);
 				
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SlowDuration, SlowLevel));
 				player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, WeaknessDuration, WeaknessLevel));

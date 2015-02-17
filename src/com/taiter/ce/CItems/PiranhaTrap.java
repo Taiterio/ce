@@ -41,6 +41,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.taiter.ce.Tools;
+
 
 public class PiranhaTrap extends CItem {
 
@@ -65,11 +67,11 @@ public class PiranhaTrap extends CItem {
 			b.getRelative(0,1,0).setMetadata("ce.mine.secondary", new FixedMetadataValue(main, coord));
 			} else if(event instanceof PlayerMoveEvent) {
 				if(!player.hasMetadata("ce.bleed")) {
-					getTools().applyBleed(player, BleedDuration);
+					Tools.applyBleed(player, BleedDuration);
 					player.sendMessage(ChatColor.RED + "You are bitten by piranhas and start bleeding!");
 				} else {
 					player.removeMetadata("ce.bleed", main);
-					getTools().applyBleed(player, BleedDuration * 2);
+					Tools.applyBleed(player, BleedDuration * 2);
 					player.sendMessage(ChatColor.RED + "You are bitten by piranhas and your bleeding intensifies!");
 				}
 				

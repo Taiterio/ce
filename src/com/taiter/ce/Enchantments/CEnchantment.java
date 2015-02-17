@@ -28,6 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.taiter.ce.CBasic;
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 
 public abstract class CEnchantment extends CBasic  {
 
@@ -98,7 +99,7 @@ public abstract class CEnchantment extends CBasic  {
 	
 	public void finalizeEnchantment() {
 		if(!getConfig().contains("Enchantments." + getOriginalName()))
-			getTools().writeConfigEntry(this);
+			Tools.writeConfigEntry(this);
 		try {
 			this.displayName         = Main.lorePrefix +Main.config.getString("Enchantments." + getOriginalName() + ".DisplayName");
 			this.enchantProbability  = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".EnchantmentProbability"));
@@ -107,7 +108,7 @@ public abstract class CEnchantment extends CBasic  {
 			initConfigEntries();
 		} catch(Exception e) {
 			if(!hasRetriedConfig) {
-				getTools().writeConfigEntry(this);
+				Tools.writeConfigEntry(this);
 				hasRetriedConfig = true;
 				finalizeEnchantment();
 			} else {

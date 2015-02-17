@@ -46,7 +46,7 @@ public class DruidBoots extends CItem {
 	public boolean effect(Event event, final Player player) {
 		
 		Material t = player.getLocation().getBlock().getRelative(0,-1,0).getLocation().getBlock().getType();
-		if(t.equals(Material.GRASS) || t.equals(Material.DIRT) || t.equals(Material.LEAVES)) {
+		if(t.equals(Material.GRASS) || t.equals(Material.DIRT) || t.toString().contains("LEAVES")) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, SpeedDuration , SpeedLevel), true);
 			player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, RegenerationDuration , RegenerationLevel), true);
 		}

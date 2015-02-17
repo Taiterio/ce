@@ -165,7 +165,7 @@ public class NecromancersStaff extends CItem {
 		WitherCooldown 		= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".WitherCooldown"));
 		FireballCost 		= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCost"));
 		FireballCooldown	= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCooldown"));
-		this.description.add(spells.get(0));
+		addToDescription(spells.get(0));
 	}
 
 }

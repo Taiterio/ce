@@ -65,7 +65,7 @@ public class Shockwave extends CEnchantment {
 
 		Location loc = damager.getLocation();
 		loc.setY(damager.getLocation().getY() - 1);
-		List<Location> list = getTools().getCone(loc);
+		List<Location> list = Tools.getCone(loc);
 		this.generateCooldown(damager, cooldown);
 		damager.getWorld().playEffect(damager.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
 		for(final Location l : list) {
@@ -76,6 +76,7 @@ public class Shockwave extends CEnchantment {
 				if(!Tools.checkWorldGuard(l, damager, "PVP"))
 					return;
 				final Material mat = blockMat;
+				final byte matData = block.getData();
 				final FallingBlock b = l.getWorld().spawnFallingBlock(l, mat, block.getData());
 				b.setDropItem(false);
 				b.setVelocity(new Vector(0, (0.5 + 0.1*(list.indexOf(l))) + (level/4), 0));
@@ -90,6 +91,7 @@ public class Shockwave extends CEnchantment {
 							//if(finLoc.getBlock().getLocation() != l) 
 								finLoc.getBlock().setType(Material.AIR);
 							block.setType(mat);
+							block.setData(matData);
 							this.cancel();
 						}
 					}

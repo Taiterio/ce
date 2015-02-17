@@ -27,6 +27,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -53,7 +54,7 @@ public class Deepwounds extends CEnchantment {
 		Random random = new Random();
 		if(random.nextInt(100) < rand) {
 			generateCooldown(damager, 140);
-			getTools().applyBleed(damaged, duration*level);
+			Tools.applyBleed(damaged, duration*level);
 		}
 		}
 	}

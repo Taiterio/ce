@@ -28,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -46,8 +47,8 @@ public class Gears extends CEnchantment {
 			PlayerMoveEvent event = (PlayerMoveEvent) e;
 			final Player player = event.getPlayer();
 
-			if(Main.tools.repeatPotionEffects) {
-				Main.tools.repeatPotionEffect(item, player, PotionEffectType.SPEED, strength+level, true, this);
+			if(Main.repeatPotionEffects) {
+				Tools.repeatPotionEffect(item, player, PotionEffectType.SPEED, strength+level, true, this);
 			} else {
 				event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 120, strength + level), true);
 				generateCooldown(player, 100l);	

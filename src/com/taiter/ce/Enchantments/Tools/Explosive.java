@@ -30,7 +30,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -59,7 +58,7 @@ public class Explosive extends CEnchantment {
 			List<Location> locations = new ArrayList<Location>();
 			
 			int locRad = Radius;
-			if(LargerRadius && Main.tools.random.nextInt(100) < level * 5)
+			if(LargerRadius && Tools.random.nextInt(100) < level * 5)
 				locRad += 2;
 			int r = locRad-1;
 			int start = r/2;

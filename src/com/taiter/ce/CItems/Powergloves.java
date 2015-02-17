@@ -90,14 +90,14 @@ public class Powergloves extends CItem {
 								if(player.hasMetadata("ce." + getOriginalName())) {
 									player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
 									player.removeMetadata("ce." + getOriginalName(), main);
-									generateCooldown(player, cooldownTime);
+									generateCooldown(player, getCooldown());
 								}
 								clicked.leaveVehicle();
 								this.cancel();
 							}
 						  } else {
 							  player.removeMetadata("ce." + getOriginalName(), main);
-							  generateCooldown(player, cooldownTime);
+							  generateCooldown(player, getCooldown());
 							  this.cancel();
 						  }
 						}

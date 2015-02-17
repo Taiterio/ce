@@ -35,42 +35,62 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.taiter.ce.CBasic;
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 
 public abstract class CItem extends CBasic {
-	
-	private boolean		hasRetriedConfig = false;
-	
-	Material            itemMaterial;
-	List<String>        description;
-	
-	public long         cooldownTime;
-	public ChatColor    itemColor;
 
+	private enum ItemType {
+		NORMAL,
+		ARMORSET,
+		MINE
+	};
 	
-	public Material 	getMaterial()	{	return this.itemMaterial;	}
-	public List<String>	getDescription(){	return this.description;	}
+	private boolean	     hasRetriedConfig = false;
+	
+	private Material     itemMaterial;
+	private List<String> description;
+	private long         cooldownTime;
+	private ChatColor    itemColor;
+	private ItemType     itemType;
+
+	protected void      addToDescription(String toAdd) { this.description.add(toAdd); }
+	
+	public Material     getMaterial()    { return this.itemMaterial; }
+	public List<String> getDescription() { return this.description;  }
+	public ItemType     getItemType()    { return this.itemType;     }
+	public long         getCooldown()    { return this.cooldownTime; }
+	public ChatColor    getItemColor()   { return this.itemColor;    }
+
 	@Override
-	public double		getCost()		{	return Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));}
+	public double		getCost()		 {	return Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));}
 	
+	public abstract boolean effect(Event event, Player owner); // The boolean represents whether the cooldown is to be applied or not
+	public abstract void    initConfigEntries();
 	
 	public CItem(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
-		this.typeString = "Items";
+		this.typeString   = "Items";
 		this.itemMaterial = mat;
 		this.originalName = originalName; 
-		this.description =  new ArrayList<String>(Arrays.asList(lDescription.split(";")));
+		this.description  = new ArrayList<String>(Arrays.asList(lDescription.split(";")));
 		this.configEntries.add("DisplayName: " + originalName);
 		this.configEntries.add("Color: " + color.name());
 		this.configEntries.add("Description: " + lDescription);
 		this.configEntries.add("Cooldown: " + lCooldown);
-		this.configEntries.add("Cost: 0");
-		
+		this.configEntries.add("Cost: 0");	
 	}
+	
+	
+	
+	
+	
+	// Cooldown
 	
 	public boolean getHasCooldown(Player p) {
 		if(cooldown.contains(p))
 			return true;
 		return false;
 	}
+	
 	public void generateCooldown(final Player p, long cooldownT) {
 	  if(cooldownT != 0) {
 			cooldown.add(p);
@@ -84,54 +104,66 @@ public abstract class CItem extends CBasic {
 	  }
 	}
 	
-	public void addLock(Player p) {
+	
+	
+	
+	
+	// Locks
+	
+	protected void addLock(Player p) {
 		lockList.add(p);
 	}
 	
-	public void removeLock(Player p) {
+	protected void removeLock(Player p) {
 		lockList.remove(p);
 	}
 	
-	public abstract boolean effect(Event event, Player owner); // The boolean represents whether the cooldown is to be applied or not
-	public abstract void initConfigEntries();
+	
+	
+	
+	// Value initiation
 	
 	public void finalizeItem() {
 		
 		if(!getConfig().contains("Items." + getOriginalName()))
-			getTools().writeConfigEntry(this);
+			Tools.writeConfigEntry(this);
 
 		try {
-		this.itemColor 	 = ChatColor.valueOf(Main.config.getString("Items." + getOriginalName() + ".Color").toUpperCase());
+			this.itemColor 	 = ChatColor.valueOf(Main.config.getString("Items." + getOriginalName() + ".Color").toUpperCase());
 		} catch(Exception e) {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] The color of the Custom Item '" + getOriginalName() + "' is invalid, please check the official Bukkit list of ChatColors.");
 			this.itemColor = ChatColor.AQUA;
 		}
-		this.displayName = itemColor + Main.config.getString("Items." + getOriginalName() + ".DisplayName");
-		this.description = new ArrayList<String>(Arrays.asList(Main.config.getString("Items." + getOriginalName() + ".Description").split(";"))); 
+		this.displayName  = itemColor + Main.config.getString("Items." + getOriginalName() + ".DisplayName");
+		this.description  = new ArrayList<String>(Arrays.asList(Main.config.getString("Items." + getOriginalName() + ".Description").split(";"))); 
+		this.cooldownTime = Long.parseLong(Main.config.getString("Items." + getOriginalName() + ".Cooldown"));
+
 		for(String s : description)
 			description.set(description.indexOf(s), ChatColor.GRAY + "" + ChatColor.ITALIC + s);
+		
 		//If the item has a special line, this whitespace is required
 		this.description.add("");
-		this.cooldownTime= Long.parseLong(Main.config.getString("Items." + getOriginalName() + ".Cooldown"));
+		
 		try {
-		initConfigEntries();
+			initConfigEntries();
 		} catch(Exception e) {
 			if(!hasRetriedConfig) {
-				getTools().writeConfigEntry(this);
+				Tools.writeConfigEntry(this);
 				hasRetriedConfig = true;
 				finalizeItem();
 			} else {
 				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] WARNING: Could not configurate the CE-Item '" + getOriginalName() + "',");
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] 		 please check the config for any errors, the item is now disabled. ");
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] 		 Explicit error: " + e.getMessage());
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "     		 please check the config for any errors, the item is now disabled. ");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "     	Explicit error: " + e.getMessage());
 				Main.items.remove(this);
 			}
 		}
 		
-		if(this.description.get(description.size()-1).length() > 0)
-			this.description.add("");
-
 		
+		// Add an empty line to the end if the last line is not already one
+		// This is just for stylistic purposes
+		if(this.description.get(description.size()-1).length() > 0) 
+			this.description.add("");
 	}
 	
 }

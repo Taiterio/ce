@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Main;
+import com.taiter.ce.Tools;
 
 
 public class HermesBoots extends CItem {
@@ -40,10 +41,10 @@ public class HermesBoots extends CItem {
 
 	@Override
 	public boolean effect(Event event, Player player) {
-		if(Main.tools.repeatPotionEffects)
-			  Main.tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.SPEED, SpeedLevel, this);
+		if(Main.repeatPotionEffects)
+			  Tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.SPEED, SpeedLevel, this);
 		else 
-			 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) this.cooldownTime + 20, SpeedLevel, true), true);
+			 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) getCooldown() + 20, SpeedLevel, true), true);
 		return true;
 	}
 

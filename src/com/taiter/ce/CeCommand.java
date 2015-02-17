@@ -82,9 +82,9 @@ public class CeCommand {
 		    	Main.maxEnchants = Integer.parseInt(Main.config.getString("Global.Enchantments.MaximumCustomEnchantments"));
 		    	
 		    	//Set the Loreprefix
-		    	Main.lorePrefix = Main.tools.resolveEnchantmentColor();
+		    	Main.lorePrefix = Tools.resolveEnchantmentColor();
 				
-				Main.tools.generateInventories();
+				Tools.generateInventories();
 				
 				return Success + "The Custom Enchantments config has been reloaded successfully.";
 
@@ -137,8 +137,9 @@ public class CeCommand {
 								Error += "You are already using the latest version of CE.";
 								return Error;
 							}
+						} else {
+							return usageError;
 						}
-							
 					} else {
 						return usageError;
 					}
@@ -378,10 +379,19 @@ public class CeCommand {
 					String targetNotification = ChatColor.GOLD + "[CE] ";
 					
 					if(custom != null) {
-						if(Main.tools.checkPermission(custom, target)) {
-						CItem cust = Main.items.get(Main.items.indexOf(custom));
-						im.setDisplayName(cust.getDisplayName());
-						im.setLore(cust.getDescription());
+						if(Tools.checkPermission(custom, target)) {
+//						CItem cust = null;
+//						
+//						Iterator<CItem> iterator = Main.items.iterator(); 
+//						
+//						while(iterator.hasNext() && cust == null) {
+//							CItem next = iterator.next();
+//							if(next == custom)
+//								custom = next;
+//						}
+						
+						im.setDisplayName(custom.getDisplayName());
+						im.setLore(custom.getDescription());
 						newItem.setItemMeta(im);
 						if(custom instanceof Swimsuit) {//TODO:REPLACE
 							
@@ -456,7 +466,7 @@ public class CeCommand {
 							if(enchALvl.length > 2)
 								for(int i = 1; i < enchALvl.length-1; i++)
 									finalEnchName += " " + enchALvl[i];
-							lore.add(finalEnchName + " " + Main.tools.intToLevel(level));
+							lore.add(finalEnchName + " " + Tools.intToLevel(level));
 						}
 						im.setLore(lore);
 						if(Success.length() < 10) {
@@ -487,14 +497,14 @@ public class CeCommand {
 						if(toList.startsWith("i") ) {
 							p.sendMessage(ChatColor.GOLD + "-------------Item List-------------");
 							for(CItem ci : Main.items)
-								if( p.isOp() || Main.tools.checkPermission(ci, p))
+								if( p.isOp() || Tools.checkPermission(ci, p))
 									p.sendMessage("   " + ci.getDisplayName());
 							p.sendMessage(ChatColor.GOLD + "-----------------------------------");
 							return "";
 						} else if(toList.startsWith("e")) {
 							p.sendMessage(ChatColor.GOLD + "----------Enchantment List-----------");
 							for(CEnchantment ce : Main.enchantments)
-								if( p.isOp() ||  Main.tools.checkPermission(ce, p))
+								if( p.isOp() ||  Tools.checkPermission(ce, p))
 									p.sendMessage("   " + ce.getDisplayName());
 							p.sendMessage(ChatColor.GOLD + "------------------------------------");
 							return "";
@@ -508,7 +518,7 @@ public class CeCommand {
 					requiredPermission += "menu";
 					if(!sender.hasPermission(requiredPermission) && !sender.isOp())
 						return Error + "You do not have permission to use this command.";
-					Main.tools.openCEMenu(p);
+					Tools.openCEMenu(p);
 					return "";
 				}
 				
@@ -562,7 +572,7 @@ public class CeCommand {
 								return Error;
 							}
 							
-							if(!Main.tools.checkPermission(custom, p)) {
+							if(!Tools.checkPermission(custom, p)) {
 								Error += "You do not have permission to use '" + customName + "'.";
 								return Error;
 							}
@@ -574,12 +584,12 @@ public class CeCommand {
 							if(item.hasItemMeta() && item.getItemMeta().hasLore()) {
 								lore = item.getItemMeta().getLore();
 								if(custom instanceof CEnchantment) { 
-									if(Main.tools.checkForEnchantments(lore, (CEnchantment) custom))
+									if(Tools.checkForEnchantments(lore, (CEnchantment) custom))
 										return Error + "You already have this Enchantment!";
 									int number = Main.maxEnchants;
 									for(CEnchantment ce : Main.enchantments)
 										if(number > 0) {
-											if(Main.tools.checkForEnchantments(lore, ce))
+											if(Tools.checkForEnchantments(lore, ce))
 												number--;
 										} else {
 											return Error += "You already have the maximum number of Enchantments on your item!";
@@ -588,7 +598,7 @@ public class CeCommand {
 							}
 							
 							if(custom instanceof CEnchantment) {
-								lore.add(custom.getDisplayName() + " " + Main.tools.intToLevel(level));
+								lore.add(custom.getDisplayName() + " " + Tools.intToLevel(level));
 								im.setLore(lore);
 								item.setItemMeta(im);
 								p.setItemInHand(item);

@@ -60,7 +60,7 @@ public class Implants extends CEnchantment {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if(player.isOnline() && !player.isDead() && player.getInventory().getBoots() != null && player.getInventory().getBoots().hasItemMeta() && player.getInventory().getBoots().getItemMeta().hasLore() && player.getInventory().getBoots().getItemMeta().getLore().contains(Main.enchantments.get(23).getDisplayName())) {
+						if(player.isOnline() && !player.isDead() && player.getInventory().getBoots() != null && player.getInventory().getBoots().hasItemMeta() && player.getInventory().getBoots().getItemMeta().hasLore() && player.getInventory().getBoots().getItemMeta().getLore().contains(getDisplayName())) {
 						if(player.getLocation().getBlock().getRelative(0, 1, 0).getType() != Material.WATER || player.getLocation().getBlock().getRelative(0, 1, 0).getType() != Material.STATIONARY_WATER)
 							this.cancel();
 						if(player.getRemainingAir() < player.getMaximumAir())
