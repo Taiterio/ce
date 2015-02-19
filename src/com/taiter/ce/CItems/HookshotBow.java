@@ -50,14 +50,14 @@ public class HookshotBow extends CItem {
 
 	public HookshotBow(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-
+		triggers.add(Trigger.SHOOT_BOW);
+		triggers.add(Trigger.INTERACT_LEFT);
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
 		if(event instanceof PlayerInteractEvent) {
-			PlayerInteractEvent e = (PlayerInteractEvent) event;
-			if(e.getAction().toString().startsWith("LEFT")) {
 				ItemStack item = player.getItemInHand();
 				ItemMeta im = item.getItemMeta();
 				List<String> lore = new ArrayList<String>();
@@ -78,8 +78,6 @@ public class HookshotBow extends CItem {
 				im.setLore(lore);
 				item.setItemMeta(im);
 				player.sendMessage(ChatColor.GREEN + "Hookshot Mode: " + newMode);
-
-			}
 		} else if(event instanceof EntityShootBowEvent) {
 			EntityShootBowEvent e = (EntityShootBowEvent) event;
 			ItemMeta im = e.getBow().getItemMeta();

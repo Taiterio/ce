@@ -33,10 +33,11 @@ public class Autorepair extends CEnchantment {
 	int	healAmount;
 	boolean healFully;
 	
-	public Autorepair(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);		
+	public Autorepair(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);		
 		configEntries.add("HealAmount: 1");
 		configEntries.add("HealFully: false");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

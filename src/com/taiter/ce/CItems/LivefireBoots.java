@@ -43,6 +43,7 @@ public class LivefireBoots extends CItem {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("FlameDuration: 200");
 		this.configEntries.add("FireResistanceLevel: 5");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

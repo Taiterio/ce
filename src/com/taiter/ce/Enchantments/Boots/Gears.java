@@ -37,9 +37,10 @@ public class Gears extends CEnchantment {
 
 	int	strength;
 
-	public Gears(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Gears(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("SpeedBoost: 1");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

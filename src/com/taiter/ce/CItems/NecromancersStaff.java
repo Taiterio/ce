@@ -37,7 +37,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
 
@@ -64,7 +66,7 @@ public class NecromancersStaff extends CItem {
 		this.configEntries.add("FireballCooldown: 60");
 		this.configEntries.add("LightningCost: 20");
 		this.configEntries.add("LightningCooldown: 240");
-		
+		triggers.add(Trigger.INTERACT);
 	}
 
 	@Override
@@ -129,7 +131,10 @@ public class NecromancersStaff extends CItem {
 				// Apply effect
 				if(spell == 0) {
 					if(Tools.checkWorldGuard(l, player, "TNT")) {
-						player.launchProjectile(WitherSkull.class).setVelocity(l.getDirection().multiply(2));
+						WitherSkull ws = player.launchProjectile(WitherSkull.class);
+						ws.setVelocity(l.getDirection().multiply(2));
+						if(!Main.createExplosions)
+							ws.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
 						player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
 					} else {
 						player.getWorld().playSound(l, Sound.CAT_HISS, 0.3f, 5f);

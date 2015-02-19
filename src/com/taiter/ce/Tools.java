@@ -21,6 +21,7 @@ package com.taiter.ce;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -47,14 +48,10 @@ import com.sk89q.worldguard.protection.GlobalRegionManager;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.taiter.ce.CBasic.Trigger;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
-import com.taiter.ce.Enchantments.CEnchantment.Cause;
-import com.taiter.ce.Enchantments.Global.Blind;
-import com.taiter.ce.Enchantments.Global.Ice;
-import com.taiter.ce.Enchantments.Global.Lifesteal;
-import com.taiter.ce.Enchantments.Global.Poison;
 
 
 
@@ -626,12 +623,13 @@ public class Tools {
 		return color;
 	}
 
-	public static void resolveEnchantmentLists() {
-		for(CEnchantment ce : Main.enchantments) {
-			if(ce instanceof Poison || ce instanceof Blind || ce instanceof Lifesteal || ce instanceof Ice)
-				Main.listener.bowEnchantments.add(ce);
-			getAppropriateList(ce.getCause()).add(ce);
-		}
+	public static void resolveLists() {
+		for(CEnchantment ce : Main.enchantments)
+			for(Trigger t : ce.getTriggers())
+				getAppropriateList(t).add(ce);
+		for(CItem ci : Main.items)
+			for(Trigger t : ci.getTriggers())
+				getAppropriateList(t).add(ci);
 	}
 	
 	public static boolean checkWorldGuard(Location l, Player p, String fs) {
@@ -655,32 +653,41 @@ public class Tools {
 		return true;
 	}
 
-	private static List<CEnchantment> getAppropriateList(Cause c) {
+	private static HashSet<CBasic> getAppropriateList(Trigger t) {
 
-		if(c == Cause.BLOCKBREAK)
-			return Main.listener.blockBreakEnchantments;
-		else if(c == Cause.BLOCKPLACE)
-			return Main.listener.blockPlaceEnchantments;
-		else if(c == Cause.BOW)
-			return Main.listener.bowEnchantments;
-		else if(c == Cause.CLICK)
-			return Main.listener.clickEnchantments;
-		else if(c == Cause.DAMAGEGIVEN || c == Cause.BOW)
-			return Main.listener.damageGivenEnchantments;
-		else if(c == Cause.DAMAGETAKEN)
-			return Main.listener.damageTakenEnchantments;
-		else if(c == Cause.DEATH)
-			return Main.listener.deathEnchantments;
-		else if(c == Cause.INTERACT)
-			return Main.listener.interactEnchantments;
-		else if(c == Cause.MOVE)
-			return Main.listener.moveEnchantments;
-
+		if(t == Trigger.BLOCK_BROKEN)
+			return Main.listener.blockBroken;
+		else if(t == Trigger.BLOCK_PLACED)
+			return Main.listener.blockPlaced;
+		else if(t == Trigger.INTERACT)
+			return Main.listener.interact;
+		else if(t == Trigger.INTERACT_ENTITY)
+			return Main.listener.interactE;
+		else if(t == Trigger.INTERACT_LEFT)
+			return Main.listener.interactL;
+		else if(t == Trigger.INTERACT_RIGHT)
+			return Main.listener.interactR;
+		else if(t == Trigger.DEATH)
+			return Main.listener.death;
+		else if(t == Trigger.DAMAGE_GIVEN)
+			return Main.listener.damageGiven;
+		else if(t == Trigger.DAMAGE_TAKEN)
+			return Main.listener.damageTaken;
+		else if(t == Trigger.DAMAGE_NATURE)
+			return Main.listener.damageNature;
+		else if(t == Trigger.SHOOT_BOW)
+			return Main.listener.shootBow;
+		else if(t == Trigger.PROJECTILE_HIT)
+			return Main.listener.projectileHit;
+		else if(t == Trigger.PROJECTILE_THROWN)
+			return Main.listener.projectileThrow;
+		else if(t == Trigger.EQUIP_ITEM)
+			return Main.listener.equipItem;
+		else if(t == Trigger.MOVE)
+			return Main.listener.move;
 		return null;
 	}
 
-
-	
 	
 
 	public static List<CEnchantment> getEnchantList(Application app, Player p) {
@@ -748,7 +755,7 @@ public class Tools {
 			(ce.getApplication() == Application.TOOL			&& 
 				(i.getType().toString().endsWith("PICKAXE")		||
 				 i.getType().toString().endsWith("SPADE")		|| 
-				 i.getType().toString().endsWith("AXE")			|| 
+				 i.getType().toString().endsWith("_AXE")		|| 
 				 i.getType().toString().endsWith("HOE")))
 				 												|| 
 			(ce.getApplication() == Application.HELMET			&&	i.getType().toString().endsWith("HELMET")) 	

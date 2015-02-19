@@ -40,6 +40,7 @@ public class DruidBoots extends CItem {
 		this.configEntries.add("SpeedLevel: 5");
 		this.configEntries.add("RegenerationDuration: 100");
 		this.configEntries.add("RegenerationLevel: 5");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

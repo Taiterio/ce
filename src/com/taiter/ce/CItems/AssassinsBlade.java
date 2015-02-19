@@ -45,14 +45,16 @@ public class AssassinsBlade extends CItem {
 		this.configEntries.add("AmbushDmgMultiplier: 2");
 		this.configEntries.add("WeaknessLevel: 4");
 		this.configEntries.add("WeaknessLength: 100");
+		triggers.add(Trigger.INTERACT_RIGHT);
+		triggers.add(Trigger.DAMAGE_GIVEN);
+
 	}
 
 	@Override
 	public boolean effect(Event event, final Player player) {
-		if(event instanceof PlayerInteractEvent)
+		if(event instanceof PlayerInteractEvent) {
 			if(!player.hasMetadata("ce.assassin"))
 				if(player.isSneaking())
-					if(((PlayerInteractEvent) event).getAction().toString().startsWith("RIGHT")) {
 						  player.setMetadata("ce.assassin", new FixedMetadataValue(main, null));
 						  player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, InvisibilityDuration, 0, true), true);
 						  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You hide in the shadows.");

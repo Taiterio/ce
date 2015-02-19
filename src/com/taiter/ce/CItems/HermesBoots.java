@@ -37,6 +37,7 @@ public class HermesBoots extends CItem {
 	public HermesBoots(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("SpeedLevel: 5");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

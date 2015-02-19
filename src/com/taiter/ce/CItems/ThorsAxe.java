@@ -25,7 +25,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -39,13 +38,13 @@ public class ThorsAxe extends CItem {
 	public ThorsAxe(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("FireDuration: 200");
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
 		if(event instanceof PlayerInteractEvent) {
 			final PlayerInteractEvent e = (PlayerInteractEvent) event;
-				if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 					if(e.getClickedBlock() != null) {
 						Location loc = e.getClickedBlock().getLocation();
 						loc.setY(loc.getY() +1);
@@ -105,7 +104,6 @@ public class ThorsAxe extends CItem {
 							
 						}
 					}
-				}
 		}
 		return false;
 	}

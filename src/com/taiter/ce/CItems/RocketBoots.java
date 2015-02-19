@@ -46,6 +46,7 @@ public class RocketBoots extends CItem {
 	
 	public RocketBoots(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override

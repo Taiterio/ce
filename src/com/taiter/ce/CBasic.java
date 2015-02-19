@@ -39,11 +39,14 @@ public abstract class CBasic {
 		INTERACT_RIGHT,
 		MOVE,
 		DAMAGE_GIVEN,
-		DAMAGE_RECEIVED,
+		DAMAGE_TAKEN,
+		DAMAGE_NATURE, //Falldamage, damage by cactus, etc.
 		BLOCK_PLACED,
 		BLOCK_BROKEN,
 		SHOOT_BOW,
-		THROW,
+		PROJECTILE_THROWN,
+		PROJECTILE_HIT,
+		EQUIP_ITEM,
 		DEATH
 	}
 	
@@ -69,10 +72,12 @@ public abstract class CBasic {
 	public String	getDisplayName()		{	return this.displayName;	}
 	
 	public String	getOriginalName()		{	return this.originalName;	}
-
-	public FileConfiguration	getConfig()	{	return Main.config;			}
 	
-	public String				getType()	{ return this.typeString;		}
+	public HashSet<Trigger>     getTriggers()	{	return this.triggers;	}
+
+	public FileConfiguration	getConfig()	    {	return Main.config;	    }
+	
+	public String				getType()	    { return this.typeString;   }
 		
 	public abstract double		getCost();
 	

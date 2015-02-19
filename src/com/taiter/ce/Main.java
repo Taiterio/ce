@@ -67,6 +67,8 @@ import com.taiter.ce.CItems.BeastmastersBow;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.CItems.Deathscythe;
 import com.taiter.ce.CItems.DruidBoots;
+import com.taiter.ce.CItems.Firecracker;
+import com.taiter.ce.CItems.FireworkBattery;
 import com.taiter.ce.CItems.Flamethrower;
 import com.taiter.ce.CItems.HealingShovel;
 import com.taiter.ce.CItems.HermesBoots;
@@ -86,7 +88,6 @@ import com.taiter.ce.CItems.RocketBoots;
 import com.taiter.ce.CItems.ThorsAxe;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
-import com.taiter.ce.Enchantments.CEnchantment.Cause;
 import com.taiter.ce.Enchantments.Armor.Enlighted;
 import com.taiter.ce.Enchantments.Armor.Frozen;
 import com.taiter.ce.Enchantments.Armor.Hardened;
@@ -134,6 +135,8 @@ public final class Main extends JavaPlugin {
 	public static HashSet<CItem>        items;
 	public static HashSet<CEnchantment> enchantments;
 	public static int                   maxEnchants = -1;
+	
+	public static Boolean createExplosions;
 	
 	public static Boolean repeatPotionEffects;
 	public static int     repeatDelay;
@@ -201,6 +204,8 @@ public final class Main extends JavaPlugin {
     	
     	//Start the listener
     	initializeListener();
+    	
+    	createExplosions     = Boolean.parseBoolean(Main.config.getString("Global.CreateExplosions"));
     	
     	//The Config options for the potion effect repeating
     	repeatPotionEffects  = Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RepeatPotionEffects"));
@@ -518,47 +523,47 @@ public final class Main extends JavaPlugin {
     	long time = System.currentTimeMillis();
     	
     	//Global Enchantments
-    	enchantments.add(new Lifesteal("Lifesteal", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Gooey("Gooey", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Deathbringer("Deathbringer", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Poison("Poison", Application.GLOBAL, Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Block("Block", Application.GLOBAL,Cause.CLICK,5,100));
-    	enchantments.add(new Shockwave("Shockwave",       Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Deepwounds("Deep Wounds",    Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Thunderingblow("Thunderingblow",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Cripple("Crippling Strike",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Ice("Ice Aspect",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Autorepair("Autorepair",Application.GLOBAL,Cause.MOVE,5,100));
-    	enchantments.add(new Vampire("Vampire",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
-    	enchantments.add(new Blind("Blind",Application.GLOBAL,Cause.DAMAGEGIVEN,5,100));
+    	enchantments.add(new Lifesteal("Lifesteal", Application.GLOBAL,5,100));
+    	enchantments.add(new Gooey("Gooey", Application.GLOBAL, 5,100));
+    	enchantments.add(new Deathbringer("Deathbringer", Application.GLOBAL, 5,100));
+    	enchantments.add(new Poison("Poison", Application.GLOBAL, 5,100));
+    	enchantments.add(new Block("Block", Application.GLOBAL,5,100));
+    	enchantments.add(new Shockwave("Shockwave",       Application.GLOBAL,5,100));
+    	enchantments.add(new Deepwounds("Deep Wounds",    Application.GLOBAL,5,100));
+    	enchantments.add(new Thunderingblow("Thunderingblow",Application.GLOBAL,5,100));
+    	enchantments.add(new Cripple("Crippling Strike",Application.GLOBAL,5,100));
+    	enchantments.add(new Ice("Ice Aspect",Application.GLOBAL,5,100));
+    	enchantments.add(new Autorepair("Autorepair",Application.GLOBAL,5,100));
+    	enchantments.add(new Vampire("Vampire",Application.GLOBAL,5,100));
+    	enchantments.add(new Blind("Blind",Application.GLOBAL,5,100));
 
     	
     	//Armor Enchantments
-    	enchantments.add(new Enlighted("Enlighted",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
-    	enchantments.add(new Frozen("Frozen",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
-    	enchantments.add(new Hardened("Hardened",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
-    	enchantments.add(new Molten("Molten",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
-    	enchantments.add(new Poisoned("Poisoned",Application.ARMOR,Cause.DAMAGETAKEN,4,100));
-    	enchantments.add(new Shielded("Shielded",Application.ARMOR,Cause.MOVE,4,100));
-    	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,Cause.MOVE,4,100));
+    	enchantments.add(new Enlighted("Enlighted",Application.ARMOR,4,100));
+    	enchantments.add(new Frozen("Frozen",Application.ARMOR,4,100));
+    	enchantments.add(new Hardened("Hardened",Application.ARMOR,4,100));
+    	enchantments.add(new Molten("Molten",Application.ARMOR,4,100));
+    	enchantments.add(new Poisoned("Poisoned",Application.ARMOR,4,100));
+    	enchantments.add(new Shielded("Shielded",Application.ARMOR,4,100));
+    	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,4,100));
     	
     	//Bow Enchantments
-    	enchantments.add(new Bombardment("Bombardment",Application.BOW,Cause.BOW,10,100));
-    	enchantments.add(new Firework("Firework",Application.BOW,Cause.BOW,20,100));
-    	enchantments.add(new Lightning("Lightning",Application.BOW,Cause.BOW,10,100));
+    	enchantments.add(new Bombardment("Bombardment",Application.BOW,10,100));
+    	enchantments.add(new Firework("Firework",Application.BOW,20,100));
+    	enchantments.add(new Lightning("Lightning",Application.BOW,10,100));
     	
     	//Tool Enchantments
-    	enchantments.add(new Smelting("Smelting",Application.TOOL,Cause.BLOCKBREAK,50,100));
-    	enchantments.add(new Explosive("Explosive",Application.TOOL,Cause.BLOCKBREAK,50,100));
+    	enchantments.add(new Smelting("Smelting",Application.TOOL,50,100));
+    	enchantments.add(new Explosive("Explosive",Application.TOOL,50,100));
     	
     	//Boots Enchantments
-		enchantments.add(new Gears("Gears",Application.BOOTS,Cause.MOVE,4,100));
-		enchantments.add(new Springs("Springs",Application.BOOTS,Cause.MOVE,4,100));
-		enchantments.add(new Stomp("Stomp",Application.BOOTS,Cause.DAMAGETAKEN,4,100));
+		enchantments.add(new Gears("Gears",Application.BOOTS,4,100));
+		enchantments.add(new Springs("Springs",Application.BOOTS,4,100));
+		enchantments.add(new Stomp("Stomp",Application.BOOTS,4,100));
     	
     	//Helmet Enchantments
-    	enchantments.add(new Glowing("Glowing",Application.HELMET,Cause.MOVE,4,100));
-    	enchantments.add(new Implants("Implants",Application.HELMET,Cause.MOVE,4,100));
+    	enchantments.add(new Glowing("Glowing",Application.HELMET,4,100));
+    	enchantments.add(new Implants("Implants",Application.HELMET,4,100));
     		
     		if(finalize)
     		for(CEnchantment ce : enchantments) 
@@ -569,44 +574,50 @@ public final class Main extends JavaPlugin {
     		
     		//ITEMS
         	
-        	//Bow 0-2
+        	//Bow
         	items.add(new Minigun("Minigun", ChatColor.AQUA, "Fires a Volley of Arrows", 0, Material.BOW));
         	items.add(new BeastmastersBow("Beastmaster's Bow", ChatColor.AQUA, "Tame the wilderness;and turn nature against your foes!", 0, Material.BOW));
         	items.add(new HookshotBow("Hookshot Bow", ChatColor.AQUA, "Everyone is just one hook away", 0, Material.BOW));
         	
-        	//Boots 3-6
+        	//Boots
         	items.add(new HermesBoots("Hermes Boots", ChatColor.GOLD, "These boots are made for walkin'", 100, Material.DIAMOND_BOOTS));
         	items.add(new LivefireBoots("Livefire Boots", ChatColor.DARK_RED, "Leave a burning trail...;Because it's fun!", 0, Material.DIAMOND_BOOTS));
         	items.add(new RocketBoots("Rocket Boots", ChatColor.AQUA, "Up we go!; ;WARNING: May cause dismemberment,;            death;            and explosions", 0, Material.DIAMOND_BOOTS));
         	items.add(new DruidBoots("Druid Boots", ChatColor.DARK_GREEN, "Let the nature rejuvenate you!", 0, Material.DIAMOND_BOOTS));
         	
-        	//Flint + Steel 7
+        	//Flint + Steel
         	items.add(new Flamethrower("Flamethrower", ChatColor.DARK_RED, "Burn, baby, burn!", 0, Material.FLINT_AND_STEEL));
         	
-        	//Stick 8
+        	//Stick
         	items.add(new NecromancersStaff("Necromancer's Staff of Destruction", ChatColor.AQUA, "Wreak chaos everywhere,;Because why not?", 0, Material.STICK));
         	
-        	//Armor 9
+        	//Armor
         	//items.add((CItem) new Swimsuit("Scuba Helmet", ChatColor.BLUE, "Just stay underwater for a while,;Take your time!", 60, Material.IRON_HELMET));
         	
-        	//Axe 10-11
+        	//Axe
         	items.add(new ThorsAxe("Thor's Axe", ChatColor.GOLD, "Smite your enemies down with mighty thunder!;Note: Batteries not included.", 0, Material.DIAMOND_AXE));
         	items.add(new Pyroaxe("Pyroaxe", ChatColor.DARK_RED, "Are your enemies burning?;Do you want to make their situation worse?;Then this is just perfect for you!", 0, Material.DIAMOND_AXE));
         	
-        	//Sword 12
+        	//Sword 
         	items.add(new AssassinsBlade("Assassin's Blade", ChatColor.AQUA, "Sneak up on your enemies and hit them hard!; ;(High chance of failure against Hacked Clients)", 200, Material.GOLD_SWORD));
         	
-        	//Shovel 13
+        	//Shovel
         	items.add(new HealingShovel("Healing Shovel", ChatColor.GREEN, "Smacking other people in the face;has never been healthier!", 600, Material.GOLD_SPADE));
         	
-        	//Block 14-18
-        	items.add(new BearTrap("Bear Trap", ChatColor.GRAY, "Just hope that it does not contain bears...", 0, Material.IRON_PLATE));
-        	items.add(new PiranhaTrap("Piranha Trap", ChatColor.GRAY, "Who came up with this?", 0, Material.WOOD_PLATE));
-        	items.add(new PoisonIvy("Poison Ivy", ChatColor.DARK_GREEN, "If you're too cheap to afford ladders,;just take this, it'll work just fine!", 0, Material.VINE));
-        	items.add(new PricklyBlock("Prickly Block", ChatColor.LIGHT_PURPLE, "Just build a labyrinth out of these,;people will love you for it!", 0, Material.SAND));
-        	items.add(new Landmine("Landmine", ChatColor.GRAY, "Just don't trigger it yourself, please.", 0, Material.GOLD_PLATE));
+        	//Projectile
+        	items.add(new Firecracker("Firecracker", ChatColor.DARK_RED, "Makes every situation a good situation!", 0, Material.SNOW_BALL));
         	
-        	//Any 19-23
+        	//Block 
+        	items.add(new FireworkBattery("Firework-Battery", ChatColor.DARK_RED, "Make the sky shine bright with colors!", 0, Material.REDSTONE_BLOCK));
+
+        		//Mines
+        		items.add(new BearTrap("Bear Trap", ChatColor.GRAY, "Just hope that it does not contain bears...", 0, Material.IRON_PLATE));
+        		items.add(new PiranhaTrap("Piranha Trap", ChatColor.GRAY, "Who came up with this?", 0, Material.WOOD_PLATE));
+        		items.add(new PoisonIvy("Poison Ivy", ChatColor.DARK_GREEN, "If you're too cheap to afford ladders,;just take this, it'll work just fine!", 0, Material.VINE));
+        		items.add(new PricklyBlock("Prickly Block", ChatColor.LIGHT_PURPLE, "Just build a labyrinth out of these,;people will love you for it!", 0, Material.SAND));
+        		items.add(new Landmine("Landmine", ChatColor.GRAY, "Just don't trigger it yourself, please.", 0, Material.GOLD_PLATE));
+        	
+        	//Any 
         	items.add(new Powergloves("Powergloves", ChatColor.AQUA, "Throw all your problems away!", 500, Material.QUARTZ));
         	items.add(new Medikit("Medikit", ChatColor.GREEN, "Treats most of your ailments,;it even has a box of juice!", 2000, Material.NETHER_STALK));
         	items.add(new Bandage("Bandage", ChatColor.GREEN, "It has little hearts on it,;so you know it's good", 1000, Material.PAPER));
@@ -647,7 +658,7 @@ public final class Main extends JavaPlugin {
     			Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Item " + ci.getOriginalName() + " is disabled in the config.");
     		}
     	}
-    	Tools.resolveEnchantmentLists();
+    	Tools.resolveLists();
     }
     
 

@@ -55,6 +55,8 @@ public class PiranhaTrap extends CItem {
 		this.configEntries.add("BleedDuration: 120");
 		this.configEntries.add("FishAmount: 20");
 		this.configEntries.add("FishDuration: 200");
+		triggers.add(Trigger.BLOCK_PLACED);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

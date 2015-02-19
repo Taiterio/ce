@@ -44,19 +44,19 @@ public class Bandage extends CItem {
 		this.configEntries.add("TotalHealAmount: 10");
 		this.configEntries.add("TotalHealTime: 200");
 		this.configEntries.add("StopAtFullHealth: true");
+		triggers.add(Trigger.INTERACT_RIGHT);
+		triggers.add(Trigger.INTERACT_ENTITY);
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
 		if(event instanceof PlayerInteractEvent) {
-			PlayerInteractEvent e = ((PlayerInteractEvent) event);
-			if(e.getAction().toString().startsWith("RIGHT")) {
 				if(((Damageable) player).getHealth() != ((Damageable) player).getMaxHealth()) {
 					heal(player);
 					return true;
 				} else
 					player.sendMessage(ChatColor.RED + "You do not have any wounds to apply the bandage to!");
-			}
 		} else if(event instanceof PlayerInteractEntityEvent || event instanceof EntityDamageByEntityEvent) {
 			Player toHeal = null;
 			

@@ -44,10 +44,11 @@ public class Shockwave extends CEnchantment {
 	int	cooldown;
 	List<Material> ForbiddenMaterials;
 
-	public Shockwave(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Shockwave(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("Cooldown: 200");
 		configEntries.add("ForbiddenMaterials: BEDROCK, WATER, STATIONARY_WATER, LAVA, STATIONARY_LAVA, CACTUS, CAKE_BLOCK, CROPS, TORCH, ENDER_PORTAL, PISTON_MOVING_PIECE, MELON_STEM, NETHER_WARTS, MOB_SPAWNER, CHEST, SIGN, WALL_SIGN, SIGN_POST, ITEM_FRAME");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

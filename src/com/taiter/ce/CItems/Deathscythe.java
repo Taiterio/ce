@@ -46,6 +46,7 @@ public class Deathscythe extends CItem {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("Range: 10");
 		this.configEntries.add("MaximumHookTime: 240");
+		triggers.add(Trigger.INTERACT);
 	}
 
 	@Override

@@ -1,4 +1,5 @@
 Global:
+ CreateExplosions: true
  Updates:
   ShowPercentageOnUpdate: true
   CheckOnStartup: true

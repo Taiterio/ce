@@ -40,10 +40,11 @@ public class Explosive extends CEnchantment {
 	int Radius;
 	boolean LargerRadius;
 	
-	public Explosive(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Explosive(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("Radius: 3");
 		configEntries.add("LargerRadius: true");
+		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 
 	@Override

@@ -36,9 +36,10 @@ public class Shielded extends CEnchantment {
 	
 	int strength;
 
-	public Shielded(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Shielded(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("BaseStrength: 1");
+		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 
 	@Override

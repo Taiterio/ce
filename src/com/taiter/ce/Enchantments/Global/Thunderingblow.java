@@ -35,10 +35,11 @@ public class Thunderingblow extends CEnchantment {
 
 	int	chance;
 
-	public Thunderingblow(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Thunderingblow(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("LightningChance: 20");
-		}
+		triggers.add(Trigger.DAMAGE_GIVEN);
+	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {

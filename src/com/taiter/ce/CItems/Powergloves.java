@@ -46,6 +46,8 @@ public class Powergloves extends CItem {
 		this.configEntries.add("ThrowSpeedMultiplier: 60");
 		this.configEntries.add("ThrowDelayAfterGrab: 20");
 		this.configEntries.add("MaxGrabtime: 10");
+		triggers.add(Trigger.INTERACT_RIGHT);
+		triggers.add(Trigger.INTERACT_ENTITY);
 	}
 
 	@Override
@@ -104,9 +106,7 @@ public class Powergloves extends CItem {
 					}.runTaskTimer(main, 0l, 10l);
 				}
 		} else if(event instanceof PlayerInteractEvent) {
-			PlayerInteractEvent e = (PlayerInteractEvent) event;
 			if(player.hasMetadata("ce." + getOriginalName()) && player.getMetadata("ce." + getOriginalName()).get(0).asBoolean())
-				if(e.getAction().toString().startsWith("RIGHT"))
 					if(player.getPassenger() != null) {
 						Entity passenger = player.getPassenger();
 						player.getPassenger().leaveVehicle();

@@ -1,6 +1,7 @@
 package com.taiter.ce;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,7 +45,7 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class CEventHandler {
 
-	public static void handleEvent(Player toCheck, Event e, List<CEnchantment> list) {
+	public static void handleEvent(Player toCheck, Event e, HashSet<CBasic> list) {
 
 		long time = System.currentTimeMillis();
 		
@@ -63,6 +65,9 @@ public class CEventHandler {
 
 		Player p = e.getEnchanter();
 		ItemStack i = e.getItem();
+		
+		if(i == null)
+			return;
 		
 		if(i.getType().equals(Material.BOOK))
 			return;
@@ -171,80 +176,98 @@ public class CEventHandler {
 			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
 		}
 	}
+	
 
-	private static void handleEventMain(Player toCheck, ItemStack i, Event e, List<CEnchantment> list) {
+	private static void handleEventMain(Player toCheck, ItemStack i, Event e, HashSet<CBasic> list) {
 		if(i.hasItemMeta()) {
 		ItemMeta im = i.getItemMeta();
-		if(!list.isEmpty())
-		if(im.hasLore())
-			for(String s : im.getLore())
-			if(s.length() > 3) {
-			for(CEnchantment ce : list)
-				if(Tools.isApplicable(i, ce)) {
-				if(Tools.checkForEnchantment(s, ce)) {
-				int level = Tools.getLevel(s);
+		if(!list.isEmpty()) {
+			
+			Boolean checkLore = im.hasLore();
+			Boolean checkName = im.hasDisplayName();
+						
+			List<String> lore = im.getLore();
+			String name = im.getDisplayName();
+			
+			for(CBasic cb : list) {
+		      if(checkLore)
+		        if(cb instanceof CEnchantment) {
+		        CEnchantment ce = (CEnchantment) cb;
+
+		        for(String s : lore)
+		         if(Tools.isApplicable(i, ce)) {
+
+		          if(Tools.checkForEnchantment(s, ce)) {
+		        	  		        
+		          int level = Tools.getLevel(s);
 
 				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || Tools.checkPermission(ce, toCheck))
 				if(!ce.lockList.contains(toCheck)) 
 				if(!ce.getHasCooldown(toCheck))
-					try {
-						if(e instanceof EntityShootBowEvent)
-							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
-						long time = System.currentTimeMillis();
-						if(Tools.random.nextInt(100) < ce.getOccurrenceChance())
-							ce.effect(e, i, level);
-						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
-							long timeF = (System.currentTimeMillis() - time);
-							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-								Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + ChatColor.RESET +  "(" + ce.getOriginalName() + ").");
+				 try {
+				  if(e instanceof EntityShootBowEvent)
+					((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
+				  long time = System.currentTimeMillis();
+				  if(Tools.random.nextInt(100) < ce.getOccurrenceChance())
+					 ce.effect(e, i, level);
+				  if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
+					long timeF = (System.currentTimeMillis() - time);
+					if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
+					  Bukkit.getConsoleSender().sendMessage("[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ce.getDisplayName() + ChatColor.RESET +  "(" + ce.getOriginalName() + ").");
+					}
+				 } catch (Exception ex) {
+					if(!(ex instanceof ClassCastException))
+						for(StackTraceElement element : ex.getStackTrace()) {
+						 String className = element.getClassName();
+						 if(className.contains("com.taiter.ce")) {
+						  Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
+						  break;
+						 }
 						}
-					} catch (Exception ex) {
-						if(!(ex instanceof ClassCastException))
-							for(StackTraceElement element : ex.getStackTrace()) {
-								String className = element.getClassName();
-								if(className.contains("com.taiter.ce")) {
-									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
-									break;
-								}
-							}
-						}
+				 }
 				}
-				}
-			}
-			if(im.hasDisplayName())
-				for(CItem ci : Main.items)
-				if(im.getDisplayName().equals(ci.getDisplayName())) {
+				} 
+			   }
+			if(checkName)
+				if(cb instanceof CItem) {
+				CItem ci = (CItem) cb;
+				if(name.equals(ci.getDisplayName())) {
 				if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || Tools.checkPermission(ci, toCheck))
 				if(!ci.getHasCooldown(toCheck))
 				if(!ci.lockList.contains(toCheck)) {
-						if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
-							return;
-					try {
-						if(e instanceof EntityShootBowEvent) 
-							((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
-						long time = System.currentTimeMillis();
+				 if(e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap") || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
+					return;
+				 try {
+					if(e instanceof EntityShootBowEvent) 
+					  ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
+					if(e instanceof ProjectileLaunchEvent) 
+						 ((ProjectileLaunchEvent) e).getEntity().setMetadata("ce.projectile.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
+					long time = System.currentTimeMillis();
 
-						if(ci.effect(e, toCheck))
-							ci.generateCooldown(toCheck, ci.getCooldown());
-						if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
-							long timeF = (System.currentTimeMillis() - time);
-							if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-								Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
+					if(ci.effect(e, toCheck))
+					  ci.generateCooldown(toCheck, ci.getCooldown());
+					if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
+					  long timeF = (System.currentTimeMillis() - time);
+					  if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
+						Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process " + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
+					}
+				 } catch (Exception ex) {
+					if(!(ex instanceof ClassCastException))
+						for(StackTraceElement element : ex.getStackTrace()) {
+						 String className = element.getClassName();
+						 if(className.contains("com.taiter.ce")) {
+						  Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
+						  break;
+						 }
 						}
-					} catch (Exception ex) {
-						if(!(ex instanceof ClassCastException))
-							for(StackTraceElement element : ex.getStackTrace()) {
-								String className = element.getClassName();
-								if(className.contains("com.taiter.ce")) {
-									Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line " + element.getLineNumber() + ": " + ex.getCause());
-									break;
-								}
-							}
 					}
 				}
 				return; // Stops going through the list of items as it
 						// is not needed anymore
 				}
+			}
+			}
+			}
 		}
 	}
 	

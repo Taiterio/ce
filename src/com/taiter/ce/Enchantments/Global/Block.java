@@ -38,10 +38,11 @@ public class Block extends CEnchantment {
 	int	strength;
 	int	cooldown;
 
-	public Block(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Block(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("Strength: 1");
 		configEntries.add("Cooldown: 600");
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override

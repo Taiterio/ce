@@ -42,10 +42,11 @@ public class Stomp extends CEnchantment {
 	int	damageReductionFraction;
 	int damageApplicationFraction;
 
-	public Stomp(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Stomp(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("DamageReductionFraction: 4");
 		configEntries.add("DamageApplicationFraction: 2");
+		triggers.add(Trigger.DAMAGE_NATURE);
 	}
 
 	@Override

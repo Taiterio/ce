@@ -31,18 +31,6 @@ import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
 public abstract class CEnchantment extends CBasic  {
-
-	static public enum Cause {
-		MOVE,		//Move event
-		CLICK,		//Interact event
-		INTERACT,	//Interact WITH ENTITY event
-		DAMAGETAKEN,//Damage taken event
-		DAMAGEGIVEN,//Damage caused event
-		BOW,		//Bow shot event
-		DEATH,		//Death event
-		BLOCKPLACE,	//Block place event
-		BLOCKBREAK	//Block break event
-	}
 	
 	static public enum Application {
 		ARMOR,
@@ -53,14 +41,12 @@ public abstract class CEnchantment extends CBasic  {
 		TOOL
 	}
 	
-	Cause				cause;
 	Application			app;
 	int 				enchantProbability;
 	int 				enchantmentMaxLevel;
 	int 				occurrenceChance;
 	private boolean		hasRetriedConfig;
 	public Application 	getApplication()		{   return this.app;				}
-	public Cause 		getCause() 				{	return this.cause;				}
 	public int 			getEnchantProbability()	{	return this.enchantProbability;	}
 	public int			getEnchantmentMaxLevel(){	return this.enchantmentMaxLevel;}
 	public int 			getOccurrenceChance() 	{	return this.occurrenceChance;	}
@@ -68,9 +54,8 @@ public abstract class CEnchantment extends CBasic  {
 	@Override
 	public double getCost() { return Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".Cost"));}
 	
-	public CEnchantment(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
+	public CEnchantment(String originalName, Application app, int enchantProbability, int occurrenceChance) {
 		this.typeString = "Enchantment";
-		this.cause = cause;
 		this.app = app;
 		this.originalName = originalName; 
 		this.occurrenceChance = occurrenceChance; 

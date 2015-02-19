@@ -33,9 +33,10 @@ public class Molten extends CEnchantment {
 	
 	int duration;
 
-	public Molten(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Molten(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("Duration: 20");
+		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 
 	@Override

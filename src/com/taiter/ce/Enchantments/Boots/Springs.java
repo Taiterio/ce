@@ -37,9 +37,10 @@ public class Springs extends CEnchantment {
 
 	int	strength;
 
-	public Springs(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Springs(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("Strength: 4");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

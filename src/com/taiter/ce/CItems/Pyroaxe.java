@@ -38,6 +38,7 @@ public class Pyroaxe extends CItem {
 	public Pyroaxe(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		configEntries.add("DamageMultiplier: 2");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

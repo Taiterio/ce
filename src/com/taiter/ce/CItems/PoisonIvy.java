@@ -42,6 +42,8 @@ public class PoisonIvy extends CItem {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("PoisonDuration: 100");
 		this.configEntries.add("PoisonLevel: 2");
+		triggers.add(Trigger.BLOCK_PLACED);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

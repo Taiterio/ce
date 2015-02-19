@@ -67,6 +67,8 @@ public class BeastmastersBow extends CItem {
 		this.configEntries.add("MobAppearanceChance: 90");
 		this.configEntries.add("DamageMultiplication: 5");
 		rand = new Random();
+		triggers.add(Trigger.SHOOT_BOW);
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

@@ -51,6 +51,8 @@ public class BearTrap extends CItem {
 		this.configEntries.add("SlowDuration: 100");
 		this.configEntries.add("WeaknessLevel: 4");
 		this.configEntries.add("WeaknessDuration: 100");
+		triggers.add(Trigger.BLOCK_PLACED);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

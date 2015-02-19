@@ -36,13 +36,14 @@ public class Medikit extends CItem {
 	public Medikit(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("HealAmount: 10");
+		triggers.add(Trigger.DAMAGE_GIVEN);
+		triggers.add(Trigger.INTERACT_ENTITY);
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
 		if(event instanceof PlayerInteractEvent) {
-			PlayerInteractEvent e = ((PlayerInteractEvent) event);
-			if(e.getAction().toString().startsWith("RIGHT")) {
 				double maxHealth = ((Damageable) player).getMaxHealth();
 				if(((Damageable) player).getHealth() != maxHealth) {
 					if(((Damageable) player).getHealth() + HealAmount >= maxHealth)
@@ -52,7 +53,6 @@ public class Medikit extends CItem {
 					return true;
 				} else
 					player.sendMessage(ChatColor.RED + "You do not have any wounds to apply the Medikit to!");
-			}
 		} else if(event instanceof PlayerInteractEntityEvent || event instanceof EntityDamageByEntityEvent) {
 			Player toHeal = null;
 			

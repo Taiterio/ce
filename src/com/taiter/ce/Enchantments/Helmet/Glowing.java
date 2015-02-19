@@ -36,8 +36,9 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class Glowing extends CEnchantment {
 
 
-	public Glowing(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Glowing(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

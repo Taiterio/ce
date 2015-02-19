@@ -51,14 +51,15 @@ public class Ice extends CEnchantment {
 	int		chanceSpecialFreeze;
 	boolean	specialFreeze;
 
-	public Ice(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Ice(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("SlowStrength: 5");
 		configEntries.add("SlowDuration: 40");
 		configEntries.add("ChanceFreeze: 60");
 		configEntries.add("SpecialFreeze: true");
 		configEntries.add("SpecialFreezeDuration: 60");
 		configEntries.add("ChanceSpecialFreeze: 10");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

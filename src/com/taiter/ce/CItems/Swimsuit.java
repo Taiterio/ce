@@ -45,6 +45,7 @@ public class Swimsuit extends CItem {
 		super(originalName, color, lDescription, lCooldown, mat);
 		configEntries.add("DamageBoostLevel: 4");
 		configEntries.add("SpeedBoostLevel: 4");
+		triggers.add(Trigger.MOVE);
 	}// TODO: Use the Helmet as the main item
 
 	@Override

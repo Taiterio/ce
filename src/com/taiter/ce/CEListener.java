@@ -20,10 +20,12 @@ package com.taiter.ce;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -42,11 +44,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -59,6 +64,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
+import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
 
@@ -66,15 +72,22 @@ import com.taiter.ce.Enchantments.CEnchantment.Application;
 public class CEListener implements Listener {
 	
 	
-	List<CEnchantment> moveEnchantments 		= new ArrayList<CEnchantment>();
-	List<CEnchantment> clickEnchantments 		= new ArrayList<CEnchantment>();
-	List<CEnchantment> interactEnchantments 	= new ArrayList<CEnchantment>();
-	List<CEnchantment> damageTakenEnchantments	= new ArrayList<CEnchantment>();
-	List<CEnchantment> damageGivenEnchantments 	= new ArrayList<CEnchantment>();
-	List<CEnchantment> bowEnchantments			= new ArrayList<CEnchantment>();
-	List<CEnchantment> deathEnchantments 		= new ArrayList<CEnchantment>();
-	List<CEnchantment> blockPlaceEnchantments	= new ArrayList<CEnchantment>();
-	List<CEnchantment> blockBreakEnchantments 	= new ArrayList<CEnchantment>();
+	HashSet<CBasic> move 		    = new HashSet<CBasic>();
+	HashSet<CBasic> interact 	    = new HashSet<CBasic>();
+	HashSet<CBasic> interactE 	    = new HashSet<CBasic>();
+	HashSet<CBasic> interactR 	    = new HashSet<CBasic>();
+	HashSet<CBasic> interactL 	    = new HashSet<CBasic>();
+	HashSet<CBasic> damageTaken	    = new HashSet<CBasic>();
+	HashSet<CBasic> damageGiven     = new HashSet<CBasic>();
+	HashSet<CBasic> damageNature    = new HashSet<CBasic>();
+	HashSet<CBasic> shootBow        = new HashSet<CBasic>();
+	HashSet<CBasic> projectileThrow = new HashSet<CBasic>();
+	HashSet<CBasic> projectileHit   = new HashSet<CBasic>();
+	HashSet<CBasic> death 		    = new HashSet<CBasic>();
+	HashSet<CBasic> blockPlaced	    = new HashSet<CBasic>();
+	HashSet<CBasic> blockBroken     = new HashSet<CBasic>();
+	HashSet<CBasic> equipItem       = new HashSet<CBasic>();
+
 	
 	
 	/*
@@ -260,8 +273,8 @@ public class CEListener implements Listener {
 						if(ecr.transactionSuccess())
 							successString = (ChatColor.GREEN + "[CE] Purchased " + type + ChatColor.GREEN + " for " + cost + " " + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()));
 						else {
-							p.sendMessage(ChatColor.RED + "[CE] An economy error has occured:");
-							p.sendMessage(ChatColor.RED + 	ecr.errorMessage);
+							Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An economy error has occured:");
+							Bukkit.getConsoleSender().sendMessage(ChatColor.RED + 	ecr.errorMessage);
 							p.closeInventory();
 							return;
 						}
@@ -343,9 +356,9 @@ public class CEListener implements Listener {
 
 		
 		if(damaged instanceof Player)
-			CEventHandler.handleEvent((Player) damaged, e, damageTakenEnchantments);
+			CEventHandler.handleEvent((Player) damaged, e, damageTaken);
 		if(damager instanceof Player) 
-			CEventHandler.handleEvent((Player) damager, e, damageGivenEnchantments); 
+			CEventHandler.handleEvent((Player) damager, e, damageGiven); 
 		else if(damager instanceof Arrow)
 			if(damager.hasMetadata("ce.bow.item") || damager.hasMetadata("ce.bow.enchantment"))
 				CEventHandler.handleBows((Player) ((Projectile) damager).getShooter(), e);
@@ -362,7 +375,7 @@ public class CEListener implements Listener {
 		
 		if(damaged instanceof Player) {
 			
-			CEventHandler.handleEvent((Player) damaged, e, damageTakenEnchantments);
+			CEventHandler.handleEvent((Player) damaged, e, damageNature);
 			
 			if(damaged.hasMetadata("ce.springs")) {
 				e.setCancelled(true);
@@ -376,7 +389,15 @@ public class CEListener implements Listener {
 		
 	}
 	
-	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void EntityExplodeEvent(EntityExplodeEvent e) {
+		
+		if(e.getEntity() != null && e.getEntity().hasMetadata("ce.explosive")) {
+			e.getEntity().remove();
+			e.setCancelled(true);
+		}
+		
+	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void EntityShootBowEvent(EntityShootBowEvent e) {
@@ -384,11 +405,23 @@ public class CEListener implements Listener {
 		Entity 		shooter 	= e.getEntity();
 		
 		if(shooter instanceof Player)
-			CEventHandler.handleEvent((Player) shooter, e, bowEnchantments);
-		
+			CEventHandler.handleEvent((Player) shooter, e, shootBow);
 	}
 	
-	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void ProjectileHitEvent(ProjectileHitEvent e) {
+
+		ProjectileSource shooter = e.getEntity().getShooter();
+		
+		if(shooter instanceof Player) {
+			if(e.getEntity().hasMetadata("ce.projectile.item")) {
+				CItem ci = Tools.getItemByOriginalname(e.getEntity().getMetadata("ce.projectile.item").get(0).asString());
+				if(ci != null)
+					ci.effect(e, (Player) shooter);
+			}
+		}
+	}
+
 	
 	//PLAYER: org.bukkit.event.player
 	
@@ -399,21 +432,132 @@ public class CEListener implements Listener {
 //		
 //	}
 	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void ProjectileLaunchEvent(ProjectileLaunchEvent e) {
+	
+		ProjectileSource shooter = e.getEntity().getShooter();
+		
+		if(shooter instanceof Player)
+			CEventHandler.handleEvent((Player) shooter, e, projectileThrow);
+		
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void SignChangeEvent(SignChangeEvent e) {
+		if(e.getLine(0).equals("[CustomEnchant]") && !e.getPlayer().isOp())
+			e.setCancelled(true);
+	}
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerInteractEvent(PlayerInteractEvent e) {
 				
-		CEventHandler.handleEvent(e.getPlayer(), e, clickEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, interact);
+		
+		if(e.getAction().toString().startsWith("LEFT"))
+			CEventHandler.handleEvent(e.getPlayer(), e, interactL);
+		else if(e.getAction().toString().startsWith("RIGHT"))
+			CEventHandler.handleEvent(e.getPlayer(), e, interactR);
 		
 		if(e.getClickedBlock() != null && e.getClickedBlock() instanceof Sign) 
-			if(((Sign) e.getClickedBlock()).getLine(0).equals("[CustomEnchant]"))
-				Tools.openCEMenu(e.getPlayer());
+			if(((Sign) e.getClickedBlock()).getLine(0).equals("[CustomEnchant]")) {
+				Player p = e.getPlayer();
+				if(!Main.hasEconomy) {
+					p.performCommand("/ce menu");
+				} else if(p.getItemInHand().getType() != Material.AIR){
+				Sign sign = ((Sign) e.getClickedBlock());
+				CEnchantment ce = Tools.getEnchantmentByDisplayname(sign.getLine(1));
+				if(ce == null)
+					Tools.getEnchantmentByOriginalname(sign.getLine(1));
+				if(ce == null)
+					for(CEnchantment ceT : Main.enchantments)
+						if(Tools.checkForEnchantment(sign.getLine(1), ceT))
+							ce = ceT;
+				if(ce == null)
+					return;
+				
+				ItemStack inHand = p.getItemInHand();
+				if(!Tools.isApplicable(inHand, ce)) {
+					p.sendMessage(ChatColor.RED + "[CE] This enchantment can not be applied to this item.");
+					return;
+				}
+				
+				int cost = 0;
+				try {
+					cost = Integer.parseInt(sign.getLine(3).replaceAll("\\D+",""));
+				} catch(NumberFormatException ex) {
+					return;
+				}
+				
+				if(inHand.hasItemMeta() && inHand.getItemMeta().hasLore()) {
+					List<String> lore = inHand.getItemMeta().getLore();
+					for(int i = 0; i < lore.size(); i++)
+						if(Tools.checkForEnchantment(lore.get(i), ce)) {
+							int newLevel = Tools.getLevel(lore.get(i))+1;
+							if(newLevel <= ce.getEnchantmentMaxLevel()) {
+								if(Main.econ.getBalance(p.getName()) >= cost) {
+									EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
+									if(ecr.transactionSuccess())
+										p.sendMessage(ChatColor.GREEN + "[CE] Upgraded enchantment " + ce.getDisplayName() + ChatColor.RESET + "" + ChatColor.GREEN  + " for " + cost + " " + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()));
+									else {
+										p.sendMessage(ChatColor.RED + "[CE] An economy error has occured:");
+										p.sendMessage(ChatColor.RED + 	ecr.errorMessage);
+										p.closeInventory();
+										return;
+									}
+								} else {
+									p.sendMessage(ChatColor.RED + "[CE] You do not have enough money to buy this!");
+									p.closeInventory();
+									return;
+								}
+								lore.set(i, ce.getDisplayName() + " " + Tools.intToLevel(newLevel));
+								ItemMeta im = inHand.getItemMeta();
+								im.setLore(lore);
+								inHand.setItemMeta(im);
+								return;
+							} else {
+								p.sendMessage(ChatColor.RED + "[CE] You already have the maximum level of this enchantment!");
+								return;
+							}
+						}	
+					}
+				
+				List<String> lore = new ArrayList<String>();
+				ItemMeta im = inHand.getItemMeta();
+				
+				if(inHand.getItemMeta().hasLore())
+					lore = im.getLore();
+				
+				if(Main.econ.getBalance(p.getName()) >= cost) {
+					EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
+					if(ecr.transactionSuccess())
+						p.sendMessage(ChatColor.GREEN + "[CE] Bought enchantment " + ce.getDisplayName() + ChatColor.RESET + "" + ChatColor.GREEN  + " for " + cost + " " + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()));
+					else {
+						Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An economy error has occured:");
+						Bukkit.getConsoleSender().sendMessage(ChatColor.RED + 	ecr.errorMessage);
+						p.closeInventory();
+						return;
+					}
+				} else {
+					p.sendMessage(ChatColor.RED + "[CE] You do not have enough money to buy this!");
+					p.closeInventory();
+					return;
+				}
+				
+				lore.add(ce.getDisplayName() + " I");
+				im.setLore(lore);
+				inHand.setItemMeta(im);
+				return;
+				
+				
+				}
+			}
 		
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void PlayerInteractEntityEvent(PlayerInteractEntityEvent e) {
 				
-		CEventHandler.handleEvent(e.getPlayer(), e, interactEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, interactE);
 		
 	}
 	
@@ -429,7 +573,7 @@ public class CEListener implements Listener {
 				
 		if(from.getBlockX() != to.getBlockX() || from.getBlockY() != to.getBlockY() || from.getBlockZ() != to.getBlockZ() ) {
 				
-		CEventHandler.handleEvent(e.getPlayer(), e, moveEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, move);
 		CEventHandler.handleMines(e.getPlayer(), e);
 		
 		}
@@ -444,7 +588,7 @@ public class CEListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void BlockPlaceEvent(BlockPlaceEvent e) {
 		
-		CEventHandler.handleEvent(e.getPlayer(), e, blockPlaceEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, blockPlaced);
 		
 	}
 	
@@ -455,7 +599,7 @@ public class CEListener implements Listener {
 		if(e.getBlock().hasMetadata("ce.Ice"))
 			e.setCancelled(true);
 		
-		CEventHandler.handleEvent(e.getPlayer(), e, blockBreakEnchantments);
+		CEventHandler.handleEvent(e.getPlayer(), e, blockBroken);
 		if(e.getBlock().hasMetadata("ce.mine")) {
 			Block b = e.getBlock();
 			b.removeMetadata("ce.mine", Main.plugin);

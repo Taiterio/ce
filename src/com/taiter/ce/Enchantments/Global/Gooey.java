@@ -34,9 +34,10 @@ public class Gooey extends CEnchantment {
 
 	int	strength;
 
-	public Gooey(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Gooey(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("HeightMultiplier: 3");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

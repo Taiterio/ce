@@ -32,6 +32,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
 
@@ -43,6 +44,8 @@ public class Landmine extends CItem {
 	public Landmine(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("ExplosionStrength: 5");
+		triggers.add(Trigger.BLOCK_PLACED);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override
@@ -67,7 +70,8 @@ public class Landmine extends CItem {
 			
 			if(!b.getType().equals(Material.AIR) && !b.getType().equals(Material.WATER) && !b.getType().equals(Material.LAVA) && Tools.checkWorldGuard(loc, player, "PVP")) { 
 				b.setType(Material.AIR);
-				w.createExplosion(loc, ExplosionStrength);
+				if(Main.createExplosions)
+					w.createExplosion(loc, ExplosionStrength);
 			}
 		}
 		return false;

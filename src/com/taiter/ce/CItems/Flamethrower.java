@@ -31,7 +31,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -50,12 +49,12 @@ public class Flamethrower extends CItem {
 		this.configEntries.add("IsReloadable: true");
 		this.configEntries.add("BurnDuration: 100");
 		this.configEntries.add("FireBlocksPerBurst: 10");
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override
 	public boolean effect(Event event, final Player player) {
 		PlayerInteractEvent e = (PlayerInteractEvent) event;
-		if(e.getAction().equals(Action.RIGHT_CLICK_AIR) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 			e.setCancelled(true);
 
 			if(player.getItemInHand().getDurability() >= 64) {
@@ -124,7 +123,6 @@ public class Flamethrower extends CItem {
 				player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() + 1));
 				}
 			}
-		}
 		
 		return true;
 	}

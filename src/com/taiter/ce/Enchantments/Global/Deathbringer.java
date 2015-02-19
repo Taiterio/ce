@@ -36,9 +36,10 @@ public class Deathbringer extends CEnchantment {
 
 	int	strength;
 
-	public Deathbringer(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Deathbringer(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("TrueDamagePerHit: 2");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

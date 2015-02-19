@@ -43,6 +43,8 @@ public class PricklyBlock extends CItem {
 		this.configEntries.add("Damage: 3");
 		this.configEntries.add("NauseaLevel: 2");
 		this.configEntries.add("NauseaDuration: 200");
+		triggers.add(Trigger.BLOCK_PLACED);
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

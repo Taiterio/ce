@@ -40,10 +40,12 @@ public class Firework extends CEnchantment {
 	int		duration;
 	long	delay;
 
-	public Firework(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Firework(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("FireworkAmount: 30");
-		configEntries.add("Delay: 5");
+		configEntries.add("Delay: 5");		
+		triggers.add(Trigger.SHOOT_BOW);
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

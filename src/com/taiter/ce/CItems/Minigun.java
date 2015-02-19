@@ -44,6 +44,7 @@ public class Minigun extends CItem {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("ArrowCountPerVolley: 20");
 		this.configEntries.add("ShotsPerSecond: 20");
+		triggers.add(Trigger.SHOOT_BOW);
 	}
 
 	@Override

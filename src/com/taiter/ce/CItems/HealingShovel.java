@@ -36,6 +36,7 @@ public class HealingShovel extends CItem {
 	public HealingShovel(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("Heal: 4");
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override

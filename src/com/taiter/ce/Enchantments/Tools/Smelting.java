@@ -35,8 +35,9 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class Smelting extends CEnchantment {
 
-	public Smelting(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Smelting(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
+		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 
 	@Override

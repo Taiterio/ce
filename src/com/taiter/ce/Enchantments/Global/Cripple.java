@@ -37,11 +37,12 @@ public class Cripple extends CEnchantment {
 	int	duration;
 	int	strength;
 
-	public Cripple(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName, app,  cause, enchantProbability, occurrenceChance);
+	public Cripple(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName, app, enchantProbability, occurrenceChance);
 		configEntries.add("Duration: 100");
 		configEntries.add("Strength: 1");
-		}
+		triggers.add(Trigger.DAMAGE_GIVEN);
+	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {

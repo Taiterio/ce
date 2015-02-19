@@ -40,9 +40,10 @@ public class Implants extends CEnchantment {
 	public int	burstDelay;
 	List<Player> inWater = new ArrayList<Player>();
 
-	public Implants(String originalName, Application app, Cause cause, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app,  cause, enchantProbability, occurrenceChance);
+	public Implants(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+		super(originalName,  app, enchantProbability, occurrenceChance);
 		configEntries.add("FoodBurstDelay: 20");
+		triggers.add(Trigger.MOVE);
 	}
 
 	@Override

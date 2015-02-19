@@ -29,7 +29,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 
@@ -41,13 +40,12 @@ public class PotionLauncher extends CItem {
 	public PotionLauncher(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("ProjectileSpeedMultiplier: 4");
+		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
-		PlayerInteractEvent e = (PlayerInteractEvent) event;
 
-		if(e.getAction().toString().startsWith("RIGHT")) {
 			int slot = player.getInventory().getHeldItemSlot();
 
 			ItemStack potion = player.getInventory().getItem(slot + 1);
@@ -68,7 +66,6 @@ public class PotionLauncher extends CItem {
 				player.sendMessage(ChatColor.RED + "You need a Potion in the slot to the right of the Potion Launcher!");
 				player.getWorld().playEffect(loc, Effect.CLICK1, 5);
 			}
-		}
 		return false;
 	}
 
