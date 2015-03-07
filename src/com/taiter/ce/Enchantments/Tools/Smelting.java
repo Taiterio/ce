@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -49,7 +48,7 @@ public class Smelting extends CEnchantment {
 		
 			ItemStack itemToDrop = null;
 			Material drop = null;
-			MaterialData md = null;
+			short dur = 0;
 			
 			Block b = event.getBlock();
 			
@@ -63,11 +62,9 @@ public class Smelting extends CEnchantment {
 				drop = Material.IRON_INGOT;
 			else if(m == Material.GOLD_ORE)
 				drop = Material.GOLD_INGOT;
-			else if(m == Material.DIAMOND_ORE)
-				drop = Material.DIAMOND;
-			else if(m == Material.WOOD) {
+			else if(m.toString().contains("LOG")) {
 				drop = Material.COAL;
-				md = new MaterialData(Material.COAL, (byte) 1);
+				dur = 1;
 			}
 			else if(m == Material.SAND)
 				drop = Material.GLASS;
@@ -76,8 +73,7 @@ public class Smelting extends CEnchantment {
 			
 			if(drop != null) {
 				itemToDrop = new ItemStack(drop, event.getBlock().getDrops(player.getItemInHand()).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
-				if(md != null)
-					itemToDrop.setData(md);
+				itemToDrop.setDurability(dur);
 				event.setCancelled(true);
 				player.getWorld().dropItemNaturally(b.getLocation(), itemToDrop);
 				player.getWorld().playEffect(b.getLocation(), Effect.MOBSPAWNER_FLAMES, 12);

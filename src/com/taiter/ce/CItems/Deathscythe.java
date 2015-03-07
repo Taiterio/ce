@@ -27,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -100,6 +101,10 @@ public class Deathscythe extends CItem {
 			e.setCancelled(true);
 		Location loc = player.getLocation();
 		List<Entity> ents = player.getNearbyEntities(Range, Range, Range);
+		
+		for(int i = ents.size()-1; i >= 0; i--)
+			if(!(ents.get(i) instanceof LivingEntity))
+				ents.remove(i);
 		
 		if(ents.isEmpty()) {
 			loc.getWorld().playSound(loc, Sound.PORTAL_TRAVEL, 0.01f, 100f);

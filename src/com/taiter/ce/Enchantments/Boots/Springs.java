@@ -48,9 +48,9 @@ public class Springs extends CEnchantment {
 		PlayerMoveEvent event = (PlayerMoveEvent) e;
 		Player player = event.getPlayer();
 		if(Main.repeatPotionEffects)
-			Tools.repeatPotionEffect(item, player, PotionEffectType.JUMP, strength+level, true, this);
+			Tools.repeatPotionEffect(item, player, PotionEffectType.JUMP, strength+level-1, true, this);
 		else {
-			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 120, strength + level), true);
+			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 120, strength + level-1), true);
 			generateCooldown(player, 100l);	
 		}
 		}
