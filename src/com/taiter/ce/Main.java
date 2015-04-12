@@ -94,6 +94,8 @@ import com.taiter.ce.Enchantments.Armor.Hardened;
 import com.taiter.ce.Enchantments.Armor.Molten;
 import com.taiter.ce.Enchantments.Armor.ObsidianShield;
 import com.taiter.ce.Enchantments.Armor.Poisoned;
+import com.taiter.ce.Enchantments.Armor.Revulsion;
+import com.taiter.ce.Enchantments.Armor.SelfDestruct;
 import com.taiter.ce.Enchantments.Armor.Shielded;
 import com.taiter.ce.Enchantments.Boots.Gears;
 import com.taiter.ce.Enchantments.Boots.Springs;
@@ -101,9 +103,11 @@ import com.taiter.ce.Enchantments.Boots.Stomp;
 import com.taiter.ce.Enchantments.Bow.Bombardment;
 import com.taiter.ce.Enchantments.Bow.Firework;
 import com.taiter.ce.Enchantments.Bow.Lightning;
+import com.taiter.ce.Enchantments.Global.Aerial;
 import com.taiter.ce.Enchantments.Global.Autorepair;
 import com.taiter.ce.Enchantments.Global.Blind;
 import com.taiter.ce.Enchantments.Global.Block;
+import com.taiter.ce.Enchantments.Global.Charge;
 import com.taiter.ce.Enchantments.Global.Cripple;
 import com.taiter.ce.Enchantments.Global.Deathbringer;
 import com.taiter.ce.Enchantments.Global.Deepwounds;
@@ -422,7 +426,8 @@ public final class Main extends JavaPlugin {
     
     public void initializeListener() {
     	
-    	HandlerList.unregisterAll(listener);
+    	if(listener != null)
+    		HandlerList.unregisterAll(listener);
     	
     	listener = new CEListener();
     	
@@ -536,7 +541,8 @@ public final class Main extends JavaPlugin {
     	enchantments.add(new Autorepair("Autorepair",Application.GLOBAL,5,100));
     	enchantments.add(new Vampire("Vampire",Application.GLOBAL,5,100));
     	enchantments.add(new Blind("Blind",Application.GLOBAL,5,100));
-
+    	enchantments.add(new Charge("Charge",Application.GLOBAL,5,100));
+    	enchantments.add(new Aerial("Aerial",Application.GLOBAL,5,100));
     	
     	//Armor Enchantments
     	enchantments.add(new Enlighted("Enlighted",Application.ARMOR,4,100));
@@ -545,7 +551,9 @@ public final class Main extends JavaPlugin {
     	enchantments.add(new Molten("Molten",Application.ARMOR,4,100));
     	enchantments.add(new Poisoned("Poisoned",Application.ARMOR,4,100));
     	enchantments.add(new Shielded("Shielded",Application.ARMOR,4,100));
+    	enchantments.add(new Revulsion("Revulsion",Application.ARMOR,4,100));
     	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,4,100));
+    	enchantments.add(new SelfDestruct("Self Destruct",Application.ARMOR,4,100));
     	
     	//Bow Enchantments
     	enchantments.add(new Bombardment("Bombardment",Application.BOW,10,100));

@@ -201,6 +201,8 @@ public class Tools {
 			name += "item.";
 		else
 			name += "ench.";
+		if(p.hasPermission(name + "*"))
+			return true;
 		name += cb.getOriginalName();
 		if(p.hasPermission(name))
 			return true;
@@ -692,19 +694,6 @@ public class Tools {
 
 	public static List<CEnchantment> getEnchantList(Application app, Player p) {
 		List<CEnchantment> list = new ArrayList<CEnchantment>();
-
-		
-		/* WARNING: Weird Code Behavior
-		 * 
-		 *          Checking for p.hasPermission in this for-loop WILL cause a server crash,
-		 *          due to the server being seemably unable to process it here.
-		 *          
-		 *          This has been tested with different copies of Main.enchantments,
-		 *          without the other code of the for-loop and different implementations of the loop.
-		 *          
-		 *          Checking the permission without a for-loop and using the function makePermissions
-		 *          works perfectly.
-		 */
 		for(CEnchantment ce : Main.enchantments) 
 			if(ce.getApplication() == app) 
 					list.add(ce);

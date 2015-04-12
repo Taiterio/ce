@@ -84,6 +84,8 @@ public class CEventHandler {
 			lore = im.getLore();
 		
 		int numberOfEnchantments = Tools.random.nextInt(4) + 1;
+		int maxTries = 10;
+		int appliedEnchantments = 0;
 		
 		if(Main.maxEnchants < numberOfEnchantments)
 			numberOfEnchantments = Main.maxEnchants;
@@ -91,7 +93,7 @@ public class CEventHandler {
 		if(list.size() < numberOfEnchantments)
 			numberOfEnchantments = list.size();
 				
-		while(numberOfEnchantments > 0) {
+		while(numberOfEnchantments > 0 && maxTries >= 0) {
 			for(CEnchantment ce : list) {
 				if(numberOfEnchantments <= 0)
 					break;
@@ -106,13 +108,16 @@ public class CEventHandler {
 					}
 					
 					lore.add(ce.getDisplayName() + " " + Tools.intToLevel(Tools.random.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
+					appliedEnchantments++;
 					numberOfEnchantments--;
 					
 				}
-
-					
 			}
+			maxTries--;
 		}
+		
+		if(appliedEnchantments == 0)
+			return;
 		
 		im.setLore(lore);
 		i.setItemMeta(im);
@@ -169,10 +174,12 @@ public class CEventHandler {
 		}
 		
 		if(e.getDamager().hasMetadata("ce.bow.enchantment")) {
-			
-			String[] enchantment = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" : ");
+			String[] enchantments = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" ; ");
+			for(String ench : enchantments) {
+				String[] enchantment = ench.split(" : ");
 
-			Tools.getEnchantmentByOriginalname(enchantment[0]).effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+				Tools.getEnchantmentByOriginalname(enchantment[0]).effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+			}
 			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
 		}
 	}
@@ -205,8 +212,12 @@ public class CEventHandler {
 				if(!ce.lockList.contains(toCheck)) 
 				if(!ce.getHasCooldown(toCheck))
 				 try {
-				  if(e instanceof EntityShootBowEvent)
-					((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, ce.getOriginalName() + " : " + level));
+					 if(e instanceof EntityShootBowEvent) {
+					  String enchantments = ce.getOriginalName() + " : " + level;
+					  if(((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment"))
+						  enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
+					  ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
+					 }
 				  long time = System.currentTimeMillis();
 				  if(Tools.random.nextInt(100) < ce.getOccurrenceChance())
 					 ce.effect(e, i, level);

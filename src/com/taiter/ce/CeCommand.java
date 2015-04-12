@@ -54,6 +54,7 @@ public class CeCommand {
 		String Error = ChatColor.RED + "[CE] ";
 		String usageError = Error + "Correct Usage: /ce ";
 		
+		String node = "ce.cmd.*";
 		String requiredPermission = "ce.cmd.";
 		
 		
@@ -64,7 +65,7 @@ public class CeCommand {
 			if(name.startsWith("r")) {
 				
 				requiredPermission += "reload";
-				if(!sender.hasPermission(requiredPermission) && !sender.isOp())
+				if(!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
 					return Error + "You do not have permission to use this command.";
 
 				
@@ -152,7 +153,7 @@ public class CeCommand {
 				if(args.length >= 4) {
 					
 					requiredPermission += "give";
-					if(!sender.hasPermission(requiredPermission) && !sender.isOp())
+					if(!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
 						return Error + "You do not have permission to use this command.";
 					
 					Player target = null;
@@ -516,7 +517,7 @@ public class CeCommand {
 				
 				} else if(name.startsWith("m")) {
 					requiredPermission += "menu";
-					if(!sender.hasPermission(requiredPermission) && !sender.isOp())
+					if(!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
 						return Error + "You do not have permission to use this command.";
 					Tools.openCEMenu(p);
 					return "";
@@ -531,7 +532,7 @@ public class CeCommand {
 						if(args.length >= 2) {
 							
 							requiredPermission += "enchant";
-							if(!sender.hasPermission(requiredPermission) && !sender.isOp())
+							if(!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
 								return Error + "You do not have permission to use this command.";
 							
 							String customName = args[1];
@@ -568,8 +569,23 @@ public class CeCommand {
 									custom = ci;
 									}
 							if(custom == null) {
+								Enchantment ench = null;
+								try {
+									ench = Enchantment.getById(Integer.parseInt(customName));
+								} catch (Exception e) {
+									try {
+										ench = Enchantment.getByName(customName);
+									} catch(Exception ex) {}
+								}
+								
+								if(ench != null) {
+									item.addUnsafeEnchantment(ench, level);
+									return Success + "You have succesfully enchanted your item with " + ench.getName() + " level " + level + ".";
+								}
+								
 								Error += "The " + (name.startsWith("i") ? "item":"enchantment") +" '" + customName + "' does not exist.";
 								return Error;
+								
 							}
 							
 							if(!Tools.checkPermission(custom, p)) {
@@ -670,7 +686,7 @@ public class CeCommand {
 						if(args.length >= 4) {
 							
 							requiredPermission += "change";
-							if(!sender.hasPermission(requiredPermission) && !sender.isOp())
+							if(!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
 								return Error + "You do not have permission to use this command.";
 
 							String toChange = args[1].toLowerCase();
@@ -690,6 +706,8 @@ public class CeCommand {
 										}
 
 										toSet += args[args.length - 1];
+										
+										toSet = ChatColor.translateAlternateColorCodes('&', toSet);
 
 										im.setDisplayName(toSet);
 										item.setItemMeta(im);
@@ -700,16 +718,23 @@ public class CeCommand {
 									if(item.hasItemMeta() && im.hasDisplayName()) {
 
 										if(option.startsWith("c")) {
-
-											if(ChatColor.valueOf(args[3].toUpperCase()) != null) {
-
-												im.setDisplayName(ChatColor.valueOf(args[3].toUpperCase()) + "" + ChatColor.stripColor(im.getDisplayName()));
-												item.setItemMeta(im);
-												return Success + "You have successfully changed the item's Color!";
-
+											
+											String test = args[3].toUpperCase();
+											try {
+												test = ChatColor.valueOf(test) + "";
+											} catch (IllegalArgumentException e) {
+												if(test.contains("&"))
+													test = ChatColor.translateAlternateColorCodes('&', test);
+												else
+													return Error + "The Color " + args[3] + " could not be found.";
 											}
+											
+											im.setDisplayName(test + ChatColor.stripColor(im.getDisplayName()));
+											item.setItemMeta(im);
+											return Success + "You have successfully changed the item's Color!";
 
-											return Error + "The Color " + args[3] + " could not be found.";
+
+											
 
 										} else if(option.startsWith("a")) {
 

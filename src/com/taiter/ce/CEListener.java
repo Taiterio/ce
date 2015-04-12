@@ -50,6 +50,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -206,7 +207,7 @@ public class CEListener implements Listener {
 						int number = 0;
 						for(String s : lore) {
 							CEnchantment c = Tools.getEnchantmentByDisplayname(s);
-							if(c != null && Tools.checkForEnchantment(s, c)) {
+							if(c != null && c.originalName == ce.originalName) {
 								p.sendMessage(ChatColor.RED + "[CE] This item already has this enchantment!");
 								return;
 							}
@@ -585,6 +586,13 @@ public class CEListener implements Listener {
 	public void PlayerInteractEntityEvent(PlayerInteractEntityEvent e) {
 
 		CEventHandler.handleEvent(e.getPlayer(), e, interactE);
+
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void PlayerDeathEvent(PlayerDeathEvent e) {
+
+		CEventHandler.handleEvent(e.getEntity(), e, death);
 
 	}
 

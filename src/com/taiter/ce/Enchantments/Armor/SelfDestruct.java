@@ -20,11 +20,13 @@ package com.taiter.ce.Enchantments.Armor;
 
 
 
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
@@ -32,26 +34,30 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class ObsidianShield extends CEnchantment {
+public class SelfDestruct extends CEnchantment {
 
+	int delay;
 
-	public ObsidianShield(String originalName, Application app, int enchantProbability, int occurrenceChance) {
+	public SelfDestruct(String originalName, Application app, int enchantProbability, int occurrenceChance) {
 		super(originalName,  app, enchantProbability, occurrenceChance);
-		triggers.add(Trigger.MOVE);
+		triggers.add(Trigger.DEATH);
+		this.configEntries.add("ExplosionDelay: 40");
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
-		PlayerMoveEvent event = (PlayerMoveEvent) e;
-		if(Main.repeatPotionEffects)
-			Tools.repeatPotionEffect(item, event.getPlayer(), PotionEffectType.FIRE_RESISTANCE, 10, true, this);
-		else {
-			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 600, 10), true);
-			generateCooldown(event.getPlayer(), 400l);	
+		PlayerDeathEvent event = (PlayerDeathEvent) e;
+		for(int i = level; i >= 0; i--) {
+		TNTPrimed tnt = (TNTPrimed) event.getEntity().getWorld().spawnEntity(event.getEntity().getLocation(), EntityType.PRIMED_TNT);
+		tnt.setFuseTicks(delay);
+		tnt.setVelocity(new Vector(Tools.random.nextDouble()*1.5 - 1, Tools.random.nextDouble() * 1.5, Tools.random.nextDouble()*1.5 - 1));
+		if(!Main.createExplosions)
+			tnt.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
 		}
 	}
 
 	@Override
 	public void initConfigEntries() {
+		delay = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".ExplosionDelay"));		
 	}
 }
