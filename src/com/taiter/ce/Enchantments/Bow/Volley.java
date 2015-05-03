@@ -59,9 +59,7 @@ public class Volley extends CEnchantment {
 	public void effect(Event e, ItemStack item, int level) {
 		if(e instanceof EntityShootBowEvent) {
 			//spawn arrows with a slightly altered direction, based on the location of the first arrow.
-			if (level == 1){
-				volley((EntityShootBowEvent)e,item,level);
-			}
+			volley((EntityShootBowEvent)e,item,level);
 			// If level is not 1 or 2, nothing happens.
 		}
 	}
@@ -86,7 +84,8 @@ public class Volley extends CEnchantment {
 		}
 		
 		Vector velocity = e.getProjectile().getVelocity();
-		Double angleBetweenArrows = (CONE_DEGREES / amount)*Math.PI/180;
+		e.getProjectile().remove(); // Remove original arrow.
+		Double angleBetweenArrows = (CONE_DEGREES / (amount-1))*Math.PI/180;
 		double pitch = (p.getLocation().getPitch() + 90) * Math.PI / 180;
 		double yaw  = (p.getLocation().getYaw() + 90 -CONE_DEGREES/2)  * Math.PI / 180;
 		// Starting direction values for the cone, each arrow increments it's direction on these values.
