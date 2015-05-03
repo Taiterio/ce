@@ -94,19 +94,19 @@ public class Volley extends CEnchantment {
 		double sY = Math.sin(pitch) * Math.sin(yaw);
 		double sZ = Math.cos(pitch);
 		for (int i=0;i<amount;i++){ // spawn all arrows in a cone of 90 degrees (equally distributed).;
-			Arrow arrow = p.launchProjectile(Arrow.class);
 			double nX = Math.sin(pitch) * Math.cos(yaw+ angleBetweenArrows*i);
 			double nY = Math.sin(pitch) * Math.sin(yaw+ angleBetweenArrows*i);
 			Vector newDir = new Vector(nX,sZ,nY);
+			Arrow arrow = p.launchProjectile(Arrow.class);
 			arrow.setShooter(p);
 			// Need to make sure arrow has same speed as original arrow.
 			arrow.setVelocity(newDir.normalize().multiply(velocity.length())); 
 			// Set the metaData of the arrow, so that all arrows support other custom enchants.
 			String enchantments = this.getOriginalName() + " : " + lvl;
-			if(((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment")){
+			if((e.getProjectile().hasMetadata("ce.bow.enchantment"))){
 				  enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
 			}
-		    arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, Main.enchantments));
+		    arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
 		}
 	}
 
