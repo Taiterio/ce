@@ -103,6 +103,7 @@ import com.taiter.ce.Enchantments.Boots.Stomp;
 import com.taiter.ce.Enchantments.Bow.Bombardment;
 import com.taiter.ce.Enchantments.Bow.Firework;
 import com.taiter.ce.Enchantments.Bow.Lightning;
+import com.taiter.ce.Enchantments.Bow.Volley;
 import com.taiter.ce.Enchantments.Global.Aerial;
 import com.taiter.ce.Enchantments.Global.Autorepair;
 import com.taiter.ce.Enchantments.Global.Blind;
@@ -559,6 +560,7 @@ public final class Main extends JavaPlugin {
     	enchantments.add(new Bombardment("Bombardment",Application.BOW,10,100));
     	enchantments.add(new Firework("Firework",Application.BOW,20,100));
     	enchantments.add(new Lightning("Lightning",Application.BOW,10,100));
+    	enchantments.add(new Volley("Volley",Application.BOW,5,100));
     	
     	//Tool Enchantments
     	enchantments.add(new Smelting("Smelting",Application.TOOL,50,100));
