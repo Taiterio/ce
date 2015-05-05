@@ -963,7 +963,7 @@ public class Tools {
 	public static List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
 		for(int amount = length; amount > 0; amount--) {
-			list.add(player.getTargetBlock(null, amount).getLocation());
+			list.add(player.getTargetBlock((HashSet<Material>)null, amount).getLocation());
 		}
 		return list;
 	}

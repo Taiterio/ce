@@ -185,7 +185,7 @@ public class CEventHandler {
 	}
 	
 
-	private static void handleEventMain(Player toCheck, ItemStack i, Event e, HashSet<CBasic> list) {
+	public static void handleEventMain(Player toCheck, ItemStack i, Event e, HashSet<CBasic> list) {
 		if(i.hasItemMeta()) {
 		ItemMeta im = i.getItemMeta();
 		if(!list.isEmpty()) {
