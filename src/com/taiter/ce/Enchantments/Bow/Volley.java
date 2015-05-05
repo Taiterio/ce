@@ -46,8 +46,6 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class Volley extends CEnchantment {
 
 	// Constants
-	private static final int ARROW_AMOUNT_LVL1 = 3;
-	private static final int ARROW_AMOUNT_LVL2 = 5;
 	private static final int CONE_DEGREES = 45; // The volley will span a cone of CONE_DEGREES in front of the player.
 
 	public Volley(String originalName, Application app, int enchantProbability, int occurrenceChance) {
@@ -72,19 +70,11 @@ public class Volley extends CEnchantment {
 		} catch (ClassCastException error){
 			return; // If arrow is not shot by player --> do nothing.
 		}
-		int amount;
-		if (lvl == 1){
-			amount = ARROW_AMOUNT_LVL1;
-		}
-		else if (lvl == 2){
-			amount = ARROW_AMOUNT_LVL2;
-		}
-		else {
-			return; // Invalid lvl --> do nothing.
-		}
+		int amount = 1 + 2*lvl; // Keep amount of arrows uneven, 2 extra arrows in a volley per level.
 		
-		Vector velocity = e.getProjectile().getVelocity();
-		e.getProjectile().remove(); // Remove original arrow.
+		Arrow oldArrow =  (Arrow) e.getProjectile();
+		Vector velocity = oldArrow.getVelocity();
+		oldArrow.remove(); // Remove original arrow.
 		Double angleBetweenArrows = (CONE_DEGREES / (amount-1))*Math.PI/180;
 		double pitch = (p.getLocation().getPitch() + 90) * Math.PI / 180;
 		double yaw  = (p.getLocation().getYaw() + 90 -CONE_DEGREES/2)  * Math.PI / 180;
