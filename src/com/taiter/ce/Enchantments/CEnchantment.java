@@ -149,7 +149,6 @@ public abstract class CEnchantment extends CBasic  {
 				this.enchantProbability  = enchantmentProbability;
 			else
 				this.enchantProbability  = Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".EnchantmentProbability"));
-			Bukkit.getConsoleSender().sendMessage(getOriginalName() + " " + enchantProbability);
 			this.enchantmentMaxLevel = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".EnchantmentMaxLevel"));
 			this.occurrenceChance    = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".OccurrenceChance"));
 			for(String entry :this.configEntries) {
