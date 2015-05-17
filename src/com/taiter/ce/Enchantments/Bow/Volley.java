@@ -75,7 +75,8 @@ public class Volley extends CEnchantment {
 			arrow.setShooter(p);
 			// Need to make sure arrow has same speed as original arrow.
 			arrow.setVelocity(newDir.normalize().multiply(velocity.length()));
-			arrow.setMetadata("ce.Volley", new FixedMetadataValue(getPlugin(), null)); //Control metadata to prevent players from duplicating arrows
+			if(i > 0)
+				arrow.setMetadata("ce.Volley", new FixedMetadataValue(getPlugin(), null)); //Control metadata to prevent players from duplicating arrows
 		}
 	}
 
