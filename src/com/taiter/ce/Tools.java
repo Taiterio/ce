@@ -590,7 +590,7 @@ public class Tools {
 		Main.config = Main.plugin.getConfig();
 	}
 
-	public static void writeConfigEntry(CBasic ce) {
+	public static void writeConfigEntries(CBasic ce) {
 		for(String entry : ce.configEntries) {
 			int start = entry.indexOf(": ");
 			String path = entry.substring(0, start);
@@ -634,7 +634,10 @@ public class Tools {
 				getAppropriateList(t).add(ci);
 	}
 	
-	public static boolean checkWorldGuard(Location l, Player p, String fs) {
+	public static boolean checkWorldGuard(Location l, Player p, String fs, boolean sendMessage) {
+		if(p.isOp())
+			return true;
+		
 		if(Main.getWorldGuard() != null) {
 			GlobalRegionManager grm = Main.getWorldGuard().getGlobalRegionManager();
 			
@@ -647,10 +650,16 @@ public class Tools {
 					f = (StateFlag) df;
 			
 			if(f.equals(DefaultFlag.BUILD)) {
-				if(!grm.canBuild(p, l))
+				if(!grm.canBuild(p, l)) {
+					if(sendMessage)
+						p.sendMessage(ChatColor.RED + "You cannot use this here!");
 					return false;
-			} else if(!grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p)))
+				}
+			} else if(!grm.allows(f, l, Main.getWorldGuard().wrapPlayer(p))) {
+				if(sendMessage)
+					p.sendMessage(ChatColor.RED + "You cannot use this here!");
 				return false;
+			}
 		}	
 		return true;
 	}
@@ -683,8 +692,8 @@ public class Tools {
 			return Main.listener.projectileHit;
 		else if(t == Trigger.PROJECTILE_THROWN)
 			return Main.listener.projectileThrow;
-		else if(t == Trigger.EQUIP_ITEM)
-			return Main.listener.equipItem;
+		else if(t == Trigger.WEAR_ITEM)
+			return Main.listener.wearItem;
 		else if(t == Trigger.MOVE)
 			return Main.listener.move;
 		return null;

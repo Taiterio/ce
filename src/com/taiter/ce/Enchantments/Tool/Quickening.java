@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Boots;
+package com.taiter.ce.Enchantments.Tool;
 
 /*
 * This file is part of Custom Enchantments
@@ -20,31 +20,42 @@ package com.taiter.ce.Enchantments.Boots;
 
 
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Gears extends CEnchantment {
+public class Quickening extends CEnchantment {
 
-	int	strength;
+	int Strength;
+	int Duration;
 
-	public Gears(Application app) {
+	
+	public Quickening(Application app) {
 		super(app);		
-		configEntries.add("SpeedBoost: 1");
-		triggers.add(Trigger.WEAR_ITEM);
+		configEntries.add("Strength: 3");
+		configEntries.add("Duration: 40");
+		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
+		BlockBreakEvent event = (BlockBreakEvent) e;
+		Player player = event.getPlayer();
+		
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Duration, Strength+level-1), true);
 	}
-
+	
 	@Override
 	public void initConfigEntries() {
-		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SpeedBoost"))-1;
-		this.getPotionEffectsOnWear().put(PotionEffectType.SPEED, strength);
+		Strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Strength"))-1;
+		Duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
 	}
+	
 }

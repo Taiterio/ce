@@ -130,7 +130,7 @@ public class NecromancersStaff extends CItem {
 				
 				// Apply effect
 				if(spell == 0) {
-					if(Tools.checkWorldGuard(l, player, "TNT")) {
+					if(Tools.checkWorldGuard(l, player, "PVP", true)) {
 						WitherSkull ws = player.launchProjectile(WitherSkull.class);
 						ws.setVelocity(l.getDirection().multiply(2));
 						if(!Main.createExplosions)
@@ -145,7 +145,7 @@ public class NecromancersStaff extends CItem {
 				} else if(spell == 2) {
 					Location target = player.getTargetBlock(null, 20).getLocation();
 					player.getWorld().strikeLightning(target);
-					if(Tools.checkWorldGuard(l, player, "TNT"))
+					if(Tools.checkWorldGuard(l, player, "TNT", true))
 							player.getWorld().createExplosion(target, 1);
 					player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
 				}

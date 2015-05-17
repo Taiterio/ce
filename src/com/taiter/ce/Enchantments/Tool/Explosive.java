@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Tools;
+package com.taiter.ce.Enchantments.Tool;
 
 /*
 * This file is part of Custom Enchantments
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -39,11 +40,14 @@ public class Explosive extends CEnchantment {
 
 	int Radius;
 	boolean LargerRadius;
+	boolean DropItems;
+
 	
-	public Explosive(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Explosive(Application app) {
+		super(app);		
 		configEntries.add("Radius: 3");
 		configEntries.add("LargerRadius: true");
+		configEntries.add("DropItems: true");
 		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 
@@ -82,9 +86,8 @@ public class Explosive extends CEnchantment {
 							(!(x==r && y==r && z==0)) &&
 							(!(x==0 && y==r && z==r)) &&
 							(!(x==r && y==0 && z==r)) &&
-							(!(x==r && y==r && z==r))) {
+							(!(x==r && y==r && z==r)))
 						  locations.add(new Location(sL.getWorld(), sL.getX()+x, sL.getY()+y, sL.getZ()+z));
-						}
 			
 			for(Location loc : locations) {
 				String iMat = item.getType().toString();
@@ -93,8 +96,14 @@ public class Explosive extends CEnchantment {
 
 				if(isUsable(iMat, bMat))
 					if(!loc.getBlock().getDrops(item).isEmpty())
-						if(Tools.checkWorldGuard(loc, player, "BUILD")) 
-							loc.getBlock().breakNaturally(item);
+						if(Tools.checkWorldGuard(loc, player, "BUILD", false)) 
+							if(DropItems)
+								loc.getBlock().breakNaturally(item);
+							else
+								for(ItemStack i : loc.getBlock().getDrops(item)) {
+									player.getInventory().addItem(i);
+									loc.getBlock().setType(Material.AIR);
+								}
 			}
 			
 					
@@ -136,6 +145,7 @@ public class Explosive extends CEnchantment {
 		if(Radius % 2 == 0)
 			Radius += 1;
 		LargerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".LargerRadius"));
+		DropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".DropItems"));
 	}
 	
 }

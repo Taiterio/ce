@@ -36,8 +36,8 @@ public class Vampire extends CEnchantment {
 	int	damageHealFraction;
 	int	cooldown;
 
-	public Vampire(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public Vampire(Application app) {
+		super(app);		
 		configEntries.add("DamageHealFraction: 2");
 		configEntries.add("Cooldown: 100");
 		triggers.add(Trigger.DAMAGE_GIVEN);

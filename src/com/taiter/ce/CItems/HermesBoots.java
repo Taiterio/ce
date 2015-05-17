@@ -23,11 +23,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import com.taiter.ce.Main;
-import com.taiter.ce.Tools;
 
 
 public class HermesBoots extends CItem {
@@ -37,21 +33,18 @@ public class HermesBoots extends CItem {
 	public HermesBoots(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
 		this.configEntries.add("SpeedLevel: 5");
-		triggers.add(Trigger.MOVE);
+		triggers.add(Trigger.WEAR_ITEM);
 	}
 
 	@Override
 	public boolean effect(Event event, Player player) {
-		if(Main.repeatPotionEffects)
-			  Tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.SPEED, SpeedLevel, this);
-		else 
-			 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) getCooldown() + 20, SpeedLevel, true), true);
-		return true;
+		return false;
 	}
 
 	@Override
 	public void initConfigEntries() {
 		SpeedLevel = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".SpeedLevel")) - 1;
+		this.potionsOnWear.put(PotionEffectType.SPEED, SpeedLevel);
 	}
 
 }

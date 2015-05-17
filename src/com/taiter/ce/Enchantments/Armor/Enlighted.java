@@ -36,8 +36,8 @@ public class Enlighted extends CEnchantment {
 	int duration;
 	int strength;
 
-	public Enlighted(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Enlighted(Application app) {
+		super(app);		
 		configEntries.add("Duration: 60");
 		configEntries.add("Strength: 1");
 		triggers.add(Trigger.DAMAGE_TAKEN);

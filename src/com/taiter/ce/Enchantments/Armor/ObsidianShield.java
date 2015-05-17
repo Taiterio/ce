@@ -35,8 +35,8 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class ObsidianShield extends CEnchantment {
 
 
-	public ObsidianShield(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public ObsidianShield(Application app) {
+		super(app);		
 		triggers.add(Trigger.MOVE);
 	}
 

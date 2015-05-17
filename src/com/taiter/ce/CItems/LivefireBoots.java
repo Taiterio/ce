@@ -26,11 +26,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
 
@@ -44,21 +42,18 @@ public class LivefireBoots extends CItem {
 		this.configEntries.add("FlameDuration: 200");
 		this.configEntries.add("FireResistanceLevel: 5");
 		triggers.add(Trigger.MOVE);
+		triggers.add(Trigger.WEAR_ITEM);
 	}
 
 	@Override
 	public boolean effect(Event event, final Player player) {
 		  final PlayerMoveEvent e = (PlayerMoveEvent) event;
 		  final Block b = e.getTo().getBlock();
-		  
-		  if(!Tools.checkWorldGuard(e.getTo(), player, "PVP"))
+		  		  
+		  if(!Tools.checkWorldGuard(e.getTo(), player, "PVP", false))
 			  return false;
 		  
-		  if(Main.repeatPotionEffects)
-			  Tools.repeatPotionEffect(player.getInventory().getBoots(), player, PotionEffectType.FIRE_RESISTANCE, FireResistanceLevel, this);
-		  else
-			  player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, FlameDuration + 20, FireResistanceLevel, true), true);
-		if(b.getType().equals(Material.AIR)) {
+		  if(b.getType().equals(Material.AIR)) {
 			b.setType(Material.FIRE);
 			new BukkitRunnable() {
 				@Override
@@ -78,7 +73,7 @@ public class LivefireBoots extends CItem {
 	public void initConfigEntries() {
 		FireResistanceLevel = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireResistanceLevel"))-1;
 		FlameDuration = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FlameDuration"));
-		
+		this.potionsOnWear.put(PotionEffectType.FIRE_RESISTANCE, FireResistanceLevel);
 	}
 
 }

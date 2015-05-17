@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Global;
+package com.taiter.ce.Enchantments.Bow;
 
 /*
 * This file is part of Custom Enchantments
@@ -20,9 +20,8 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
-import org.bukkit.Sound;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
+import org.bukkit.Effect;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -32,41 +31,33 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Aerial extends CEnchantment {
+public class Piercing extends CEnchantment {
 
-	int	DamageIncreasePercentage;
-
-	public Aerial(Application app) {
+	public Piercing(Application app) {
 		super(app);		
-		configEntries.add("DamageIncreasePercentagePerLevel: 10");
+		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
+		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		Player player = (Player) event.getDamager();
-		Entity ent = event.getEntity();
-		
-		if(player.getVelocity().getY() == -0.0784000015258789) //Constant velocity for not moving in y direction (Gravity)
-			return;
-		
-		
-		double newDamage = event.getDamage() * (1 + DamageIncreasePercentage * level); 
-		double currentHealth = ((Damageable) ent).getHealth();
-		
-		if(currentHealth - newDamage > 0)
-			((Damageable) ent).setHealth(currentHealth-newDamage);
-		else
-			((Damageable) ent).setHealth(0);
-
-		player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.1f, 0.1f);
+		LivingEntity target = (LivingEntity) event.getEntity();
 		
 
+		if(target instanceof Player && ((Player) target).getInventory().getArmorContents().length != 0) {
+		double newHealth = target.getHealth()-event.getDamage();
+		if(newHealth < 0)
+			newHealth=0;
+		target.setHealth(newHealth);
+		event.setDamage(0);
+		target.getWorld().playEffect(target.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
+		}
+		}
 	}
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
 	}
 }

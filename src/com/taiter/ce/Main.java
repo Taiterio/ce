@@ -31,8 +31,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -44,8 +48,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -88,40 +90,7 @@ import com.taiter.ce.CItems.RocketBoots;
 import com.taiter.ce.CItems.ThorsAxe;
 import com.taiter.ce.Enchantments.CEnchantment;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
-import com.taiter.ce.Enchantments.Armor.Enlighted;
-import com.taiter.ce.Enchantments.Armor.Frozen;
-import com.taiter.ce.Enchantments.Armor.Hardened;
-import com.taiter.ce.Enchantments.Armor.Molten;
-import com.taiter.ce.Enchantments.Armor.ObsidianShield;
-import com.taiter.ce.Enchantments.Armor.Poisoned;
-import com.taiter.ce.Enchantments.Armor.Revulsion;
-import com.taiter.ce.Enchantments.Armor.SelfDestruct;
-import com.taiter.ce.Enchantments.Armor.Shielded;
-import com.taiter.ce.Enchantments.Boots.Gears;
-import com.taiter.ce.Enchantments.Boots.Springs;
-import com.taiter.ce.Enchantments.Boots.Stomp;
-import com.taiter.ce.Enchantments.Bow.Bombardment;
-import com.taiter.ce.Enchantments.Bow.Firework;
-import com.taiter.ce.Enchantments.Bow.Lightning;
-import com.taiter.ce.Enchantments.Global.Aerial;
-import com.taiter.ce.Enchantments.Global.Autorepair;
-import com.taiter.ce.Enchantments.Global.Blind;
-import com.taiter.ce.Enchantments.Global.Block;
-import com.taiter.ce.Enchantments.Global.Charge;
-import com.taiter.ce.Enchantments.Global.Cripple;
-import com.taiter.ce.Enchantments.Global.Deathbringer;
-import com.taiter.ce.Enchantments.Global.Deepwounds;
-import com.taiter.ce.Enchantments.Global.Gooey;
-import com.taiter.ce.Enchantments.Global.Ice;
-import com.taiter.ce.Enchantments.Global.Lifesteal;
-import com.taiter.ce.Enchantments.Global.Poison;
-import com.taiter.ce.Enchantments.Global.Shockwave;
-import com.taiter.ce.Enchantments.Global.Thunderingblow;
-import com.taiter.ce.Enchantments.Global.Vampire;
-import com.taiter.ce.Enchantments.Helmet.Glowing;
-import com.taiter.ce.Enchantments.Helmet.Implants;
-import com.taiter.ce.Enchantments.Tools.Explosive;
-import com.taiter.ce.Enchantments.Tools.Smelting;
+import com.taiter.ce.Enchantments.Global.IceAspect;
 
 
 
@@ -132,7 +101,7 @@ public final class Main extends JavaPlugin {
 	public static FileConfiguration config;
 	public static CEListener        listener;
 	public static CeCommand         commandC;
-
+	private static ClassLoader      classLoader;
 	
 	
 	public static String                lorePrefix;
@@ -192,6 +161,7 @@ public final class Main extends JavaPlugin {
     	    
     	plugin		= this;
     	commandC	= new CeCommand(this);
+    	classLoader = this.getClassLoader();
     	
     	items         = new HashSet<CItem>();
     	enchantments  = new HashSet<CEnchantment>();
@@ -265,11 +235,14 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
     	getServer().getScheduler().cancelAllTasks();
+    	for(CEnchantment c : enchantments)
+    		if(c instanceof IceAspect)
+    			for(HashMap<org.bukkit.block.Block, String> list : ((IceAspect) c).IceLists)
+    				((IceAspect) c).deleteIce(list);
     }
     
     public void updateCheck() {
     	try {
-    		
     		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Checking for updates...");
     		
     		URLConnection connection = updateListURL.openConnection();
@@ -441,10 +414,6 @@ public final class Main extends JavaPlugin {
 	    	if(!getConfig().getBoolean("Global.Enchantments.CEnchantmentTable"))
 	    		EnchantItemEvent.getHandlerList().unregister(listener);
 	    	
-	    	//These are taking up ressources unnecessarily
-	    	//BlockExpEvent.getHandlerList().unregister(listener);
-	    	PlayerDeathEvent.getHandlerList().unregister(listener);
-	    	EntityDeathEvent.getHandlerList().unregister(listener);
     	
     }
     
@@ -524,57 +493,33 @@ public final class Main extends JavaPlugin {
     }
     
     public static void makeLists(boolean finalize, boolean printSuccess) {
-    	
     	long time = System.currentTimeMillis();
+
     	
-    	//Global Enchantments
-    	enchantments.add(new Lifesteal("Lifesteal", Application.GLOBAL,5,100));
-    	enchantments.add(new Gooey("Gooey", Application.GLOBAL, 5,100));
-    	enchantments.add(new Deathbringer("Deathbringer", Application.GLOBAL, 5,100));
-    	enchantments.add(new Poison("Poison", Application.GLOBAL, 5,100));
-    	enchantments.add(new Block("Block", Application.GLOBAL,5,100));
-    	enchantments.add(new Shockwave("Shockwave",       Application.GLOBAL,5,100));
-    	enchantments.add(new Deepwounds("Deep Wounds",    Application.GLOBAL,5,100));
-    	enchantments.add(new Thunderingblow("Thunderingblow",Application.GLOBAL,5,100));
-    	enchantments.add(new Cripple("Crippling Strike",Application.GLOBAL,5,100));
-    	enchantments.add(new Ice("Ice Aspect",Application.GLOBAL,5,100));
-    	enchantments.add(new Autorepair("Autorepair",Application.GLOBAL,5,100));
-    	enchantments.add(new Vampire("Vampire",Application.GLOBAL,5,100));
-    	enchantments.add(new Blind("Blind",Application.GLOBAL,5,100));
-    	enchantments.add(new Charge("Charge",Application.GLOBAL,5,100));
-    	enchantments.add(new Aerial("Aerial",Application.GLOBAL,5,100));
-    	
-    	//Armor Enchantments
-    	enchantments.add(new Enlighted("Enlighted",Application.ARMOR,4,100));
-    	enchantments.add(new Frozen("Frozen",Application.ARMOR,4,100));
-    	enchantments.add(new Hardened("Hardened",Application.ARMOR,4,100));
-    	enchantments.add(new Molten("Molten",Application.ARMOR,4,100));
-    	enchantments.add(new Poisoned("Poisoned",Application.ARMOR,4,100));
-    	enchantments.add(new Shielded("Shielded",Application.ARMOR,4,100));
-    	enchantments.add(new Revulsion("Revulsion",Application.ARMOR,4,100));
-    	enchantments.add(new ObsidianShield("Obsidian Shield",Application.ARMOR,4,100));
-    	enchantments.add(new SelfDestruct("Self Destruct",Application.ARMOR,4,100));
-    	
-    	//Bow Enchantments
-    	enchantments.add(new Bombardment("Bombardment",Application.BOW,10,100));
-    	enchantments.add(new Firework("Firework",Application.BOW,20,100));
-    	enchantments.add(new Lightning("Lightning",Application.BOW,10,100));
-    	
-    	//Tool Enchantments
-    	enchantments.add(new Smelting("Smelting",Application.TOOL,50,100));
-    	enchantments.add(new Explosive("Explosive",Application.TOOL,50,100));
-    	
-    	//Boots Enchantments
-		enchantments.add(new Gears("Gears",Application.BOOTS,4,100));
-		enchantments.add(new Springs("Springs",Application.BOOTS,4,100));
-		enchantments.add(new Stomp("Stomp",Application.BOOTS,4,100));
-    	
-    	//Helmet Enchantments
-    	enchantments.add(new Glowing("Glowing",Application.HELMET,4,100));
-    	enchantments.add(new Implants("Implants",Application.HELMET,4,100));
+//--------------Dynamic enchantment class loading-------------------------------
+    	try {
+			JarFile jar = new JarFile(plugin.getDataFolder().getParent() + "\\CustomEnchantments.jar");
+			Enumeration<JarEntry> entries = jar.entries();
+			
+            while (entries.hasMoreElements()) {
+                String entryName = entries.nextElement().getName();
+                if(!entryName.contains("$") && entryName.contains("Enchantments") && !entryName.contains("CEnchantment"))
+                	try {
+                		enchantments.add((CEnchantment) classLoader.loadClass(entryName.replace(".class", "").replaceAll("/", ".")).getDeclaredConstructor(Application.class).newInstance(Application.valueOf(entryName.split("/")[4].toUpperCase())));
+                	} catch(ClassNotFoundException e) {} //Checked exception, should never be thrown
+            }
+            
+            jar.close();
+		} catch (Exception e) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Enchantments could not be loaded,");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please report this error on the Bukkit page of the plugin");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] by sending the following to Taiterio via PM:");
+			e.printStackTrace();
+		}
+//--------------------------------------------------------------------------------
     		
     		if(finalize)
-    		for(CEnchantment ce : enchantments) 
+    		for(CEnchantment ce : enchantments)
     			ce.finalizeEnchantment();
     		
     		if(printSuccess)

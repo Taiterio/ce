@@ -93,7 +93,7 @@ public class Flamethrower extends CItem {
 							list.add(fire.getLocation());
 							this.cancel();
 						} else {
-							if(!Tools.checkWorldGuard(fire.getLocation(), player, "BUILD") || fire.getLocation().getBlock().getType().equals(Material.WATER) || fire.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)) {
+							if(!Tools.checkWorldGuard(fire.getLocation(), player, "BUILD", true) || fire.getLocation().getBlock().getType().equals(Material.WATER) || fire.getLocation().getBlock().getType().equals(Material.STATIONARY_WATER)) {
 								fire.getWorld().playEffect(fire.getLocation(), Effect.EXTINGUISH, 60);
 								fire.remove();
 								this.cancel();

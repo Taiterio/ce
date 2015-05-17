@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Global;
+package com.taiter.ce.Enchantments.Bow;
 
 /*
 * This file is part of Custom Enchantments
@@ -20,10 +20,13 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -32,41 +35,51 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Aerial extends CEnchantment {
+public class Shuffle extends CEnchantment {
 
-	int	DamageIncreasePercentage;
-
-	public Aerial(Application app) {
+	public Shuffle(Application app) {
 		super(app);		
-		configEntries.add("DamageIncreasePercentagePerLevel: 10");
+		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
-	public void effect(Event e, ItemStack item, int level) {
+	public void effect(Event e, ItemStack item, final int level) {
+		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		Player player = (Player) event.getDamager();
-		Entity ent = event.getEntity();
+		Entity target = event.getEntity();
+		Player p = (Player) ((Projectile) event.getDamager()).getShooter();
 		
-		if(player.getVelocity().getY() == -0.0784000015258789) //Constant velocity for not moving in y direction (Gravity)
+		if(target.getEntityId() == p.getEntityId())
 			return;
 		
+		Location pLoc = p.getLocation();
+		Location tLoc = target.getLocation();
 		
-		double newDamage = event.getDamage() * (1 + DamageIncreasePercentage * level); 
-		double currentHealth = ((Damageable) ent).getHealth();
+		target.teleport(pLoc);
+		p.teleport(tLoc);
 		
-		if(currentHealth - newDamage > 0)
-			((Damageable) ent).setHealth(currentHealth-newDamage);
-		else
-			((Damageable) ent).setHealth(0);
+		p.getWorld().playSound(tLoc, Sound.ENDERMAN_TELEPORT, 0.4f, 2f);
+		p.getWorld().playSound(pLoc, Sound.ENDERMAN_TELEPORT, 0.4f, 2f);
 
-		player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.1f, 0.1f);
 		
-
+		for(int i = 10; i>0; i--) {
+			p.getWorld().playEffect(tLoc, Effect.ENDER_SIGNAL, 10);
+			p.getWorld().playEffect(pLoc, Effect.ENDER_SIGNAL, 10);
+		}
+		
+		if(target instanceof Player) {
+			p.sendMessage(ChatColor.DARK_PURPLE + "You have switched positions with " + target.getName() + "!");
+			target.sendMessage(ChatColor.DARK_PURPLE + "You have switched positions with " + p.getName() + "!");
+		}
+		
+		
+		}
 	}
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
+		this.resetMaxLevel();
 	}
+
 }

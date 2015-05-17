@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Global;
+package com.taiter.ce.Enchantments.Bow;
 
 /*
 * This file is part of Custom Enchantments
@@ -20,53 +20,49 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
-import org.bukkit.Sound;
-import org.bukkit.entity.Damageable;
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Aerial extends CEnchantment {
+public class Molotov extends CEnchantment {
 
-	int	DamageIncreasePercentage;
 
-	public Aerial(Application app) {
+	public Molotov(Application app) {
 		super(app);		
-		configEntries.add("DamageIncreasePercentagePerLevel: 10");
+		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
-	public void effect(Event e, ItemStack item, int level) {
+	public void effect(Event e, ItemStack item, final int level) {
+		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		Player player = (Player) event.getDamager();
-		Entity ent = event.getEntity();
-		
-		if(player.getVelocity().getY() == -0.0784000015258789) //Constant velocity for not moving in y direction (Gravity)
-			return;
-		
-		
-		double newDamage = event.getDamage() * (1 + DamageIncreasePercentage * level); 
-		double currentHealth = ((Damageable) ent).getHealth();
-		
-		if(currentHealth - newDamage > 0)
-			((Damageable) ent).setHealth(currentHealth-newDamage);
-		else
-			((Damageable) ent).setHealth(0);
+		Entity target = event.getEntity();
 
-		player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.1f, 0.1f);
-		
-
+		World world = target.getWorld();
+		world.playEffect(target.getLocation(), Effect.POTION_BREAK, 10);
+		double boundaries = 0.1*level;
+		for(double x = boundaries; x >= -boundaries; x-=0.1)
+			for(double z = boundaries; z >= -boundaries; z-=0.1) {
+				FallingBlock b = world.spawnFallingBlock(target.getLocation(), Material.FIRE.getId(), (byte) 0x0);
+				b.setVelocity(new Vector(x, 0.1, z));
+				b.setDropItem(false);
+			}
+		}
 	}
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
 	}
+
 }

@@ -35,8 +35,8 @@ public class Revulsion extends CEnchantment {
 	
 	int duration;
 
-	public Revulsion(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public Revulsion(Application app) {
+		super(app);		
 		configEntries.add("Duration: 20");
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}

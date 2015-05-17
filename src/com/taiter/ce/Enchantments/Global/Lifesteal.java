@@ -37,8 +37,8 @@ public class Lifesteal extends CEnchantment {
 
 	public double	heal;
 
-	public Lifesteal(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public Lifesteal(Application app) {
+		super(app);		
 		configEntries.add("Heal: 2");
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}

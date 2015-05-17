@@ -48,23 +48,23 @@ public class ThorsAxe extends CItem {
 					if(e.getClickedBlock() != null) {
 						Location loc = e.getClickedBlock().getLocation();
 						loc.setY(loc.getY() +1);
-					if(Tools.checkWorldGuard(loc, player, "PVP")) {
+					if(Tools.checkWorldGuard(loc, player, "PVP", true)) {
 						player.getWorld().strikeLightning(loc);
 						if(loc.getBlock().getType().equals(Material.AIR)) {
 							loc.getBlock().setType(Material.FIRE);
 						}
 						loc.setX(loc.getX() +1);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP", false)) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setX(loc.getX() -2);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP", false)) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setX(loc.getX() +1);
 						loc.setZ(loc.getZ() +1);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP", false)) 
 							loc.getBlock().setType(Material.FIRE);
 						loc.setZ(loc.getZ() -2);
-						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP")) 
+						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP", false)) 
 							loc.getBlock().setType(Material.FIRE);
 					
 						player.getWorld().playSound(e.getClickedBlock().getLocation(), Sound.ENDERDRAGON_GROWL, 3f, 1f);

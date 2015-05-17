@@ -22,12 +22,14 @@ package com.taiter.ce;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
 
 
 public abstract class CBasic {
@@ -46,7 +48,7 @@ public abstract class CBasic {
 		SHOOT_BOW,
 		PROJECTILE_THROWN,
 		PROJECTILE_HIT,
-		EQUIP_ITEM,
+		WEAR_ITEM,
 		DEATH
 	}
 	
@@ -62,22 +64,26 @@ public abstract class CBasic {
 	protected String          originalName;
 	protected String          typeString;
 	
+	protected HashMap<PotionEffectType, Integer> potionsOnWear = new HashMap<PotionEffectType, Integer>();
+	
 	
 	protected List<String>	configEntries = new ArrayList<String>(Arrays.asList(new String[]{"Enabled: true"}));
 	
 	
 	
-	public Plugin	getPlugin()	{	return this.main;	}
+	public Plugin	getPlugin()												{	return this.main;			}
 	
-	public String	getDisplayName()		{	return this.displayName;	}
+	public String	getDisplayName()										{	return this.displayName;	}
 	
-	public String	getOriginalName()		{	return this.originalName;	}
+	public String	getOriginalName()										{	return this.originalName;	}
 	
-	public HashSet<Trigger>     getTriggers()	{	return this.triggers;	}
+	public HashSet<Trigger>     getTriggers()								{	return this.triggers;		}
 
-	public FileConfiguration	getConfig()	    {	return Main.config;	    }
+	public FileConfiguration	getConfig()	    							{	return Main.config;	   		}
 	
-	public String				getType()	    { return this.typeString;   }
+	public String				getType()	    							{ 	return this.typeString;   	}
+	
+	public HashMap<PotionEffectType, Integer>	getPotionEffectsOnWear()	{ 	return this.potionsOnWear;  }
 		
 	public abstract double		getCost();
 	

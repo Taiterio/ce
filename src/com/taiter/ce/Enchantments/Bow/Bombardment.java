@@ -44,8 +44,8 @@ public class Bombardment extends CEnchantment {
 	int	Volume;
 	int TNTAmount;
 
-	public Bombardment(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Bombardment(Application app) {
+		super(app);		
 		configEntries.add("BaseTNTAmount: 3");
 		configEntries.add("Volume: 1");
 		triggers.add(Trigger.SHOOT_BOW);

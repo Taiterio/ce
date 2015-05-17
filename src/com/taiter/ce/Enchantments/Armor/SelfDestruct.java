@@ -38,8 +38,8 @@ public class SelfDestruct extends CEnchantment {
 
 	int delay;
 
-	public SelfDestruct(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public SelfDestruct(Application app) {
+		super(app);		
 		triggers.add(Trigger.DEATH);
 		this.configEntries.add("ExplosionDelay: 40");
 	}

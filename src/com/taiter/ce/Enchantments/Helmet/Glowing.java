@@ -20,15 +20,10 @@ package com.taiter.ce.Enchantments.Helmet;
 
 
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.taiter.ce.Main;
-import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -36,24 +31,18 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class Glowing extends CEnchantment {
 
 
-	public Glowing(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
-		triggers.add(Trigger.MOVE);
+	public Glowing(Application app) {
+		super(app);		
+		triggers.add(Trigger.WEAR_ITEM);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
-		PlayerMoveEvent event = (PlayerMoveEvent) e;
-		Player player = event.getPlayer();
-		if(Main.repeatPotionEffects)
-			Tools.repeatPotionEffect(item, player, PotionEffectType.NIGHT_VISION, 0, true, this);
-		else {
-			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 600, 0), true);
-			generateCooldown(player, 400l);	
-		}
 	}
 
 	@Override
 	public void initConfigEntries() {
+		this.potionsOnWear.put(PotionEffectType.NIGHT_VISION, 1);
+		this.resetMaxLevel();
 	}
 }

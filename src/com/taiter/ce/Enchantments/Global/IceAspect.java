@@ -20,7 +20,9 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Location;
@@ -29,6 +31,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +45,7 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Ice extends CEnchantment {
+public class IceAspect extends CEnchantment {
 
 	int		SlowStrength;
 	int		SlowDuration;
@@ -50,9 +53,11 @@ public class Ice extends CEnchantment {
 	int     SpecialFreezeDuration;
 	int		chanceSpecialFreeze;
 	boolean	specialFreeze;
+	
+	public List<HashMap<Block, String>> IceLists = new ArrayList<HashMap<Block, String>>();
 
-	public Ice(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName,  app, enchantProbability, occurrenceChance);
+	public IceAspect(Application app) {
+		super(app);		
 		configEntries.add("SlowStrength: 5");
 		configEntries.add("SlowDuration: 40");
 		configEntries.add("ChanceFreeze: 60");
@@ -60,6 +65,7 @@ public class Ice extends CEnchantment {
 		configEntries.add("SpecialFreezeDuration: 60");
 		configEntries.add("ChanceSpecialFreeze: 10");
 		triggers.add(Trigger.DAMAGE_GIVEN);
+		triggers.add(Trigger.SHOOT_BOW);
 	}
 
 	@Override
@@ -75,21 +81,26 @@ public class Ice extends CEnchantment {
 			if(i < chanceSpecialFreeze) {
 				if(event.getEntity() instanceof LivingEntity) {
 				LivingEntity ent = (LivingEntity) event.getEntity();
-
+				Player p = null;
+				
+				if(event.getDamager() instanceof Player)
+					p = (Player) event.getDamager();
+				else
+					p = (Player) ((Projectile) event.getDamager()).getShooter();
+				
+				
+				
 				ent.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SpecialFreezeDuration + 20, 10));
-
-				final HashMap<Block, Material> list = getIgloo(ent.getLocation(), 3, (Player) event.getDamager());
-
-				generateCooldown((Player) event.getDamager(), SpecialFreezeDuration);
+				final HashMap<Block, String> list = getIgloo(ent.getLocation(), 3, p);
+				
+				generateCooldown(p, SpecialFreezeDuration);
 				
 				new BukkitRunnable() {
 
 					@Override
 					public void run() {
-						for(Entry<Block, Material> b : list.entrySet()) {
-							b.getKey().setType(b.getValue());
-							b.getKey().removeMetadata("c.Ice", getPlugin());
-						}
+						deleteIce(list);
+						IceLists.remove(list);
 					}
 				}.runTaskLater(getPlugin(), SpecialFreezeDuration);
 				}
@@ -99,28 +110,37 @@ public class Ice extends CEnchantment {
 	
 	
 
-private HashMap<Block, Material> getIgloo(Location start, int size, Player p) {
-HashMap<Block, Material> list = new HashMap<Block, Material>();
-int bx = start.getBlockX();
-int by = start.getBlockY();
-int bz = start.getBlockZ();
-
-for(int x = bx-size; x <= bx+size; x++)
-for(int y = by-size; y <= by+size; y++)
-for(int z = bz-size; z <= bz+size; z++) {
-	double distancesquared = (bx-x)*(bx-x) + ((bz-z)*(bz-z)) + ((by-y)*(by-y));
-	if(distancesquared < (size*size) && distancesquared >= ((size-1)*(size-1))) {
-		org.bukkit.block.Block b = new Location(start.getWorld(), x, y, z).getBlock();
-		if((b.getType() == Material.AIR || (!b.getType().equals(Material.CARROT) && !b.getType().equals(Material.POTATO) && !b.getType().equals(Material.CROPS) && !b.getType().toString().contains("SIGN") && !b.getType().isSolid())) && Tools.checkWorldGuard(b.getLocation(), p, "BUILD")) {
-			list.put(b, b.getType());
-			b.setType(Material.ICE);
-			b.setMetadata("ce.Ice", new FixedMetadataValue(getPlugin(), null));
+	
+	public void deleteIce(HashMap<Block, String> list) {
+		for(Entry<Block, String> b : list.entrySet()) {
+			b.getKey().setType(Material.getMaterial(b.getValue().split(" ")[0]));
+			b.getKey().setData((byte) Integer.parseInt(b.getValue().split(" ")[1]));
+			b.getKey().removeMetadata("ce.Ice", getPlugin());
 		}
+		IceLists.remove(list);
 	}
-}
-return list;
-}
-
+	
+	private HashMap<Block, String> getIgloo(Location start, int size, Player p) {
+		HashMap<Block, String> list = new HashMap<Block, String>();
+		int bx = start.getBlockX();
+		int by = start.getBlockY();
+		int bz = start.getBlockZ();
+		
+		for(int x = bx-size; x <= bx+size; x++)
+			for(int y = by-1; y <= by+size; y++)
+				for(int z = bz-size; z <= bz+size; z++) {
+					double distancesquared = (bx-x)*(bx-x) + ((bz-z)*(bz-z)) + ((by-y)*(by-y));
+					if(distancesquared < (size*size) && distancesquared >= ((size-1)*(size-1))) {
+						org.bukkit.block.Block b = new Location(start.getWorld(), x, y, z).getBlock();
+						if((b.getType() == Material.AIR || (!b.getType().equals(Material.CARROT) && !b.getType().equals(Material.POTATO) && !b.getType().equals(Material.CROPS) && !b.getType().toString().contains("SIGN") && !b.getType().isSolid())) && Tools.checkWorldGuard(b.getLocation(), p, "PVP", false)) {
+							list.put(b, b.getType().toString() + " " + b.getData());
+							b.setType(Material.ICE);
+							b.setMetadata("ce.Ice", new FixedMetadataValue(getPlugin(), null));
+						}
+					}
+				}
+		return list;
+	}
 	@Override
 	public void initConfigEntries() {
 		SlowStrength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SlowStrength"));

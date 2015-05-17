@@ -36,8 +36,8 @@ public class Poison extends CEnchantment {
 	int	duration;
 	int	strength;
 
-	public Poison(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Poison(Application app) {
+		super(app);		
 		configEntries.add("Duration: 60");
 		configEntries.add("Strength: 1");
 		triggers.add(Trigger.DAMAGE_GIVEN);

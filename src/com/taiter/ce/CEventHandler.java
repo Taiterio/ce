@@ -1,6 +1,7 @@
 package com.taiter.ce;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
@@ -45,6 +48,29 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class CEventHandler {
 
+	
+	public static void handleArmor(Player toCheck, ItemStack toAdd, Boolean remove, Event event) {
+		if(toAdd != null && toAdd.getType() != Material.AIR && toAdd.hasItemMeta() && toAdd.getItemMeta().hasLore())
+				for(String s : toAdd.getItemMeta().getLore())
+					for(CBasic c : Main.listener.wearItem) {
+						if(c instanceof CEnchantment)
+						if(Tools.checkForEnchantment(s, (CEnchantment) c)) {
+							int level = Tools.getLevel(s);
+							HashMap<PotionEffectType, Integer> potioneffects = c.getPotionEffectsOnWear();
+							if(potioneffects.size() < 1)
+								return;
+							if(remove) {
+								for(PotionEffectType pt : potioneffects.keySet())
+								if(toCheck.hasPotionEffect(pt))
+									toCheck.removePotionEffect(pt);
+							} else
+								for(PotionEffectType pt : potioneffects.keySet())
+									toCheck.addPotionEffect(new PotionEffect(pt, 600000, potioneffects.get(pt) + level - 2), true);
+						}
+				}
+	}
+	
+	
 	public static void handleEvent(Player toCheck, Event e, HashSet<CBasic> list) {
 
 		long time = System.currentTimeMillis();
@@ -107,7 +133,12 @@ public class CEventHandler {
 							continue;
 					}
 					
-					lore.add(ce.getDisplayName() + " " + Tools.intToLevel(Tools.random.nextInt(ce.getEnchantmentMaxLevel()-1)+1));
+					int level = ce.getEnchantmentMaxLevel()-1;
+					if(level > 0)
+						level = Tools.random.nextInt(ce.getEnchantmentMaxLevel()-1)+1;
+					else
+						level = 1;
+					lore.add(ce.getDisplayName() + " " + Tools.intToLevel(level));
 					appliedEnchantments++;
 					numberOfEnchantments--;
 					
@@ -177,8 +208,9 @@ public class CEventHandler {
 			String[] enchantments = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" ; ");
 			for(String ench : enchantments) {
 				String[] enchantment = ench.split(" : ");
-
-				Tools.getEnchantmentByOriginalname(enchantment[0]).effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+				CEnchantment ce = Tools.getEnchantmentByOriginalname(enchantment[0]);
+				if(Tools.random.nextDouble()*100 < ce.getOccurrenceChance())
+					ce.effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
 			}
 			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
 		}
@@ -212,15 +244,19 @@ public class CEventHandler {
 				if(!ce.lockList.contains(toCheck)) 
 				if(!ce.getHasCooldown(toCheck))
 				 try {
-					 if(e instanceof EntityShootBowEvent) {
-					  String enchantments = ce.getOriginalName() + " : " + level;
-					  if(((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment"))
-						  enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
-					  ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
-					 }
 				  long time = System.currentTimeMillis();
-				  if(Tools.random.nextInt(100) < ce.getOccurrenceChance())
+				  if(Tools.random.nextInt(100) < ce.getOccurrenceChance()) {
+					  //BOWS
+					  	if(e instanceof EntityShootBowEvent) {
+						  String enchantments = ce.getOriginalName() + " : " + level;
+						  if(((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment"))
+							  enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
+						  ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
+					  	}
+					  //BOWS
+					  
 					 ce.effect(e, i, level);
+				  }
 				  if(Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEnchantments"))) {
 					long timeF = (System.currentTimeMillis() - time);
 					if(timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))

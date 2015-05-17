@@ -126,7 +126,7 @@ public abstract class CItem extends CBasic {
 	public void finalizeItem() {
 		
 		if(!getConfig().contains("Items." + getOriginalName()))
-			Tools.writeConfigEntry(this);
+			Tools.writeConfigEntries(this);
 
 		try {
 			this.itemColor 	 = ChatColor.valueOf(Main.config.getString("Items." + getOriginalName() + ".Color").toUpperCase());
@@ -145,10 +145,18 @@ public abstract class CItem extends CBasic {
 		this.description.add("");
 		
 		try {
+			for(String entry :this.configEntries) {
+				String[] split = entry.split(": ");
+				if(split[1].equalsIgnoreCase("true") || split[1].equalsIgnoreCase("false"))
+					if(!getConfig().contains("Items." + getOriginalName() + "." + split[0])) {
+						Tools.writeConfigEntries(this);
+						break;
+					}
+			}
 			initConfigEntries();
 		} catch(Exception e) {
 			if(!hasRetriedConfig) {
-				Tools.writeConfigEntry(this);
+				Tools.writeConfigEntries(this);
 				hasRetriedConfig = true;
 				finalizeItem();
 			} else {

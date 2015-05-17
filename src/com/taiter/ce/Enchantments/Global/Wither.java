@@ -20,53 +20,42 @@ package com.taiter.ce.Enchantments.Global;
 
 
 
-import org.bukkit.Sound;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Aerial extends CEnchantment {
+public class Wither extends CEnchantment {
 
-	int	DamageIncreasePercentage;
+	int	duration;
+	int	strength;
 
-	public Aerial(Application app) {
+	public Wither(Application app) {
 		super(app);		
-		configEntries.add("DamageIncreasePercentagePerLevel: 10");
+		configEntries.add("Duration: 60");
+		configEntries.add("Strength: 1");
 		triggers.add(Trigger.DAMAGE_GIVEN);
+		triggers.add(Trigger.SHOOT_BOW);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		Player player = (Player) event.getDamager();
-		Entity ent = event.getEntity();
-		
-		if(player.getVelocity().getY() == -0.0784000015258789) //Constant velocity for not moving in y direction (Gravity)
-			return;
-		
-		
-		double newDamage = event.getDamage() * (1 + DamageIncreasePercentage * level); 
-		double currentHealth = ((Damageable) ent).getHealth();
-		
-		if(currentHealth - newDamage > 0)
-			((Damageable) ent).setHealth(currentHealth-newDamage);
-		else
-			((Damageable) ent).setHealth(0);
+		LivingEntity target = (LivingEntity) event.getEntity();
 
-		player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.1f, 0.1f);
-		
+		target.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration * level, strength + level));
 
 	}
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
+		duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
+		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Strength"))-1;
 	}
 }

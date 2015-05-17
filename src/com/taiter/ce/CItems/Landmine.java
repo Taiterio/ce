@@ -68,7 +68,7 @@ public class Landmine extends CItem {
 			b.getRelative(0,1,0).removeMetadata("ce.mine.secondary", main);
 			player.removeMetadata("ce.mine", main);
 			
-			if(!b.getType().equals(Material.AIR) && !b.getType().equals(Material.WATER) && !b.getType().equals(Material.LAVA) && Tools.checkWorldGuard(loc, player, "PVP")) { 
+			if(!b.getType().equals(Material.AIR) && !b.getType().equals(Material.WATER) && !b.getType().equals(Material.LAVA) && Tools.checkWorldGuard(loc, player, "PVP", false)) { 
 				b.setType(Material.AIR);
 				if(Main.createExplosions)
 					w.createExplosion(loc, ExplosionStrength);

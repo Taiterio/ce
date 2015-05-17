@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Armor;
+package com.taiter.ce.Enchantments.Bow;
 
 /*
 * This file is part of Custom Enchantments
@@ -31,32 +31,37 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Frozen extends CEnchantment {
-	
-	int duration;
-	int strength;
+public class Paralyze extends CEnchantment {
 
-	public Frozen(Application app) {
+	int	duration;
+	int	cooldown;
+	int	strength;
+
+
+	public Paralyze(Application app) {
 		super(app);		
 		configEntries.add("Duration: 60");
-		configEntries.add("Strength: 1");
-		triggers.add(Trigger.DAMAGE_TAKEN);
+		configEntries.add("Strength: 5");
+		configEntries.add("Cooldown: 200");
+		triggers.add(Trigger.SHOOT_BOW);
+		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
+		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		LivingEntity target = (LivingEntity) event.getDamager();
-		target.addPotionEffect(
-				new PotionEffect(
-						PotionEffectType.SLOW, 
-						duration * level,
-						strength + level));
+		LivingEntity target = (LivingEntity) event.getEntity();
+		target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration + (level-1)*20, strength + level-1), true);
+		target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration + (level-1)*20, 1), true);
+		target.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, duration + (level-1)*20, strength + level-1), true);
+		}
 	}
 
 	@Override
 	public void initConfigEntries() {
 		duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
+		cooldown = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
 		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Strength"))-1;
 	}
 }

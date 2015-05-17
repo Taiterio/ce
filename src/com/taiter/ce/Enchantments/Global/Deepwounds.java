@@ -37,8 +37,8 @@ public class Deepwounds extends CEnchantment {
 	int				duration;
 	int				rand;
 
-	public Deepwounds(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Deepwounds(Application app) {
+		super(app);		
 		configEntries.add("Duration: 20");
 		configEntries.add("BleedChance: 20");
 		triggers.add(Trigger.DAMAGE_GIVEN);

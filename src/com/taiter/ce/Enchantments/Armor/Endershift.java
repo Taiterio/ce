@@ -20,7 +20,7 @@ package com.taiter.ce.Enchantments.Armor;
 
 
 
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -31,32 +31,39 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Frozen extends CEnchantment {
+public class Endershift extends CEnchantment {
 	
 	int duration;
 	int strength;
+	int trigger;
+	int cooldown;
 
-	public Frozen(Application app) {
-		super(app);		
-		configEntries.add("Duration: 60");
-		configEntries.add("Strength: 1");
+	public Endershift(Application app) {
+		super(app);
+		configEntries.add("Duration: 200");
+		configEntries.add("Strength: 5");
+		configEntries.add("HpToTrigger: 4");
+		configEntries.add("Cooldown: 6000");
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		LivingEntity target = (LivingEntity) event.getDamager();
-		target.addPotionEffect(
-				new PotionEffect(
-						PotionEffectType.SLOW, 
-						duration * level,
-						strength + level));
+		Player player = (Player) event.getEntity();
+		if(player.getHealth() <= trigger) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, duration * level, strength + level - 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, duration * level, strength + level - 1));
+			player.sendMessage("You feel a rush of energy coming from your armor!");
+			generateCooldown(player, cooldown);
+		}
 	}
 
 	@Override
 	public void initConfigEntries() {
 		duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
 		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Strength"))-1;
+		trigger = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".HpToTrigger"));
+		cooldown = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
 	}
 }

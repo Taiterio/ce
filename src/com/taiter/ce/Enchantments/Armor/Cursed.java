@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Boots;
+package com.taiter.ce.Enchantments.Armor;
 
 /*
 * This file is part of Custom Enchantments
@@ -20,31 +20,38 @@ package com.taiter.ce.Enchantments.Boots;
 
 
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
 
-public class Gears extends CEnchantment {
+public class Cursed extends CEnchantment {
+	
+	int duration;
+	int strength;
 
-	int	strength;
-
-	public Gears(Application app) {
-		super(app);		
-		configEntries.add("SpeedBoost: 1");
-		triggers.add(Trigger.WEAR_ITEM);
+	public Cursed(Application app) {
+		super(app);
+		configEntries.add("Duration: 60");
+		configEntries.add("Strength: 1");
+		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
+		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+		((LivingEntity) event.getDamager()).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, duration * level, strength + level));
 	}
 
 	@Override
 	public void initConfigEntries() {
-		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".SpeedBoost"))-1;
-		this.getPotionEffectsOnWear().put(PotionEffectType.SPEED, strength);
+		duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Duration"));
+		strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Strength"))-1;
 	}
 }

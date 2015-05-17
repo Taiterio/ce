@@ -53,14 +53,18 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
@@ -87,7 +91,7 @@ public class CEListener implements Listener {
 	HashSet<CBasic> death           = new HashSet<CBasic>();
 	HashSet<CBasic> blockPlaced     = new HashSet<CBasic>();
 	HashSet<CBasic> blockBroken     = new HashSet<CBasic>();
-	HashSet<CBasic> equipItem       = new HashSet<CBasic>();
+	HashSet<CBasic> wearItem        = new HashSet<CBasic>();
 
 
 
@@ -120,6 +124,25 @@ public class CEListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void inventoryMenu(final InventoryClickEvent event) {
+		
+		// -------Armor wear handling--------
+		if(event.getSlotType() == SlotType.ARMOR && event.getClick() != ClickType.DOUBLE_CLICK) {
+			CEventHandler.handleArmor((Player) event.getWhoClicked(), event.getCurrentItem(), true, event);
+			CEventHandler.handleArmor((Player) event.getWhoClicked(), event.getCursor(), false, event);
+			if(event.getCursor() == null)
+				CEventHandler.handleArmor((Player) event.getWhoClicked(), event.getCurrentItem(), false, event);
+
+		} else if(event.getClick() == ClickType.SHIFT_LEFT) {
+			ItemStack current = event.getCurrentItem();
+			String typeS = current.getType().toString();
+			PlayerInventory inv = event.getWhoClicked().getInventory();
+			if((typeS.endsWith("HELMET") && inv.getHelmet() == null) || (typeS.endsWith("CHESTPLATE") && inv.getChestplate() == null) || (typeS.endsWith("LEGGINGS") && inv.getLeggings() == null) || (typeS.endsWith("BOOTS") && inv.getBoots() == null))
+				CEventHandler.handleArmor((Player) event.getWhoClicked(), event.getCurrentItem(), false, event);
+		}
+		// ---------------------------------
+		
+		
+		
 		if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || event.getRawSlot() < -1) {
 			return;
 		}
@@ -137,6 +160,8 @@ public class CEListener implements Listener {
 				p.openInventory(Tools.getPreviousInventory(topInv.getTitle()));
 				return;
 			}
+			
+			if(event.getRawSlot() < topInv.getSize()) {
 
 			//Opens the clicked Enchantments inventory and loads the permissions if needed
 			if(topInv.getTitle().equals(Tools.prefix + "Enchantments")) {
@@ -180,8 +205,9 @@ public class CEListener implements Listener {
 					p.sendMessage(ChatColor.RED + "[CE] You do not have permission to buy this Item.");
 					return;
 				}
-
-
+			}
+			
+			
 			if(topInv.getTitle().equals(Tools.prefix + "Enchanting") || topInv.getTitle().equals(Tools.prefix + "Item Creation")) {
 				double cost = 0;
 				ItemStack item = clickedItem;
@@ -320,15 +346,17 @@ public class CEListener implements Listener {
 				p.sendMessage(successString);
 				return;
 			}
+			
+			if(event.getRawSlot() < topInv.getSize()) {
 
 			p.closeInventory();
 			try {
-			p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
+				p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
 			} catch (Exception e) {
 				p.sendMessage(ChatColor.RED + "[CE] This feature is disabled.");
 			}
 
-
+			}
 
 		}
 	}
@@ -422,16 +450,7 @@ public class CEListener implements Listener {
 			}
 		}
 	}
-
-
-	//PLAYER: org.bukkit.event.player
-
-//	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-//	public void PlayerDeathEvent(PlayerDeathEvent e) {
-//
-//		CEventHandler.handleEvent(e.getEntity(), e, deathEnchantments);
-//
-//	}
+	
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void ProjectileLaunchEvent(ProjectileLaunchEvent e) {
@@ -443,49 +462,38 @@ public class CEListener implements Listener {
 
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void SignChangeEvent(SignChangeEvent e) {
-		if(e.getLine(0).equals("[CustomEnchant]"))
-			if(!e.getPlayer().isOp())
-				e.setCancelled(true);
-			else {
-				String ench = e.getLine(1);
-				CEnchantment ce = Tools.getEnchantmentByDisplayname(ench);
-				if(ce == null)
-					ce = Tools.getEnchantmentByOriginalname(ench);
-				if(ce == null)
-					for(CEnchantment ceT : Main.enchantments)
-						if(Tools.checkForEnchantment(ench, ceT))
-							ce = ceT;
-				if(ce == null) {
-					e.getPlayer().sendMessage(ChatColor.RED + "[CE] Could not find Custom Enchantment " + ench + ".");
-					e.setCancelled(true);
-					return;
-				}
-				try {
-					Integer.parseInt(e.getLine(3).replaceAll("\\D+",""));
-				} catch(NumberFormatException ex) {
-					e.getPlayer().sendMessage(ChatColor.RED + "[CE] The cost you entered is invalid.");
-					e.setCancelled(true);
-					return;
-				}
-				e.getPlayer().sendMessage(ChatColor.GREEN + "[CE] Successfully created a sign shop for the enchantment " + ench + ".");
-			}
-	}
+
+	//PLAYER
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerInteractEvent(PlayerInteractEvent e) {
-
-		CEventHandler.handleEvent(e.getPlayer(), e, interact);
+		
+		Player p = e.getPlayer();
+		
+		CEventHandler.handleEvent(p, e, interact);
 
 		if(e.getAction().toString().startsWith("LEFT"))
-			CEventHandler.handleEvent(e.getPlayer(), e, interactL);
-		else if(e.getAction().toString().startsWith("RIGHT"))
-			CEventHandler.handleEvent(e.getPlayer(), e, interactR);
+			CEventHandler.handleEvent(p, e, interactL);
+		else if(e.getAction().toString().startsWith("RIGHT")) {
+			CEventHandler.handleEvent(p, e, interactR);
+		
+			
+		//Check if the player has put armor on by rightclicking
+			if(p.getItemInHand().getType() != Material.AIR) {
+				ItemStack i = p.getItemInHand();
+				String mat = i.getType().toString();
+				PlayerInventory inv = p.getInventory();
+				if((mat.endsWith("BOOTS") && inv.getBoots() == null) || (mat.endsWith("LEGGINGS") && inv.getLeggings() == null) || (mat.endsWith("CHESTPLATE") && inv.getChestplate()  == null) || (mat.endsWith("HELMET") && inv.getHelmet()  == null))
+					CEventHandler.handleArmor(p, e.getItem(), false, e);
+			}
+		}
+		
+		
 
+		
+		//Sign shop
 		if(e.getClickedBlock() != null && e.getClickedBlock().getType().toString().contains("SIGN"))
 			if(((Sign) e.getClickedBlock().getState()).getLine(0).equals("[CustomEnchant]")) {
-				Player p = e.getPlayer();
 				if(!Main.hasEconomy) {
 					p.performCommand("ce menu");
 				} else if(p.getItemInHand().getType() != Material.AIR){
@@ -580,6 +588,9 @@ public class CEListener implements Listener {
 				}
 			}
 
+		
+		
+		
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -614,11 +625,22 @@ public class CEListener implements Listener {
 		}
 
 	}
+	
+	
+	//Check if armor broke for potion effect enchantments
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void PlayerItemBreakEvent(PlayerItemBreakEvent e) {
+				
+		for(ItemStack i : e.getPlayer().getInventory().getArmorContents())
+			if(i != null && i.getType() != Material.AIR)
+				if(i.getAmount() == 0)
+					CEventHandler.handleArmor(e.getPlayer(), e.getBrokenItem(), true, e);
+		
+	}
 
 
 
-	//BLOCKS: org.bukkit.event.block
-
+	//BLOCKS
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void BlockPlaceEvent(BlockPlaceEvent e) {
@@ -666,30 +688,50 @@ public class CEListener implements Listener {
 			e.setCancelled(true);
 
 	}
-
-
-
-	//ENCHANTMENT: org.bukkit.event.enchantment
-
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void EnchantItemEvent(EnchantItemEvent e) {
-
-		if(Tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability")))) {
-			CEventHandler.handleEnchanting(e);
-		}
-
-
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void SignChangeEvent(SignChangeEvent e) {
+		if(e.getLine(0).equals("[CustomEnchant]"))
+			if(!e.getPlayer().isOp())
+				e.setCancelled(true);
+			else {
+				String ench = e.getLine(1);
+				CEnchantment ce = Tools.getEnchantmentByDisplayname(ench);
+				if(ce == null)
+					ce = Tools.getEnchantmentByOriginalname(ench);
+				if(ce == null)
+					for(CEnchantment ceT : Main.enchantments)
+						if(Tools.checkForEnchantment(ench, ceT))
+							ce = ceT;
+				if(ce == null) {
+					e.getPlayer().sendMessage(ChatColor.RED + "[CE] Could not find Custom Enchantment " + ench + ".");
+					e.setCancelled(true);
+					return;
+				}
+				try {
+					Integer.parseInt(e.getLine(3).replaceAll("\\D+",""));
+				} catch(NumberFormatException ex) {
+					e.getPlayer().sendMessage(ChatColor.RED + "[CE] The cost you entered is invalid.");
+					e.setCancelled(true);
+					return;
+				}
+				e.getPlayer().sendMessage(ChatColor.GREEN + "[CE] Successfully created a sign shop for the enchantment " + ench + ".");
+			}
 	}
 
 
 
-	//WORLD: org.bukkit.event.world
+	//ENCHANTMENT
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void EnchantItemEvent(EnchantItemEvent e) {
+
+		if(e.getExpLevelCost() == 30)
+		if(Tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability"))))
+			CEventHandler.handleEnchanting(e);
 
 
-
-
-
+	}
 
 
 }

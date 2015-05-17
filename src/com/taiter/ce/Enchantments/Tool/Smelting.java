@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Tools;
+package com.taiter.ce.Enchantments.Tool;
 
 /*
 * This file is part of Custom Enchantments
@@ -34,8 +34,8 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class Smelting extends CEnchantment {
 
-	public Smelting(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Smelting(Application app) {
+		super(app);		
 		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 
@@ -86,6 +86,7 @@ public class Smelting extends CEnchantment {
 	
 	@Override
 	public void initConfigEntries() {
+		this.resetMaxLevel();
 	}
 	
 }

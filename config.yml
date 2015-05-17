@@ -15,6 +15,7 @@ Global:
   CEnchantmentTable: true
   CEnchantingProbability: 10
   MaximumCustomEnchantments: 1000
+  UseCustomEnchantmentProbability: false
   RequirePermissions: true
   RepeatPotionEffects: true
   RepeatDelay: 1000

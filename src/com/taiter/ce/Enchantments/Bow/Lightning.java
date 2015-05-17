@@ -35,8 +35,8 @@ public class Lightning extends CEnchantment {
 
 	int	chance;
 
-	public Lightning(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Lightning(Application app) {
+		super(app);		
 		configEntries.add("LightningChance: 75");
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);

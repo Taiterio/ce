@@ -36,8 +36,8 @@ public class Charge extends CEnchantment {
 
 	int	DamageIncreasePercentage;
 
-	public Charge(String originalName, Application app, int enchantProbability, int occurrenceChance) {
-		super(originalName, app, enchantProbability, occurrenceChance);
+	public Charge(Application app) {
+		super(app);		
 		configEntries.add("DamageIncreasePercentagePerLevel: 10");
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
