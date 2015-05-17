@@ -206,6 +206,9 @@ public final class Main extends JavaPlugin {
     	
     	//Make the list of Enchantments
     	makeLists(true, true);
+    	
+    	if(enchantments.size() == 0)
+    		return;
     
     	try {
     	    writePermissions();
@@ -500,7 +503,8 @@ public final class Main extends JavaPlugin {
 
 //--------------Dynamic enchantment class loading-------------------------------
     	try {
-			JarFile jar = new JarFile(plugin.getDataFolder().getParent() + File.separator + "CustomEnchantments.jar");
+    		String path = plugin.getDataFolder().getAbsolutePath() + ".jar";
+			JarFile jar = new JarFile(path);
 			Enumeration<JarEntry> entries = jar.entries();
 			
             while (entries.hasMoreElements()) {
@@ -513,8 +517,8 @@ public final class Main extends JavaPlugin {
                 			app = Application.valueOf(entryName.split("/")[4].toUpperCase());
                 			className = className.replaceAll("/", ".");
                 		} else if(entryName.contains("\\")) {
-                			app = Application.valueOf(entryName.split("\\")[4].toUpperCase());
-                			className = className.replaceAll("\\", ".");
+                			app = Application.valueOf(entryName.split("\\\\")[4].toUpperCase());
+                			className = className.replaceAll("\\\\", ".");
                 		}
                 		enchantments.add((CEnchantment) classLoader.loadClass(className).getDeclaredConstructor(Application.class).newInstance(app));
                 	} catch(ClassNotFoundException e) {} //Checked exception, should never be thrown
@@ -526,6 +530,8 @@ public final class Main extends JavaPlugin {
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please report this error on the Bukkit page of the plugin");
 			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] by sending the following to Taiterio via PM:");
 			e.printStackTrace();
+			plugin.getServer().getPluginManager().disablePlugin(plugin);
+			return;
 		}
 //--------------------------------------------------------------------------------
     		
