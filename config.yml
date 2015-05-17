@@ -17,6 +17,4 @@ Global:
   MaximumCustomEnchantments: 1000
   UseCustomEnchantmentProbability: false
   RequirePermissions: true
-  RepeatPotionEffects: true
-  RepeatDelay: 1000
 Enchantments:

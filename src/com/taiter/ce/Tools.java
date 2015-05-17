@@ -40,8 +40,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldguard.protection.GlobalRegionManager;
@@ -848,69 +846,69 @@ public class Tools {
 		return firework;
 	}
 	
-	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final CItem ci) {
-		if(p.hasPotionEffect(type))
-			return;
-		int slot = 0;
-		for(int x = 0; x < p.getInventory().getSize(); x++)
-			if(i.equals(p.getInventory().getItem(x)))
-				slot = x;
-		final int lSlot = slot;
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				ItemStack item = p.getInventory().getItem(lSlot);
-				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
-				else {
-					this.cancel();
-				}
-			}
-			
-		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
-	}
-	
-	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final boolean lock, final CEnchantment ce) {
-		int slot = -1;
-		boolean isArmor = false;
-		
-		ItemStack[] list = p.getInventory().getContents();
-		for(int x = 0; x < list.length; x++)
-			if(i.equals(list[x]))
-				slot = x;
-		
-		if(slot == -1) {
-			isArmor = true;
-			ItemStack[] aList = p.getInventory().getArmorContents();
-			for(int x = 0; x < aList.length; x++)
-				if(i.equals(aList[x]))
-					slot = x;
-		}
-		
-		final int lSlot = slot;
-		final boolean lIsArmor = isArmor;
-
-		if(lock)
-			ce.lockList.add(p);
-		new BukkitRunnable() {
-
-			@Override
-			public void run() {
-				ItemStack item = p.getInventory().getItem(lSlot);
-				if(lIsArmor)
-					item = p.getInventory().getArmorContents()[lSlot];
-				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
-					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
-				else {
-					if(lock)
-						ce.lockList.remove(p);
-					this.cancel();
-				}
-			}
-			
-		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
-	}
+//	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final CItem ci) {
+//		if(p.hasPotionEffect(type))
+//			return;
+//		int slot = 0;
+//		for(int x = 0; x < p.getInventory().getSize(); x++)
+//			if(i.equals(p.getInventory().getItem(x)))
+//				slot = x;
+//		final int lSlot = slot;
+//		new BukkitRunnable() {
+//
+//			@Override
+//			public void run() {
+//				ItemStack item = p.getInventory().getItem(lSlot);
+//				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+//					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
+//				else {
+//					this.cancel();
+//				}
+//			}
+//			
+//		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
+//	}
+//	
+//	public static void repeatPotionEffect(final ItemStack i, final Player p, final PotionEffectType type, final int strength, final boolean lock, final CEnchantment ce) {
+//		int slot = -1;
+//		boolean isArmor = false;
+//		
+//		ItemStack[] list = p.getInventory().getContents();
+//		for(int x = 0; x < list.length; x++)
+//			if(i.equals(list[x]))
+//				slot = x;
+//		
+//		if(slot == -1) {
+//			isArmor = true;
+//			ItemStack[] aList = p.getInventory().getArmorContents();
+//			for(int x = 0; x < aList.length; x++)
+//				if(i.equals(aList[x]))
+//					slot = x;
+//		}
+//		
+//		final int lSlot = slot;
+//		final boolean lIsArmor = isArmor;
+//
+//		if(lock)
+//			ce.lockList.add(p);
+//		new BukkitRunnable() {
+//
+//			@Override
+//			public void run() {
+//				ItemStack item = p.getInventory().getItem(lSlot);
+//				if(lIsArmor)
+//					item = p.getInventory().getArmorContents()[lSlot];
+//				if(p != null && !p.isDead() && item != null && !item.getType().equals(Material.AIR) && item.hasItemMeta() && item.getItemMeta().equals(i.getItemMeta()))
+//					p.addPotionEffect(new PotionEffect(type, Main.repeatDelay+200, strength, true), true);
+//				else {
+//					if(lock)
+//						ce.lockList.remove(p);
+//					this.cancel();
+//				}
+//			}
+//			
+//		}.runTaskTimer(Main.plugin, 0l, Main.repeatDelay);
+//	}
 
 	public static void applyBleed(final Player target, final int bleedDuration) {
 		target.sendMessage(ChatColor.RED + "You are Bleeding!");

@@ -21,13 +21,9 @@ package com.taiter.ce.Enchantments.Armor;
 
 
 import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.taiter.ce.Main;
-import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -37,21 +33,15 @@ public class ObsidianShield extends CEnchantment {
 
 	public ObsidianShield(Application app) {
 		super(app);		
-		triggers.add(Trigger.MOVE);
+		triggers.add(Trigger.WEAR_ITEM);
 	}
 
 	@Override
 	public void effect(Event e, ItemStack item, int level) {
-		PlayerMoveEvent event = (PlayerMoveEvent) e;
-		if(Main.repeatPotionEffects)
-			Tools.repeatPotionEffect(item, event.getPlayer(), PotionEffectType.FIRE_RESISTANCE, 10, true, this);
-		else {
-			event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 600, 10), true);
-			generateCooldown(event.getPlayer(), 400l);	
-		}
 	}
 
 	@Override
 	public void initConfigEntries() {
+		this.potionsOnWear.put(PotionEffectType.FIRE_RESISTANCE, 1);
 	}
 }
