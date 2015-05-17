@@ -500,14 +500,23 @@ public final class Main extends JavaPlugin {
 
 //--------------Dynamic enchantment class loading-------------------------------
     	try {
-			JarFile jar = new JarFile(plugin.getDataFolder().getParent() + "\\CustomEnchantments.jar");
+			JarFile jar = new JarFile(plugin.getDataFolder().getParent() + File.separator + "CustomEnchantments.jar");
 			Enumeration<JarEntry> entries = jar.entries();
 			
             while (entries.hasMoreElements()) {
                 String entryName = entries.nextElement().getName();
                 if(!entryName.contains("$") && entryName.contains("Enchantments") && !entryName.contains("CEnchantment"))
                 	try {
-                		enchantments.add((CEnchantment) classLoader.loadClass(entryName.replace(".class", "").replaceAll("/", ".")).getDeclaredConstructor(Application.class).newInstance(Application.valueOf(entryName.split("/")[4].toUpperCase())));
+                		Application app = null;
+                		String className = entryName.replace(".class", "");
+                		if(entryName.contains("/")) {
+                			app = Application.valueOf(entryName.split("/")[4].toUpperCase());
+                			className = className.replaceAll("/", ".");
+                		} else if(entryName.contains("\\")) {
+                			app = Application.valueOf(entryName.split("\\")[4].toUpperCase());
+                			className = className.replaceAll("\\", ".");
+                		}
+                		enchantments.add((CEnchantment) classLoader.loadClass(className).getDeclaredConstructor(Application.class).newInstance(app));
                 	} catch(ClassNotFoundException e) {} //Checked exception, should never be thrown
             }
             
