@@ -62,6 +62,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -464,6 +465,14 @@ public class CEListener implements Listener {
 
 
 	//PLAYER
+	
+	@EventHandler
+	public void PlayerPickupItemEvent(PlayerPickupItemEvent event) {
+		if(event.getItem().hasMetadata("ce.Volley")) {
+			event.getItem().remove();
+			event.setCancelled(true);
+		}
+	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void PlayerInteractEvent(PlayerInteractEvent e) {

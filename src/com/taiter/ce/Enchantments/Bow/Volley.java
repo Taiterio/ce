@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.taiter.ce.Enchantments.CEnchantment;
@@ -73,7 +74,8 @@ public class Volley extends CEnchantment {
 			Arrow arrow = p.launchProjectile(Arrow.class);
 			arrow.setShooter(p);
 			// Need to make sure arrow has same speed as original arrow.
-			arrow.setVelocity(newDir.normalize().multiply(velocity.length())); 
+			arrow.setVelocity(newDir.normalize().multiply(velocity.length()));
+			arrow.setMetadata("ce.Volley", new FixedMetadataValue(getPlugin(), null)); //Control metadata to prevent players from duplicating arrows
 		}
 	}
 
