@@ -94,6 +94,7 @@ import com.taiter.ce.Enchantments.Global.IceAspect;
 
 
 
+
 public final class Main extends JavaPlugin {
 	
 	
@@ -496,6 +497,7 @@ public final class Main extends JavaPlugin {
     	long time = System.currentTimeMillis();
 
     	
+
 //--------------Dynamic enchantment class loading-------------------------------
     	try {
 			JarFile jar = new JarFile(plugin.getDataFolder().getParent() + "\\CustomEnchantments.jar");
