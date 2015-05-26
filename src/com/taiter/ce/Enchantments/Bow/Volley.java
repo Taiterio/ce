@@ -55,9 +55,10 @@ public class Volley extends CEnchantment {
 		int amount = 1 + 2*lvl; // Keep amount of arrows uneven, 2 extra arrows in a volley per level.
 		
 		Arrow oldArrow =  (Arrow) e.getProjectile();
-		Vector velocity = oldArrow.getVelocity();
-		oldArrow.remove(); // Remove original arrow.
-		
+		int fireTicks = oldArrow.getFireTicks();
+		int knockbackStrength = oldArrow.getKnockbackStrength();
+		boolean critical = oldArrow.isCritical();
+		String metadata = oldArrow.getMetadata("ce.bow.enchantment").get(0).asString();
 		
 		double angleBetweenArrows = (CONE_DEGREES / (amount-1)) * Math.PI/180;
 		double pitch = (p.getLocation().getPitch() + 90) * Math.PI / 180;
@@ -73,11 +74,16 @@ public class Volley extends CEnchantment {
 			
 			Arrow arrow = p.launchProjectile(Arrow.class);
 			arrow.setShooter(p);
-			// Need to make sure arrow has same speed as original arrow.
-			arrow.setVelocity(newDir.normalize().multiply(velocity.length()));
+			arrow.setVelocity(newDir.normalize().multiply(oldArrow.getVelocity().length())); // Need to make sure arrow has same speed as original arrow.
+			arrow.setFireTicks(fireTicks); // Set the new arrows on fire if the original one was 
+			arrow.setKnockbackStrength(knockbackStrength);
+			arrow.setCritical(critical);
+			
 			if(i > 0)
 				arrow.setMetadata("ce.Volley", new FixedMetadataValue(getPlugin(), null)); //Control metadata to prevent players from duplicating arrows
+			arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(getPlugin(), metadata));
 		}
+		oldArrow.remove(); // Remove original arrow.
 	}
 
 	@Override

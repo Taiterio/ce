@@ -112,10 +112,6 @@ public final class Main extends JavaPlugin {
 	
 	public static Boolean createExplosions;
 	
-	public static Boolean repeatPotionEffects;
-	public static int     repeatDelay;
-
-	
 	
 	//The inventories for the Enchantment Menu
 	public static Inventory 		CEMainMenu;
@@ -181,10 +177,6 @@ public final class Main extends JavaPlugin {
     	initializeListener();
     	
     	createExplosions     = Boolean.parseBoolean(Main.config.getString("Global.CreateExplosions"));
-    	
-    	//The Config options for the potion effect repeating
-    	repeatPotionEffects  = Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RepeatPotionEffects"));
-    	repeatDelay          = Integer.parseInt(Main.config.getString("Global.Enchantments.RepeatDelay"));
     	
     	//Get the maximum amount of Enchantments on an Item
     	maxEnchants = Integer.parseInt(config.getString("Global.Enchantments.MaximumCustomEnchantments"));

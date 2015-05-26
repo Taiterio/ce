@@ -528,7 +528,7 @@ public class CeCommand {
 				
 
 					if(name.startsWith("i") || name.startsWith("e")) {
-						usageError += (name.startsWith("e") ? "enchant <Enchantment> <Level>" : "item <Item>");
+						usageError += (name.startsWith("e") ? "enchant [Required Material] <Enchantment> <Level>" : "item <Item>");
 						if(args.length >= 2) {
 							
 							requiredPermission += "enchant";
@@ -536,8 +536,27 @@ public class CeCommand {
 								return Error + "You do not have permission to use this command.";
 							
 							String customName = args[1];
+							Material test = null;
 							
-							int level = 0;
+							int start = 2;
+							
+							if(Material.getMaterial(customName) != null)
+								test = Material.getMaterial(customName);
+							else
+								try {
+									int material = Integer.parseInt(customName);
+									if(Material.getMaterial(material) != null)
+										test = Material.getMaterial(material);
+								} catch(NumberFormatException ex) {}
+							
+							if(test != null) {
+								if(p.getItemInHand().getType() != test)
+									return Error + "You do not have the right material to enchant this!";
+								start++;
+								customName = args[2];
+							}
+							
+							int level = 1;
 							
 							if(name.startsWith("e")) {
 								if(item.getType().equals(Material.AIR))
@@ -553,8 +572,8 @@ public class CeCommand {
 							if(level > 10)
 								level = 0;
 							
-							if(args.length > 2)
-								for(int i = 2; i < (level == 0 ? args.length : args.length-1); i++)
+							if(args.length > start)
+								for(int i = start; i < (level == 0 ? args.length : args.length-1); i++)
 									customName +=  " " +  args[i];
 							
 							
@@ -578,10 +597,16 @@ public class CeCommand {
 									} catch(Exception ex) {}
 								}
 								
-								if(ench != null) {
-									item.addUnsafeEnchantment(ench, level);
-									return Success + "You have succesfully enchanted your item with " + ench.getName() + " level " + level + ".";
-								}
+								if(ench != null)
+									if(item.containsEnchantment(ench)) {
+										int newLevel = item.getEnchantmentLevel(ench) + level;
+										item.removeEnchantment(ench);
+										item.addUnsafeEnchantment(ench, newLevel);
+										return Success + "You have succesfully increased the item's level of " + ench.getName() + " by " + level + ".";
+									} else {
+										item.addUnsafeEnchantment(ench, level);
+										return Success + "You have succesfully enchanted your item with " + ench.getName() + " level " + level + ".";
+									}
 								
 								Error += "The " + (name.startsWith("i") ? "item":"enchantment") +" '" + customName + "' does not exist.";
 								return Error;
@@ -601,7 +626,21 @@ public class CeCommand {
 								lore = item.getItemMeta().getLore();
 								if(custom instanceof CEnchantment) { 
 									if(Tools.checkForEnchantments(lore, (CEnchantment) custom))
-										return Error + "You already have this Enchantment!";
+										for(int i = 0; i < lore.size(); i++) {
+											if(Tools.checkForEnchantment(lore.get(i), (CEnchantment) custom)) {
+												int newLevel = Tools.getLevel(lore.get(i))+level;
+												int maxLevel = ((CEnchantment) custom).getEnchantmentMaxLevel();
+												if(Tools.getLevel(lore.get(i)) == ((CEnchantment) custom).getEnchantmentMaxLevel())
+													return Error + "You already have the maximum level of this enchantment!";
+												if(newLevel > maxLevel)
+													newLevel = maxLevel;
+												lore.set(i, custom.getDisplayName() + " " + Tools.intToLevel(newLevel));
+												im.setLore(lore);
+												item.setItemMeta(im);
+												p.setItemInHand(item);
+												return Success + "You have increased your item's level of " + custom.getDisplayName() + ChatColor.GREEN + (newLevel == maxLevel ? " to " + maxLevel : " by " + level ) + "!";
+											}
+										}
 									int number = Main.maxEnchants;
 									for(CEnchantment ce : Main.enchantments)
 										if(number > 0) {
@@ -618,7 +657,7 @@ public class CeCommand {
 								im.setLore(lore);
 								item.setItemMeta(im);
 								p.setItemInHand(item);
-								Success += "You have enchanted your item with '" + custom.getDisplayName() + ChatColor.GREEN + "'" + (level != 0 ? " level " + level : "") + "!";
+								Success += "You have enchanted your item with '" + custom.getDisplayName() + ChatColor.GREEN + "' level " + level + "!";
 							} else if(custom instanceof CItem){
 								Material toSet = item.getType();
 								if(toSet == Material.AIR)

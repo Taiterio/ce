@@ -50,8 +50,14 @@ public class Minigun extends CItem {
 	@Override
 	public boolean effect(Event event, final Player player) {
 		final EntityShootBowEvent e = (EntityShootBowEvent) event;
+		Arrow oldArrow = (Arrow) e.getProjectile();
 		e.setCancelled(true);
 		addLock(player);
+		
+		final int fireTicks = oldArrow.getFireTicks();
+		final int knockbackStrength = oldArrow.getKnockbackStrength();
+		final boolean critical = oldArrow.isCritical();
+		final String metadata = oldArrow.getMetadata("ce.bow.enchantment").get(0).asString();
 
 			new BukkitRunnable() {
 				
@@ -91,6 +97,10 @@ public class Minigun extends CItem {
 								arrow.setBounce(false);
 								arrow.setVelocity(player.getLocation().getDirection().multiply(5));
 								arrow.setShooter(player);
+								arrow.setFireTicks(fireTicks); // Set the new arrows on fire if the original one was 
+								arrow.setKnockbackStrength(knockbackStrength);
+								arrow.setCritical(critical);
+								arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(getPlugin(), metadata));
 								arrow.setMetadata("ce.minigunarrow", new FixedMetadataValue(main, null));
 								player.getWorld().playEffect(player.getLocation(),Effect.BOW_FIRE, 20);
 								lArrows--;
