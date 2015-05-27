@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -490,12 +491,17 @@ public final class Main extends JavaPlugin {
     
     public static void makeLists(boolean finalize, boolean printSuccess) {
     	long time = System.currentTimeMillis();
-
     	
 
 //--------------Dynamic enchantment class loading-------------------------------
     	try {
-    		String path = plugin.getDataFolder().getAbsolutePath() + ".jar";
+    		String path = plugin.getDataFolder().getAbsolutePath();
+    		String classSource = Bukkit.getPluginManager().getPlugin("CustomEnchantments").getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
+    		String seperator = "\\\\";
+    		if(classSource.contains("/"))
+    			seperator = "/";
+    		String[] classSourceSplit = classSource.split(seperator);
+    		path = path.substring(0, path.length() - 18) + classSourceSplit[classSourceSplit.length-1].replace("%20", " ");
 			JarFile jar = new JarFile(path);
 			Enumeration<JarEntry> entries = jar.entries();
 			
@@ -518,10 +524,16 @@ public final class Main extends JavaPlugin {
             
             jar.close();
 		} catch (Exception e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Enchantments could not be loaded,");
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please report this error on the Bukkit page of the plugin");
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] by sending the following to Taiterio via PM:");
-			e.printStackTrace();
+			if(e instanceof FileNotFoundException) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Enchantments could not be started,");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please make sure that you the plugins jar");
+    			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] in your plugin folder is named 'CustomEnchantments'.");
+			} else {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Custom Enchantments could not be loaded,");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] please report this error on the Bukkit page of the plugin");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] by sending the following to Taiterio via PM:");
+				e.printStackTrace();
+			}
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return;
 		}

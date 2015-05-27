@@ -54,12 +54,19 @@ public class Minigun extends CItem {
 		e.setCancelled(true);
 		addLock(player);
 		
+		
+		String meta = null;
+		if(oldArrow.hasMetadata("ce.bow.enchantment"))
+			meta = oldArrow.getMetadata("ce.bow.enchantment").get(0).asString();
+		
+		
 		final int fireTicks = oldArrow.getFireTicks();
 		final int knockbackStrength = oldArrow.getKnockbackStrength();
 		final boolean critical = oldArrow.isCritical();
-		final String metadata = oldArrow.getMetadata("ce.bow.enchantment").get(0).asString();
-
+		final String metadata = meta;
+		
 			new BukkitRunnable() {
+				
 				
 				int lArrows = ArrowCountPerVolley;
 				ItemStack last = player.getItemInHand();
@@ -100,7 +107,8 @@ public class Minigun extends CItem {
 								arrow.setFireTicks(fireTicks); // Set the new arrows on fire if the original one was 
 								arrow.setKnockbackStrength(knockbackStrength);
 								arrow.setCritical(critical);
-								arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(getPlugin(), metadata));
+								if(metadata != null)
+									arrow.setMetadata("ce.bow.enchantment", new FixedMetadataValue(getPlugin(), metadata));
 								arrow.setMetadata("ce.minigunarrow", new FixedMetadataValue(main, null));
 								player.getWorld().playEffect(player.getLocation(),Effect.BOW_FIRE, 20);
 								lArrows--;

@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 import com.taiter.ce.CBasic.Trigger;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
+import com.taiter.ce.Enchantments.Bow.Volley;
 
 
 /*
@@ -210,8 +211,7 @@ public class CEventHandler {
 			for(String ench : enchantments) {
 				String[] enchantment = ench.split(" : ");
 				CEnchantment ce = Tools.getEnchantmentByOriginalname(enchantment[0]);
-				if(Tools.random.nextDouble()*100 < ce.getOccurrenceChance())
-					ce.effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+				ce.effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
 			}
 			e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
 		}
@@ -225,6 +225,8 @@ public class CEventHandler {
 			
 			Boolean checkLore = im.hasLore();
 			Boolean checkName = im.hasDisplayName();
+			
+			int volleyLevel = -1; //Level to let Volley have its effect after all other bow enchantments
 						
 			List<String> lore = im.getLore();
 			String name = im.getDisplayName();
@@ -246,13 +248,17 @@ public class CEventHandler {
 				if(!ce.getHasCooldown(toCheck))
 				 try {
 				  long time = System.currentTimeMillis();
-				  if(Tools.random.nextInt(100) < ce.getOccurrenceChance()) {
+				  if(Tools.random.nextDouble()*100 <= ce.getOccurrenceChance()) {
 					  //BOWS
 					  	if(e instanceof EntityShootBowEvent) {
 						  String enchantments = ce.getOriginalName() + " : " + level;
 						  if(((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment"))
 							  enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
 						  ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
+						  if(ce instanceof Volley) {
+					  		volleyLevel = level;
+					  		continue;
+					  	  }
 					  	}
 					  //BOWS
 					  	
@@ -318,6 +324,14 @@ public class CEventHandler {
 				}
 			}
 			}
+			
+			if(volleyLevel >= 0) {
+				for(CBasic cb : list)
+					if(cb instanceof Volley)
+						((Volley) cb).effect(e, i, volleyLevel);
+			}
+			
+			
 			}
 		}
 	}
