@@ -177,14 +177,26 @@ public final class Main extends JavaPlugin {
     	//Start the listener
     	initializeListener();
     	
-    	createExplosions     = Boolean.parseBoolean(Main.config.getString("Global.CreateExplosions"));
     	
-    	//Get the maximum amount of Enchantments on an Item
-    	maxEnchants = Integer.parseInt(config.getString("Global.Enchantments.MaximumCustomEnchantments"));
+    	try {
     	
-    	//Set the Loreprefix
-    	lorePrefix = Tools.resolveEnchantmentColor();
+    		createExplosions     = Boolean.parseBoolean(Main.config.getString("Global.CreateExplosions"));
+    	
+    		//Get the maximum amount of Enchantments on an Item
+    		maxEnchants = Integer.parseInt(config.getString("Global.Enchantments.MaximumCustomEnchantments"));
+    	
+    	} catch(Exception ex) {
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Config error, please check the values of");
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Global.CreateExplosions (Has to be true or false) and");
+    		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Global.Enchantments.MaximumCustomEnchantments (Has to be a number)");
+    	}
+    		
+    		//Set the Loreprefix
+    		lorePrefix = Tools.resolveEnchantmentColor();
 	    
+    	
+    	
+    	
     	//Check and set up the Economy
     	if(setupEconomy()) {
     		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CE] Vault has been detected!");

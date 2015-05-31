@@ -615,7 +615,7 @@ public class Tools {
 				}
 		} else {
 			try {
-			color = ChatColor.valueOf(Main.config.getString("Global.Enchantments.CEnchantmentColor")) + "";
+			color = ChatColor.valueOf(Main.config.getString("Global.Enchantments.CEnchantmentColor").toUpperCase()).toString();
 			} catch (Exception e){
 				 Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[CE] ERROR: The ChatColor '" + color + "' was not found, please check the list of Bukkit ChatColors and update the ChatColor Section. The ChatColor will be ignored to ensure that CE is still working.");
 			}
@@ -970,7 +970,7 @@ public class Tools {
 	public static List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
 		for(int amount = length; amount > 0; amount--) {
-			list.add(player.getTargetBlock(null, amount).getLocation());
+			list.add(player.getTargetBlock((HashSet<Byte>) null, amount).getLocation());
 		}
 		return list;
 	}

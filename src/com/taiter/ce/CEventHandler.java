@@ -262,7 +262,7 @@ public class CEventHandler {
 					  	}
 					  //BOWS
 					  	
-					  	if(e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player && ce.triggers.contains(Trigger.SHOOT_BOW))
+					  	if(e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player && ce.triggers.contains(Trigger.SHOOT_BOW) && ((Player) ((EntityDamageByEntityEvent) e).getDamager()).getItemInHand().getType().equals(Material.BOW))
 					  		continue;
 					  
 					 ce.effect(e, i, level);

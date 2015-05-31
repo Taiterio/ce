@@ -20,6 +20,7 @@ package com.taiter.ce.CItems;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -138,7 +139,7 @@ public class Flamethrower extends CItem {
 	public List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
 		for(int amount = length; amount > 0; amount --) {
-			list.add(player.getTargetBlock(null, amount).getLocation());
+			list.add(player.getTargetBlock((HashSet<Byte>)null, amount).getLocation());
 		}
 		return list;
 	}

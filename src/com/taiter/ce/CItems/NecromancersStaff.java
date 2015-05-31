@@ -22,6 +22,7 @@ package com.taiter.ce.CItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.bukkit.ChatColor;
@@ -143,7 +144,7 @@ public class NecromancersStaff extends CItem {
 					player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
 					player.getWorld().playSound(l, Sound.BLAZE_HIT, 0.2f, 0f);
 				} else if(spell == 2) {
-					Location target = player.getTargetBlock(null, 20).getLocation();
+					Location target = player.getTargetBlock((HashSet<Byte>)null, 20).getLocation();
 					player.getWorld().strikeLightning(target);
 					if(Tools.checkWorldGuard(l, player, "TNT", true))
 							player.getWorld().createExplosion(target, 1);
