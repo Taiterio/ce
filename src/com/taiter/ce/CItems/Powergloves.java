@@ -37,9 +37,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class Powergloves extends CItem {
 
-	int	ThrowSpeedMultiplier;
-	int	ThrowDelayAfterGrab;
-	int	MaxGrabtime;
+	int ThrowSpeedMultiplier;
+	int ThrowDelayAfterGrab;
+	int MaxGrabtime;
 
 	public Powergloves(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
@@ -49,7 +49,7 @@ public class Powergloves extends CItem {
 		triggers.add(Trigger.INTERACT_RIGHT);
 		triggers.add(Trigger.INTERACT_ENTITY);
 	}
-
+	
 	@Override
 	public boolean effect(Event event, final Player player) {
 		if(event instanceof PlayerInteractEntityEvent) {
@@ -73,48 +73,46 @@ public class Powergloves extends CItem {
 							this.cancel();
 						}
 					}.runTaskLater(main, ThrowDelayAfterGrab);
-
+					
 					new BukkitRunnable() {
-
-						int			GrabTime	= MaxGrabtime;
-						ItemStack	current		= player.getItemInHand();
-
+						
+						int GrabTime = MaxGrabtime;
+						ItemStack current = player.getItemInHand();
+						
 						@Override
 						public void run() {
 							if(current.equals(player.getItemInHand())) {
 								current = player.getItemInHand();
-							if(GrabTime > 0) {
-								if(!player.hasMetadata("ce." + getOriginalName())) {
+								if(GrabTime > 0) {
+									if(!player.hasMetadata("ce." + getOriginalName()))
+										this.cancel();
+									GrabTime--;
+								} else if(GrabTime <= 0) {
+									if(player.hasMetadata("ce." + getOriginalName())) {
+										player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
+										player.removeMetadata("ce." + getOriginalName(), main);
+										generateCooldown(player, getCooldown());
+									}
+									clicked.leaveVehicle();
 									this.cancel();
-								}
-								GrabTime--;
-							} else if(GrabTime <= 0) {
-								if(player.hasMetadata("ce." + getOriginalName())) {
-									player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
-									player.removeMetadata("ce." + getOriginalName(), main);
-									generateCooldown(player, getCooldown());
-								}
-								clicked.leaveVehicle();
-								this.cancel();
-							}
-						  } else {
+								} 
+							} else {
 							  player.removeMetadata("ce." + getOriginalName(), main);
 							  generateCooldown(player, getCooldown());
 							  this.cancel();
-						  }
+						  	}
 						}
 					}.runTaskTimer(main, 0l, 10l);
 				}
-		} else if(event instanceof PlayerInteractEvent) {
-			if(player.hasMetadata("ce." + getOriginalName()) && player.getMetadata("ce." + getOriginalName()).get(0).asBoolean())
-					if(player.getPassenger() != null) {
-						Entity passenger = player.getPassenger();
-						player.getPassenger().leaveVehicle();
-						passenger.setVelocity(player.getLocation().getDirection().multiply(ThrowSpeedMultiplier));
-						player.getWorld().playEffect(player.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
-						player.removeMetadata("ce." + getOriginalName(), main);
-						return true;
-					}
+		} else if (event instanceof PlayerInteractEvent
+		&& (player.hasMetadata("ce." + getOriginalName()) || player.getMetadata("ce." + getOriginalName()).get(0).asBoolean())
+		&& player.getPassenger() != null) {
+			Entity passenger = player.getPassenger();
+			player.getPassenger().leaveVehicle();
+			passenger.setVelocity(player.getLocation().getDirection().multiply(ThrowSpeedMultiplier));
+			player.getWorld().playEffect(player.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
+			player.removeMetadata("ce." + getOriginalName(), main);
+			return true;
 		}
 		return false;
 	}
