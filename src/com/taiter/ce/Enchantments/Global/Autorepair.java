@@ -32,11 +32,13 @@ import com.taiter.ce.Enchantments.CEnchantment;
 public class Autorepair extends CEnchantment {
 	int	healAmount;
 	boolean healFully;
+	int cooldown;
 	
 	public Autorepair(Application app) {
 		super(app);				
 		configEntries.add("HealAmount: 1");
 		configEntries.add("HealFully: false");
+		configEntries.add("Cooldown: 60");
 		triggers.add(Trigger.MOVE);
 	}
 
@@ -57,7 +59,7 @@ public class Autorepair extends CEnchantment {
 				else
 					item.setDurability((short) 0);
 			}
-
+			generateCooldown(owner, cooldown);
 		}
 	}
 
@@ -65,5 +67,6 @@ public class Autorepair extends CEnchantment {
 	public void initConfigEntries() {
 		healAmount = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".HealAmount"));
 		healFully  = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".HealFully"));
+		cooldown  = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
 	}
 }

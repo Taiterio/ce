@@ -18,8 +18,6 @@ package com.taiter.ce.CItems;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,135 +41,134 @@ import org.bukkit.metadata.FixedMetadataValue;
 import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
-
-
 public class NecromancersStaff extends CItem {
 
-	List<String>	spells	= Arrays.asList(new String[] { ChatColor.GRAY + "Spell: " + ChatColor.DARK_GRAY + "Wither's Apprentice", ChatColor.GRAY + "Spell: " + ChatColor.DARK_RED + "Fireball", ChatColor.GRAY + "Spell: " + ChatColor.DARK_BLUE + "Lightning Strike" });
+    List<String> spells = Arrays.asList(new String[] { ChatColor.GRAY + "Spell: " + ChatColor.DARK_GRAY + "Wither's Apprentice", ChatColor.GRAY + "Spell: " + ChatColor.DARK_RED + "Fireball",
+            ChatColor.GRAY + "Spell: " + ChatColor.DARK_BLUE + "Lightning Strike" });
 
-	Material		Fuel;
+    Material Fuel;
 
-	int				WitherCost;
-	int				FireballCost;
-	int				LightningCost;
-	int				WitherCooldown;
-	int				FireballCooldown;
-	int				LightningCooldown;
+    int WitherCost;
+    int FireballCost;
+    int LightningCost;
+    int WitherCooldown;
+    int FireballCooldown;
+    int LightningCooldown;
 
-	public NecromancersStaff(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
-		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("Fuel: 377");
-		this.configEntries.add("WitherCost: 10");
-		this.configEntries.add("WitherCooldown: 100");
-		this.configEntries.add("FireballCost: 35");
-		this.configEntries.add("FireballCooldown: 60");
-		this.configEntries.add("LightningCost: 20");
-		this.configEntries.add("LightningCooldown: 240");
-		triggers.add(Trigger.INTERACT);
-	}
+    public NecromancersStaff(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
+        super(originalName, color, lDescription, lCooldown, mat);
+        this.configEntries.add("Fuel: 377");
+        this.configEntries.add("WitherCost: 10");
+        this.configEntries.add("WitherCooldown: 100");
+        this.configEntries.add("FireballCost: 35");
+        this.configEntries.add("FireballCooldown: 60");
+        this.configEntries.add("LightningCost: 20");
+        this.configEntries.add("LightningCooldown: 240");
+        triggers.add(Trigger.INTERACT);
+    }
 
-	@Override
-	public boolean effect(Event event, Player player) {
-		PlayerInteractEvent e = (PlayerInteractEvent) event;
-		ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
-		List<String> lore = new ArrayList<String>();
-		if(!im.hasLore()) {
-			lore.add(spells.get(0));
-			im.setLore(lore);
-			e.getPlayer().getItemInHand().setItemMeta(im);
-		}
-		lore = im.getLore();
-		int lastElement = lore.size() - 1;
+    @Override
+    public boolean effect(Event event, Player player) {
+        PlayerInteractEvent e = (PlayerInteractEvent) event;
+        ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
+        List<String> lore = new ArrayList<String>();
+        if (!im.hasLore()) {
+            lore.add(spells.get(0));
+            im.setLore(lore);
+            e.getPlayer().getItemInHand().setItemMeta(im);
+        }
+        lore = im.getLore();
+        int lastElement = lore.size() - 1;
 
-		if(e.getAction().toString().startsWith("LEFT")) {
+        if (e.getAction().toString().startsWith("LEFT")) {
 
-			int nextSpellIndex = spells.indexOf(lore.get(lastElement)) + 1;
+            int nextSpellIndex = spells.indexOf(lore.get(lastElement)) + 1;
 
-			if(nextSpellIndex == 3)
-				nextSpellIndex = 0;
+            if (nextSpellIndex == 3)
+                nextSpellIndex = 0;
 
-			String nextSpell = spells.get(nextSpellIndex);
+            String nextSpell = spells.get(nextSpellIndex);
 
-			lore.set(lastElement, nextSpell);
-			im.setLore(lore);
-			e.getPlayer().getItemInHand().setItemMeta(im);
+            lore.set(lastElement, nextSpell);
+            im.setLore(lore);
+            e.getPlayer().getItemInHand().setItemMeta(im);
 
-			player.sendMessage(ChatColor.GRAY + "Changed Spell to " + nextSpell.split(": ")[1] + ChatColor.GRAY + ".");
-			player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
-		} else if(e.getAction().toString().startsWith("RIGHT")) {
+            player.sendMessage(ChatColor.GRAY + "Changed Spell to " + nextSpell.split(": ")[1] + ChatColor.GRAY + ".");
+            player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);
+        } else if (e.getAction().toString().startsWith("RIGHT")) {
 
-			int spell    = -1;
-			int cost     = -1;
-			int cooldown = -1;
+            int spell = -1;
+            int cost = -1;
+            int cooldown = -1;
 
-			// Get all values
-			if(lore.get(lastElement).equals(spells.get(0))) {
-				spell = 0;
-				cost = WitherCost;
-				cooldown = WitherCooldown;
-			} else if(lore.get(lastElement).equals(spells.get(1))) {
-				spell = 1;
-				cost = FireballCost;
-				cooldown = FireballCooldown;
-			} else if(lore.get(lastElement).equals(spells.get(2))) {
-				spell = 2;
-				cost = LightningCost;
-				cooldown = LightningCooldown;
-			}
+            // Get all values
+            if (lore.get(lastElement).equals(spells.get(0))) {
+                spell = 0;
+                cost = WitherCost;
+                cooldown = WitherCooldown;
+            } else if (lore.get(lastElement).equals(spells.get(1))) {
+                spell = 1;
+                cost = FireballCost;
+                cooldown = FireballCooldown;
+            } else if (lore.get(lastElement).equals(spells.get(2))) {
+                spell = 2;
+                cost = LightningCost;
+                cooldown = LightningCooldown;
+            }
 
-			// Apply costs
-			if(player.getInventory().contains(Fuel, cost) || player.getGameMode().equals(GameMode.CREATIVE)) {
-				if(!player.getGameMode().equals(GameMode.CREATIVE)) {
-					ItemStack mana = new ItemStack(Fuel, cost);
-					player.getInventory().removeItem(mana);
-					player.updateInventory();
-				}
+            // Apply costs
+            if (player.getInventory().contains(Fuel, cost) || player.getGameMode().equals(GameMode.CREATIVE)) {
+                if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+                    ItemStack mana = new ItemStack(Fuel, cost);
+                    player.getInventory().removeItem(mana);
+                    player.updateInventory();
+                }
 
-				Location l = player.getLocation();
-				
-				// Apply effect
-				if(spell == 0) {
-					if(Tools.checkWorldGuard(l, player, "PVP", true)) {
-						WitherSkull ws = player.launchProjectile(WitherSkull.class);
-						ws.setVelocity(l.getDirection().multiply(2));
-						if(!Main.createExplosions)
-							ws.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
-						player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
-					} else {
-						player.getWorld().playSound(l, Sound.CAT_HISS, 0.3f, 5f);
-					}
-				} else if(spell == 1) {
-					player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
-					player.getWorld().playSound(l, Sound.BLAZE_HIT, 0.2f, 0f);
-				} else if(spell == 2) {
-					Location target = player.getTargetBlock((HashSet<Byte>)null, 20).getLocation();
-					player.getWorld().strikeLightning(target);
-					if(Tools.checkWorldGuard(l, player, "TNT", true))
-							player.getWorld().createExplosion(target, 1);
-					player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
-				}
+                Location l = player.getLocation();
 
-				// Generate the cooldown based on the cooldown value
-				generateCooldown(player, cooldown);
-			} else {
-				player.sendMessage(ChatColor.RED + "You need " + cost + " " + Fuel.toString().toLowerCase().replace("_", " ") + " to cast this spell.");
-			}
+                // Apply effect
+                if (spell == 0) {
+                    if (Tools.checkWorldGuard(l, player, "PVP", true)) {
+                        WitherSkull ws = player.launchProjectile(WitherSkull.class);
+                        ws.setVelocity(l.getDirection().multiply(2));
+                        if (!Main.createExplosions)
+                            ws.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
+                        player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
+                    } else {
+                        player.getWorld().playSound(l, Sound.CAT_HISS, 0.3f, 5f);
+                    }
+                } else if (spell == 1) {
+                    player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
+                    player.getWorld().playSound(l, Sound.BLAZE_HIT, 0.2f, 0f);
+                } else if (spell == 2) {
+                    Location target = player.getTargetBlock((HashSet<Byte>) null, 20).getLocation();
+                    player.getWorld().strikeLightning(target);
+                    if (Tools.checkWorldGuard(l, player, "TNT", true))
+                        player.getWorld().createExplosion(target, 1);
+                    player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
+                }
 
-		}
-		return false; // The Staff generates it's own cooldowns, so it always
-						// returns false
-	}
+                // Generate the cooldown based on the cooldown value
+                generateCooldown(player, cooldown);
+            } else {
+                player.sendMessage(ChatColor.RED + "You need " + cost + " " + Fuel.toString().toLowerCase().replace("_", " ") + " to cast this spell.");
+            }
 
-	@Override
-	public void initConfigEntries() {
-		Fuel		 		= Material.getMaterial(Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".Fuel")));
-		LightningCost 		= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".LightningCost"));
-		LightningCooldown 	= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".LightningCooldown"));
-		WitherCost 			= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".WitherCost"));
-		WitherCooldown 		= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".WitherCooldown"));
-		FireballCost 		= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCost"));
-		FireballCooldown	= Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCooldown"));
-		addToDescription(spells.get(0));
-	}
+        }
+        return false; // The Staff generates it's own cooldowns, so it always
+                      // returns false
+    }
+
+    @Override
+    public void initConfigEntries() {
+        Fuel = Material.getMaterial(Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".Fuel")));
+        LightningCost = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".LightningCost"));
+        LightningCooldown = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".LightningCooldown"));
+        WitherCost = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".WitherCost"));
+        WitherCooldown = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".WitherCooldown"));
+        FireballCost = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCost"));
+        FireballCooldown = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".FireballCooldown"));
+        addToDescription(spells.get(0));
+    }
 
 }

@@ -49,7 +49,7 @@ public class Quickening extends CEnchantment {
 		BlockBreakEvent event = (BlockBreakEvent) e;
 		Player player = event.getPlayer();
 		
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Duration, Strength+level-1), true);
+		player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Duration, Strength+level-1), false);
 	}
 	
 	@Override

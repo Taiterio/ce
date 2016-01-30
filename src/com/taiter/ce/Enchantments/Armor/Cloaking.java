@@ -1,4 +1,4 @@
-package com.taiter.ce.Enchantments.Bow;
+package com.taiter.ce.Enchantments.Armor;
 
 /*
 * This file is part of Custom Enchantments
@@ -18,43 +18,39 @@ package com.taiter.ce.Enchantments.Bow;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.Random;
-
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.taiter.ce.Enchantments.CEnchantment;
 
-public class Lightning extends CEnchantment {
+public class Cloaking extends CEnchantment {
 
-    int chance;
+    int duration;
+    int cooldown;
 
-    public Lightning(Application app) {
+    public Cloaking(Application app) {
         super(app);
-        configEntries.add("LightningChance: 75");
-        triggers.add(Trigger.SHOOT_BOW);
-        triggers.add(Trigger.DAMAGE_GIVEN);
+        configEntries.add("DurationPerLevel: 60");
+        configEntries.add("Cooldown: 200");
+        triggers.add(Trigger.DAMAGE_TAKEN);
     }
 
     @Override
     public void effect(Event e, ItemStack item, int level) {
-        if (e instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-            LivingEntity target = (LivingEntity) event.getEntity();
-            Random random = new Random();
-            int temp = level;
-            while (temp != 0) {
-                if (random.nextInt(100) < chance)
-                    target.getWorld().strikeLightning(target.getLocation());
-                --temp;
-            }
-        }
+        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+        Player player = (Player) event.getEntity();
+        player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, duration * level, 0));
+        player.sendMessage("You have become invisible!");
+        generateCooldown(player, cooldown);
     }
 
     @Override
     public void initConfigEntries() {
-        chance = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".LightningChance"));
+        duration = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DurationPerLevel"));
+        cooldown = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
     }
 }

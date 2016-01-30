@@ -1,5 +1,8 @@
 package com.taiter.ce.Enchantments.Armor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /*
 * This file is part of Custom Enchantments
 * Copyright (C) Taiterio 2015
@@ -18,38 +21,72 @@ package com.taiter.ce.Enchantments.Armor;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
+import com.taiter.ce.ReflectionHelper;
 import com.taiter.ce.Enchantments.CEnchantment;
 
-
-
 public class Shielded extends CEnchantment {
-	
-	int strength;
 
-	public Shielded(Application app) {
-		super(app);		
-		configEntries.add("BaseStrength: 1");
-		triggers.add(Trigger.DAMAGE_TAKEN);
-	}
+    int baseStrength;
+    int strengthPerLevel;
+    long cooldown;
 
-	@Override
-	public void effect(Event e, ItemStack item, int level) {
-		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
-		((Player) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 600, strength + level), true);
-		generateCooldown((Player) event.getEntity(), 400l);
-	}
+    private static Method getAbsorptionHearts;
+    private static Method setAbsorptionHearts;
 
-	@Override
-	public void initConfigEntries() {
-	strength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".BaseStrength"))-1;
-	}
+    static {
+        try {
+            getAbsorptionHearts = ReflectionHelper.getNMSClass("EntityHuman").getDeclaredMethod("getAbsorptionHearts", new Class[0]);
+            setAbsorptionHearts = ReflectionHelper.getNMSClass("EntityHuman").getDeclaredMethod("setAbsorptionHearts", float.class);
+        } catch (NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Shielded(Application app) {
+        super(app);
+        configEntries.add("BaseStrength: 4");
+        configEntries.add("StrengthPerLevel: 2");
+        configEntries.add("Cooldown: 30");
+        triggers.add(Trigger.DAMAGE_TAKEN);
+    }
+
+    @Override
+    public void effect(Event e, ItemStack item, int level) {
+        EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
+        Player player = (Player) event.getEntity();
+        if (getAbsorptionHearts(player) <= 0) {
+            setAbsorptionHearts(player, baseStrength + level * strengthPerLevel);
+            generateCooldown(player, cooldown);
+        }
+    }
+
+    @Override
+    public void initConfigEntries() {
+        baseStrength = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".BaseStrength"));
+        strengthPerLevel = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".StrengthPerLevel"));
+        cooldown = Long.parseLong(getConfig().getString("Enchantments." + getOriginalName() + ".Cooldown"));
+    }
+
+    private float getAbsorptionHearts(Player player) {
+        try {
+            return (float) getAbsorptionHearts.invoke(ReflectionHelper.getEntityHandle(player), new Object[0]);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private void setAbsorptionHearts(Player player, float newValue) {
+        try {
+            setAbsorptionHearts.invoke(ReflectionHelper.getEntityHandle(player), newValue);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

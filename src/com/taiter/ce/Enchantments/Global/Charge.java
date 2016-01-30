@@ -34,7 +34,7 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class Charge extends CEnchantment {
 
-	int	DamageIncreasePercentage;
+	float	DamageIncreasePercentage;
 
 	public Charge(Application app) {
 		super(app);		
@@ -60,12 +60,10 @@ public class Charge extends CEnchantment {
 			((Damageable) ent).setHealth(0);
 
 		player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.1f, 0.1f);
-		
-
 	}
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
+		DamageIncreasePercentage = Float.parseFloat(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"))/100;		
 	}
 }

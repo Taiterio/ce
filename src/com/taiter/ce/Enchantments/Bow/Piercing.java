@@ -22,7 +22,6 @@ package com.taiter.ce.Enchantments.Bow;
 
 import org.bukkit.Effect;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -44,9 +43,8 @@ public class Piercing extends CEnchantment {
 		if(e instanceof EntityDamageByEntityEvent) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 		LivingEntity target = (LivingEntity) event.getEntity();
-		
 
-		if(target instanceof Player && ((Player) target).getInventory().getArmorContents().length != 0) {
+		if(target.getEquipment().getArmorContents().length != 0) {
 		double newHealth = target.getHealth()-event.getDamage();
 		if(newHealth < 0)
 			newHealth=0;

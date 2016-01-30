@@ -10,10 +10,18 @@ Global:
   LogEvents: true
   LogItems: true
   LogEnchantments: true
+ Runecrafting:
+  Enabled: true
+  Disenchanting: true
+  CanStackEnchantments: true
+  TransformationEffect: true
+ Books:
+  Name: "&d&kedk&5 Magic Book &d&kedk"
  Enchantments:
-  CEnchantmentColor: DARK_RED;ITALIC
+  CEnchantmentColor: GRAY
   CEnchantmentTable: true
   CEnchantingProbability: 10
+  GlowEnchantmentID: 100
   MaximumCustomEnchantments: 1000
   UseCustomEnchantmentProbability: false
   RequirePermissions: true

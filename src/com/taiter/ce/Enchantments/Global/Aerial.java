@@ -34,7 +34,7 @@ import com.taiter.ce.Enchantments.CEnchantment;
 
 public class Aerial extends CEnchantment {
 
-	int	DamageIncreasePercentage;
+	float	DamageIncreasePercentage;
 
 	public Aerial(Application app) {
 		super(app);		
@@ -67,6 +67,6 @@ public class Aerial extends CEnchantment {
 
 	@Override
 	public void initConfigEntries() {
-		DamageIncreasePercentage = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"));		
+		DamageIncreasePercentage = Float.parseFloat(getConfig().getString("Enchantments." + getOriginalName() + ".DamageIncreasePercentagePerLevel"))/100;		
 	}
 }
