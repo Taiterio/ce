@@ -451,7 +451,10 @@ public class CEventHandler {
                             public void run() {
                                 if (counter <= 0) {
                                     inv.setItem(2, new ItemStack(Material.AIR));
-                                    p.setItemOnCursor(result);
+                                    if(p.getOpenInventory() != null && p.getOpenInventory().getTitle().equals(ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba"))
+                                        p.setItemOnCursor(result);
+                                    else
+                                        p.getInventory().addItem(result);
                                     this.cancel();
                                     return;
                                 }
