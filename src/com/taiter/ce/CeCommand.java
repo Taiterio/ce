@@ -440,7 +440,7 @@ public class CeCommand {
                     if (!cEnchants.isEmpty()) {
                         HashMap<CEnchantment, Integer> list = new HashMap<CEnchantment, Integer>();
                         for (String e : cEnchants) {
-                            list.put(EnchantManager.getEnchantment(e), EnchantManager.getLevel(e));
+                            list.put(EnchantManager.getEnchantment(e), Integer.parseInt(e.split(" ")[1]));
                         }
 
                         if (newItem.getType().equals(Material.BOOK))

@@ -122,7 +122,6 @@ public class CEListener implements Listener {
                 CEventHandler.updateRunecraftingInventory(event.getInventory());
                 return;
             }
-        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -232,20 +231,20 @@ public class CEListener implements Listener {
 
                 // Opens the item inventory and loads the permissions if needed
                 if (topInv.getTitle().equals(Tools.prefix + "Main Menu"))
-                    if(event.getRawSlot() == 4) {
-                    p.closeInventory();
-                    p.openInventory(Tools.getItemMenu(p));
-                    return;
-                } else if(event.getRawSlot() == 6) {
-                    if(p.hasPermission("ce.*") || p.hasPermission("ce.runecrafting")) {
+                    if (event.getRawSlot() == 4) {
                         p.closeInventory();
-                        p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
+                        p.openInventory(Tools.getItemMenu(p));
                         return;
-                    } else {
-                        p.sendMessage(ChatColor.RED + "You do not have permission to use this!");
-                        return;
+                    } else if (event.getRawSlot() == 6) {
+                        if (p.hasPermission("ce.*") || p.hasPermission("ce.runecrafting")) {
+                            p.closeInventory();
+                            p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
+                            return;
+                        } else {
+                            p.sendMessage(ChatColor.RED + "You do not have permission to use this!");
+                            return;
+                        }
                     }
-                }
 
                 // These are the specific menus, clicking one of them will lead
                 // to the enchanting menu, which needs to be 'notified' of the
@@ -292,9 +291,14 @@ public class CEListener implements Listener {
                         return;
                     }
 
-                if (topInv.getTitle().equals(Tools.prefix + "Items"))
+                if (topInv.getTitle().equals(Tools.prefix + "Items")) {
+                    CItem ci = Tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName());
+                    if(!p.hasPermission("ce.item.*") && !p.hasPermission("ce.item." + ci.getOriginalName())) {
+                        p.sendMessage(ChatColor.RED + "You do not have permission to buy this Item!");
+                        return;
+                    }
+                    
                     if (p.getInventory().firstEmpty() != -1) {
-                        CItem ci = Tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName());
                         double cost = ci.getCost();
                         //Check cost
                         if (Main.hasEconomy && !p.isOp() && cost > 0) {
@@ -327,7 +331,8 @@ public class CEListener implements Listener {
                         p.sendMessage(ChatColor.RED + "You do not have enough space in your inventory!");
                         return;
                     }
-
+                }
+                
                 if (topInv.getTitle().equals(Tools.prefix + "Level selection")) {
                     String enchantmentName = clickedItem.getItemMeta().getDisplayName();
                     CEnchantment ce = EnchantManager.getEnchantment(enchantmentName);
@@ -508,7 +513,7 @@ public class CEListener implements Listener {
                 if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.ANVIL)) {
                     ItemStack i = p.getItemInHand();
                     if (EnchantManager.hasEnchantments(i) || EnchantManager.isEnchantmentBook(i)) {
-                        if(!p.hasPermission("ce.*") && !p.hasPermission("ce.runecrafting"))
+                        if (!p.hasPermission("ce.*") && !p.hasPermission("ce.runecrafting"))
                             return;
                         e.setCancelled(true);
                         p.setItemInHand(new ItemStack(Material.AIR));
@@ -534,95 +539,98 @@ public class CEListener implements Listener {
         // Sign shop
         if (e.getClickedBlock() != null && e.getClickedBlock().getType().toString().contains("SIGN"))
             if (((Sign) e.getClickedBlock().getState()).getLine(0).equals("[CustomEnchant]")) {
-                if (!Main.hasEconomy) {
-                    p.performCommand("ce menu");
-                } else if (p.getItemInHand().getType() != Material.AIR) {
-                    Sign sign = ((Sign) e.getClickedBlock().getState());
-                    CEnchantment ce = EnchantManager.getEnchantment(sign.getLine(1));
-                    if (ce == null)
-                        EnchantManager.getEnchantment(sign.getLine(1));
-                    if (ce == null)
-                        for (CEnchantment ceT : EnchantManager.getEnchantments())
-                            if (EnchantManager.containsEnchantment(sign.getLine(1), ceT))
-                                ce = ceT;
-                    if (ce == null)
-                        return;
+                if (Main.hasEconomy)
+                    if (p.getItemInHand().getType() != Material.AIR) {
+                        Sign sign = ((Sign) e.getClickedBlock().getState());
+                        CEnchantment ce = EnchantManager.getEnchantment(sign.getLine(1));
+                        if (ce == null)
+                            EnchantManager.getEnchantment(sign.getLine(1));
+                        if (ce == null)
+                            for (CEnchantment ceT : EnchantManager.getEnchantments())
+                                if (EnchantManager.containsEnchantment(sign.getLine(1), ceT))
+                                    ce = ceT;
+                        if (ce == null)
+                            return;
 
-                    ItemStack inHand = p.getItemInHand();
-                    if (!Tools.isApplicable(inHand, ce)) {
-                        p.sendMessage(ChatColor.RED + "This enchantment can not be applied to this item.");
-                        return;
-                    }
-
-                    int cost = 0;
-                    try {
-                        cost = Integer.parseInt(sign.getLine(3).replaceAll("\\D+", ""));
-                    } catch (NumberFormatException ex) {
-                        return;
-                    }
-
-                    if (inHand.hasItemMeta() && inHand.getItemMeta().hasLore()) {
-                        List<String> lore = inHand.getItemMeta().getLore();
-                        for (int i = 0; i < lore.size(); i++)
-                            if (EnchantManager.containsEnchantment(lore.get(i), ce)) {
-                                int newLevel = EnchantManager.getLevel(lore.get(i)) + 1;
-                                if (newLevel <= ce.getEnchantmentMaxLevel()) {
-                                    if (Main.econ.getBalance(p.getName()) >= cost) {
-                                        EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
-                                        if (ecr.transactionSuccess()) {
-                                            p.sendMessage(ChatColor.GREEN + "Upgraded enchantment " + ce.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.WHITE + cost + " "
-                                                    + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) + ChatColor.GREEN + ".");
-                                        } else {
-                                            p.sendMessage(ChatColor.RED + "An economy error has occured:");
-                                            p.sendMessage(ChatColor.RED + ecr.errorMessage);
-                                            return;
-                                        }
-                                    } else {
-                                        p.sendMessage(ChatColor.RED + "You do not have enough money to buy this!");
-                                        return;
-                                    }
-                                    lore.set(i, ce.getDisplayName() + " " + EnchantManager.intToLevel(newLevel));
-                                    ItemMeta im = inHand.getItemMeta();
-                                    im.setLore(lore);
-                                    inHand.setItemMeta(im);
-                                    return;
-                                } else {
-                                    p.sendMessage(ChatColor.RED + "You already have the maximum level of this enchantment!");
-                                    return;
-                                }
-                            }
-                    }
-
-                    List<String> lore = new ArrayList<String>();
-                    ItemMeta im = inHand.getItemMeta();
-
-                    if (inHand.getItemMeta().hasLore())
-                        lore = im.getLore();
-
-                    if (Main.econ.getBalance(p.getName()) >= cost) {
-                        EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
-                        if (ecr.transactionSuccess())
-                            p.sendMessage(ChatColor.GREEN + "Bought enchantment " + ce.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.WHITE + cost + " "
-                                    + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) + ChatColor.GREEN + ".");
-                        else {
-                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "An economy error has occured:");
-                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + ecr.errorMessage);
+                        ItemStack inHand = p.getItemInHand();
+                        if (!Tools.isApplicable(inHand, ce)) {
+                            p.sendMessage(ChatColor.RED + "This enchantment can not be applied to this item.");
                             return;
                         }
+
+                        int cost = 0;
+                        try {
+                            cost = Integer.parseInt(sign.getLine(3).replaceAll("\\D+", ""));
+                        } catch (NumberFormatException ex) {
+                            return;
+                        }
+
+                        List<String> lore = new ArrayList<String>();
+                        ItemMeta im = inHand.getItemMeta();
+
+                        if (inHand.getItemMeta().hasLore()) {
+                            lore = inHand.getItemMeta().getLore();
+
+                            if (EnchantManager.getEnchantments(lore).size() == EnchantManager.getMaxEnchants()) {
+                                p.sendMessage(ChatColor.RED + "You already have the maximum amount of enchantments!");
+                                return;
+                            }
+
+                            for (int i = 0; i < lore.size(); i++)
+                                if (EnchantManager.containsEnchantment(lore.get(i), ce)) {
+                                    int newLevel = EnchantManager.getLevel(lore.get(i)) + 1;
+                                    if (newLevel <= ce.getEnchantmentMaxLevel()) {
+                                        if (Main.econ.getBalance(p.getName()) >= cost) {
+                                            EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
+                                            if (ecr.transactionSuccess()) {
+                                                p.sendMessage(ChatColor.GREEN + "Upgraded enchantment " + ce.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.WHITE + cost + " "
+                                                        + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) + ChatColor.GREEN + ".");
+                                            } else {
+                                                p.sendMessage(ChatColor.RED + "An economy error has occured:");
+                                                p.sendMessage(ChatColor.RED + ecr.errorMessage);
+                                                return;
+                                            }
+                                        } else {
+                                            p.sendMessage(ChatColor.RED + "You do not have enough money to buy this!");
+                                            return;
+                                        }
+                                        lore.set(i, ce.getDisplayName() + " " + EnchantManager.intToLevel(newLevel));
+                                        im.setLore(lore);
+                                        inHand.setItemMeta(im);
+                                        return;
+                                    } else {
+                                        p.sendMessage(ChatColor.RED + "You already have the maximum level of this enchantment!");
+                                        return;
+                                    }
+                                }
+                        }
+
+                        if (Main.econ.getBalance(p.getName()) >= cost) {
+                            EconomyResponse ecr = Main.econ.withdrawPlayer(p.getName(), cost);
+                            if (ecr.transactionSuccess())
+                                p.sendMessage(ChatColor.GREEN + "Bought enchantment " + ce.getDisplayName() + ChatColor.GREEN + " for " + ChatColor.WHITE + cost + " "
+                                        + ((cost == 1) ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) + ChatColor.GREEN + ".");
+                            else {
+                                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "An economy error has occured:");
+                                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + ecr.errorMessage);
+                                return;
+                            }
+                        } else {
+                            p.sendMessage(ChatColor.RED + "You do not have enough money to buy this!");
+                            return;
+                        }
+
+                        lore.add(ce.getDisplayName() + " I");
+                        im.setLore(lore);
+                        inHand.setItemMeta(im);
+                        if (!inHand.containsEnchantment(EnchantManager.getGlowEnchantment()))
+                            inHand.addUnsafeEnchantment(EnchantManager.getGlowEnchantment(), 0);
+                        return;
+
                     } else {
-                        p.sendMessage(ChatColor.RED + "You do not have enough money to buy this!");
+                        p.sendMessage(ChatColor.RED + "You do not have an item in your hand.");
                         return;
                     }
-
-                    lore.add(ce.getDisplayName() + " I");
-                    im.setLore(lore);
-                    inHand.setItemMeta(im);
-                    return;
-
-                } else {
-                    p.sendMessage(ChatColor.RED + "You do not have an item in your hand.");
-                    return;
-                }
             }
 
     }
@@ -745,7 +753,7 @@ public class CEListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void EnchantItemEvent(EnchantItemEvent e) {
         if (e.getExpLevelCost() == 30)
-            if (Tools.random.nextInt(100) < (Integer.parseInt(Main.config.getString("Global.Enchantments.CEnchantingProbability"))))
+            if (Tools.random.nextInt(100) < (Float.parseFloat(Main.config.getString("Global.Enchantments.CEnchantingProbability"))))
                 CEventHandler.handleEnchanting(e);
     }
 

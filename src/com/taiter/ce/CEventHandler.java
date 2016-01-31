@@ -537,39 +537,41 @@ public class CEventHandler {
 
                 if (EnchantManager.isEnchantmentBook(bot)) {
                     ItemStack item = top.clone();
-                    HashMap<CEnchantment, Integer> list = EnchantManager.getEnchantmentLevels(bot.getItemMeta().getLore());
+                    HashMap<CEnchantment, Integer> botList = EnchantManager.getEnchantmentLevels(bot.getItemMeta().getLore());
+                    HashMap<CEnchantment, Integer> topList = EnchantManager.getEnchantmentLevels(top.getItemMeta().getLore());
 
                     if (stackEnchantments) {
                         if (EnchantManager.isEnchantmentBook(top)) {
-                            HashMap<CEnchantment, Integer> topList = EnchantManager.getEnchantmentLevels(top.getItemMeta().getLore());
                             for (CEnchantment ce : topList.keySet())
-                                if (list.containsKey(ce)) {
-                                    int newLevel = list.get(ce) + topList.get(ce);
+                                if (botList.containsKey(ce)) {
+                                    int newLevel = botList.get(ce) + topList.get(ce);
                                     if (newLevel > ce.getEnchantmentMaxLevel())
                                         newLevel = ce.getEnchantmentMaxLevel();
-                                    list.replace(ce, newLevel);
+                                    botList.replace(ce, newLevel);
                                 } else {
-                                    if (list.size() < EnchantManager.getMaxEnchants())
-                                        list.put(ce, topList.get(ce));
+                                    if (botList.size() < EnchantManager.getMaxEnchants())
+                                        botList.put(ce, topList.get(ce));
                                     else
                                         break;
                                 }
-                            inv.setItem(2, EnchantManager.getEnchantBook(list));
+                            inv.setItem(2, EnchantManager.getEnchantBook(botList));
                             return;
                         }
                     } else if (EnchantManager.hasEnchantments(top) || EnchantManager.isEnchantmentBook(top)) {
                         return;
                     }
 
-                    for (CEnchantment ce : list.keySet())
-                        if (Tools.isApplicable(item, ce))
-                            item = EnchantManager.addEnchant(item, ce, list.get(ce));
-                    if (item.getEnchantments().size() > 0) {
+                    for (CEnchantment ce : botList.keySet())
+                        if (!topList.containsKey(ce) && Tools.isApplicable(item, ce))
+                            item = EnchantManager.addEnchant(item, ce, botList.get(ce));
+                    if (EnchantManager.getEnchantments(item.getItemMeta().getLore()).size() > topList.size()) {
                         inv.setItem(2, item);
                     } else {
                         ItemMeta im = item.getItemMeta();
                         im.setDisplayName(ChatColor.DARK_RED + "Incompatible Enchantment");
+                        im.setLore(new ArrayList<String>());
                         item.setItemMeta(im);
+                        item.setType(Material.BARRIER);
                         inv.setItem(2, item);
                     }
                     return;

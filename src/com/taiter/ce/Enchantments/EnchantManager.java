@@ -92,7 +92,7 @@ public class EnchantManager {
         if (im.hasLore()) {
             lore = im.getLore();
             if (maxEnchants < enchantments.size()) {
-                int counter = maxEnchants - 1;
+                int counter = maxEnchants;
                 for (String s : lore)
                     if (containsEnchantment(s)) {
                         counter--;
@@ -171,7 +171,7 @@ public class EnchantManager {
                 name = ChatColor.stripColor(name).toLowerCase();
                 if (name.startsWith(enchantment) || name.startsWith(ce.getOriginalName().toLowerCase())) {
                     String[] split = name.split(" ");
-                    if (split.length == enchantment.split(" ").length+1) {
+                    if (split.length == enchantment.split(" ").length + 1) {
                         name = name.substring(0, name.length() - 1 - split[split.length - 1].length());
                         if (name.equals(enchantment) || name.equals(ce.getOriginalName()))
                             return ce;
@@ -207,18 +207,19 @@ public class EnchantManager {
 
     public static HashMap<CEnchantment, Integer> getEnchantmentLevels(List<String> lore) {
         HashMap<CEnchantment, Integer> list = new HashMap<CEnchantment, Integer>();
-        for (String name : lore)
-            if (name.length() > 3)
-                for (CEnchantment ce : enchantments) {
-                    String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
-                    name = ChatColor.stripColor(name).toLowerCase();
-                    if (name.startsWith(enchantment) || name.startsWith(ce.getOriginalName().toLowerCase())) {
-                        String[] split = name.split(" ");
-                        name = name.substring(0, name.length() - 1 - split[split.length - 1].length());
-                        if (name.equals(enchantment) || name.equals(ce.getOriginalName()))
-                            list.put(ce, levelToInt(split[split.length - 1]));
+        if (lore != null)
+            for (String name : lore)
+                if (name.length() > 3)
+                    for (CEnchantment ce : enchantments) {
+                        String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
+                        name = ChatColor.stripColor(name).toLowerCase();
+                        if (name.startsWith(enchantment) || name.startsWith(ce.getOriginalName().toLowerCase())) {
+                            String[] split = name.split(" ");
+                            name = name.substring(0, name.length() - 1 - split[split.length - 1].length());
+                            if (name.equals(enchantment) || name.equals(ce.getOriginalName()))
+                                list.put(ce, levelToInt(split[split.length - 1]));
+                        }
                     }
-                }
         return list;
     }
 
