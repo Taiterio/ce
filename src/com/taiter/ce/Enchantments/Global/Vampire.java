@@ -41,6 +41,7 @@ public class Vampire extends CEnchantment {
 		configEntries.add("DamageHealFraction: 2");
 		configEntries.add("Cooldown: 100");
 		triggers.add(Trigger.DAMAGE_GIVEN);
+		this.resetMaxLevel();
 	}
 
 	@Override

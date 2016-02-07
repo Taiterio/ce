@@ -114,7 +114,7 @@ public class CEventHandler {
 
             List<CEnchantment> list = new ArrayList<CEnchantment>();
             for (CEnchantment ce : EnchantManager.getEnchantments())
-                if (Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) && Tools.checkPermission(ce, p))
+                if (!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || Tools.checkPermission(ce, p))
                     list.add(ce);
 
             if (list.size() == 0)
@@ -256,8 +256,7 @@ public class CEventHandler {
                 Boolean checkLore = im.hasLore();
                 Boolean checkName = im.hasDisplayName();
 
-                int volleyLevel = -1; // Level to let Volley have its effect
-                                      // after all other bow enchantments
+                int volleyLevel = -1; // Level to let Volley have its effect  after all other bow enchantments
 
                 List<String> lore = im.getLore();
                 String name = im.getDisplayName();

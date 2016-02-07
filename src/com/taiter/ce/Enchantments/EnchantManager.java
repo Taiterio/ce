@@ -54,7 +54,7 @@ public class EnchantManager {
             if (glow.getName().equals("Custom Enchantment"))
                 return glow;
             else
-                id = Enchantment.values()[Enchantment.values().length].getId() + 1;
+                id = Enchantment.values()[Enchantment.values().length - 1].getId() + 1;
 
         Boolean forced = false;
         if (!Enchantment.isAcceptingRegistrations()) //Allow new enchantments to be registered again
@@ -190,18 +190,19 @@ public class EnchantManager {
 
     public static HashSet<CEnchantment> getEnchantments(List<String> lore) {
         HashSet<CEnchantment> list = new HashSet<CEnchantment>();
-        for (String name : lore)
-            if (name.length() > 3)
-                for (CEnchantment ce : enchantments) {
-                    String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
-                    name = ChatColor.stripColor(name).toLowerCase();
-                    if (name.startsWith(enchantment) || name.startsWith(ce.getOriginalName().toLowerCase())) {
-                        String[] split = name.split(" ");
-                        name = name.substring(0, name.length() - 1 - split[split.length - 1].length());
-                        if (name.equals(enchantment) || name.equals(ce.getOriginalName()))
-                            list.add(ce);
+        if (lore != null)
+            for (String name : lore)
+                if (name.length() > 3)
+                    for (CEnchantment ce : enchantments) {
+                        String enchantment = ChatColor.stripColor(ce.getDisplayName()).toLowerCase();
+                        name = ChatColor.stripColor(name).toLowerCase();
+                        if (name.startsWith(enchantment) || name.startsWith(ce.getOriginalName().toLowerCase())) {
+                            String[] split = name.split(" ");
+                            name = name.substring(0, name.length() - 1 - split[split.length - 1].length());
+                            if (name.equals(enchantment) || name.equals(ce.getOriginalName()))
+                                list.add(ce);
+                        }
                     }
-                }
         return list;
     }
 

@@ -1,7 +1,5 @@
 package com.taiter.ce;
 
-
-
 /*
 * This file is part of Custom Enchantments
 * Copyright (C) Taiterio 2015
@@ -31,62 +29,68 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 
-
 public abstract class CBasic {
-	
-	static public enum Trigger {
-		INTERACT,
-		INTERACT_ENTITY,
-		INTERACT_LEFT,
-		INTERACT_RIGHT,
-		MOVE,
-		DAMAGE_GIVEN,
-		DAMAGE_TAKEN,
-		DAMAGE_NATURE, //Falldamage, damage by cactus, etc.
-		BLOCK_PLACED,
-		BLOCK_BROKEN,
-		SHOOT_BOW,
-		PROJECTILE_THROWN,
-		PROJECTILE_HIT,
-		WEAR_ITEM,
-		DEATH
-	}
-	
-	
-	protected Plugin	main	= Main.plugin;
-	
-	
-	protected HashSet<Player>  cooldown = new HashSet<Player>();
-	protected HashSet<Player>  lockList = new HashSet<Player>();
-	protected HashSet<Trigger> triggers = new HashSet<Trigger>();
 
-	protected String          displayName;
-	protected String          originalName;
-	protected String          typeString;
-	
-	protected HashMap<PotionEffectType, Integer> potionsOnWear = new HashMap<PotionEffectType, Integer>();
-	
-	
-	protected List<String>	configEntries = new ArrayList<String>(Arrays.asList(new String[]{"Enabled: true"}));
-	
-	
-	
-	public Plugin	getPlugin()												{	return this.main;			}
-	
-	public String	getDisplayName()										{	return this.displayName;	}
-	
-	public String	getOriginalName()										{	return this.originalName;	}
-	
-	public HashSet<Trigger>     getTriggers()								{	return this.triggers;		}
+    static public enum Trigger {
+        INTERACT,
+        INTERACT_ENTITY,
+        INTERACT_LEFT,
+        INTERACT_RIGHT,
+        MOVE,
+        DAMAGE_GIVEN,
+        DAMAGE_TAKEN,
+        DAMAGE_NATURE, //Falldamage, damage by cactus, etc.
+        BLOCK_PLACED,
+        BLOCK_BROKEN,
+        SHOOT_BOW,
+        PROJECTILE_THROWN,
+        PROJECTILE_HIT,
+        WEAR_ITEM,
+        DEATH
+    }
 
-	public FileConfiguration	getConfig()	    							{	return Main.config;	   		}
-	
-	public String				getType()	    							{ 	return this.typeString;   	}
-	
-	public HashMap<PotionEffectType, Integer>	getPotionEffectsOnWear()	{ 	return this.potionsOnWear;  }
-		
-	public abstract double		getCost();
-	
+    protected Plugin main = Main.plugin;
 
+    protected HashSet<Player> cooldown = new HashSet<Player>();
+    protected HashSet<Player> lockList = new HashSet<Player>();
+    protected HashSet<Trigger> triggers = new HashSet<Trigger>();
+
+    protected String displayName;
+    protected String originalName;
+    protected String typeString;
+
+    protected HashMap<PotionEffectType, Integer> potionsOnWear = new HashMap<PotionEffectType, Integer>();
+
+    protected List<String> configEntries = new ArrayList<String>(Arrays.asList(new String[] { "Enabled: true" }));
+
+    public Plugin getPlugin() {
+        return this.main;
+    }
+
+    public String getDisplayName() {
+        return this.displayName;
+    }
+
+    public String getOriginalName() {
+        return this.originalName;
+    }
+
+    public HashSet<Trigger> getTriggers() {
+        return this.triggers;
+    }
+
+    public FileConfiguration getConfig() {
+        return Main.config;
+    }
+
+    public String getType() {
+        return this.typeString;
+    }
+
+    public HashMap<PotionEffectType, Integer> getPotionEffectsOnWear() {
+        return this.potionsOnWear;
+    }
+
+    public abstract double getCost();
 
 }
