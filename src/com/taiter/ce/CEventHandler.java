@@ -410,6 +410,12 @@ public class CEventHandler {
                 updateRunecraftingInventory(inv);
                 break;
             case 1:
+                //Check if item does not belong in this slot
+                if (!item.getType().equals(Material.AIR) && !EnchantManager.isEnchantmentBook(item) && !EnchantManager.hasEnchantments(item)) {
+                    event.setCancelled(true);
+                    break;
+                }
+                
                 inv.setItem(1, item);
                 event.getWhoClicked().setItemOnCursor(current);
                 updateRunecraftingInventory(inv);

@@ -242,7 +242,7 @@ public class EnchantManager {
 
     public static boolean isEnchantable(String mat) {
         if (mat.contains("HELMET") || mat.contains("CHESTPLATE") || mat.contains("LEGGINGS") || mat.contains("BOOTS") || mat.contains("SWORD") || mat.contains("PICKAXE") || mat.contains("AXE")
-                || mat.contains("SPADE") || mat.contains("HOE"))
+                || mat.contains("SPADE") || mat.contains("HOE") || mat.equals("BOW"))
             return true;
         if ((Main.config.getBoolean("Global.Runecrafting.Disenchanting") && mat.equals("BOOK"))
                 || ((Main.config.getBoolean("Global.Runecrafting.CanStackEnchantments") && mat.equals("ENCHANTED_BOOK"))))

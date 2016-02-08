@@ -154,10 +154,9 @@ public class CEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void inventoryMenu(final InventoryClickEvent event) {
-
-        if (event.getClickedInventory() == null)
+        if(event.getSlot() == -999 || event.getSlot() == -1) //No inventory was clicked
             return;
-
+        
         if (useRuneCrafting)
             if (event.getView().getTopInventory().getName().equals(
                     ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba")) {
@@ -169,11 +168,11 @@ public class CEListener implements Listener {
         if (event.getView().getTopInventory().getType().equals(InventoryType.ANVIL)) {
             ItemStack toTest = event.getCurrentItem();
             if (!event.getClick().toString().contains("SHIFT"))
-                if (event.getRawSlot() <= 1)
+                if (event.getRawSlot() <= 1) 
                     toTest = event.getCursor();
                 else
                     return;
-            if (toTest != null && !toTest.equals(Material.AIR) && toTest.hasItemMeta() && toTest.getItemMeta().hasDisplayName()
+            if (toTest != null && !toTest.getType().equals(Material.AIR) && toTest.hasItemMeta() && toTest.getItemMeta().hasDisplayName()
                     && toTest.getItemMeta().getDisplayName().equals(EnchantManager.getEnchantBookName())) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "The book is being repulsed by the Anvil");
                 event.setCancelled(true);
@@ -199,10 +198,9 @@ public class CEListener implements Listener {
             }
         // ---------------------------------
 
-        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || event.getRawSlot() < -1) {
+        if(event.getCurrentItem() == null || event.getCurrentItem().getType().equals(Material.AIR))
             return;
-        }
-
+        
         if (event.getView().getTopInventory().getTitle().startsWith("CE")) {
             Inventory topInv = event.getView().getTopInventory();
             final Player p = (Player) event.getWhoClicked();
@@ -213,7 +211,7 @@ public class CEListener implements Listener {
 
             // This is the back-button, located in the very last spot of each
             // inventory
-            if ((event.getRawSlot() == topInv.getSize() - 1) && event.getCurrentItem().getType() != Material.AIR) {
+            if ((event.getRawSlot() == topInv.getSize() - 1)) {
                 p.closeInventory();
                 p.openInventory(Tools.getPreviousInventory(topInv.getTitle()));
                 return;
