@@ -451,15 +451,15 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().addPermission(cmdEnchant);
 
         for (CItem ci : items) {
-            Permission itemTemp = new Permission("ce.item." + ci.getOriginalName().replace(" ", "").replace("'", ""), "The permission for the CE Item '" + ci.getOriginalName() + "'.");
+            Permission itemTemp = new Permission("ce.item." + ci.getPermissionName(), "The permission for the CE Item '" + ci.getOriginalName() + "'.");
             itemTemp.addParent(itemNode, true);
             Bukkit.getServer().getPluginManager().addPermission(itemTemp);
         }
 
         for (CEnchantment ce : EnchantManager.getEnchantments()) {
-            Permission itemTemp = new Permission("ce.ench." + ce.getOriginalName().replace(" ", "").replace("'", ""), "The permission for the CE Enchantment '" + ce.getOriginalName() + "'.");
-            itemTemp.addParent(itemNode, true);
-            Bukkit.getServer().getPluginManager().addPermission(itemTemp);
+            Permission enchTemp = new Permission("ce.ench." + ce.getPermissionName(), "The permission for the CE Enchantment '" + ce.getOriginalName() + "'.");
+            enchTemp.addParent(enchNode, true);
+            Bukkit.getServer().getPluginManager().addPermission(enchTemp);
         }
 
     }

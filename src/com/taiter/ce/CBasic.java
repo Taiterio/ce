@@ -57,6 +57,7 @@ public abstract class CBasic {
 
     protected String displayName;
     protected String originalName;
+    protected String permissionName;
     protected String typeString;
 
     protected HashMap<PotionEffectType, Integer> potionsOnWear = new HashMap<PotionEffectType, Integer>();
@@ -73,6 +74,10 @@ public abstract class CBasic {
 
     public String getOriginalName() {
         return this.originalName;
+    }
+    
+    public String getPermissionName() {
+        return this.permissionName;
     }
 
     public HashSet<Trigger> getTriggers() {

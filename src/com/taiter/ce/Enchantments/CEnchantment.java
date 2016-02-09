@@ -76,6 +76,7 @@ public abstract class CEnchantment extends CBasic {
         this.app = app;
 
         this.originalName = this.getClass().getSimpleName();
+        this.permissionName = this.originalName;
         char[] nameChars = originalName.toCharArray();
 
         for (int i = 3; i < nameChars.length; i++) { //Go through the classname, start at the third char (Minimum enchantment length) and check for an uppercase letter

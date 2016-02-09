@@ -291,7 +291,7 @@ public class CEListener implements Listener {
 
                 if (topInv.getTitle().equals(Tools.prefix + "Items")) {
                     CItem ci = Tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName());
-                    if(!p.hasPermission("ce.item.*") && !p.hasPermission("ce.item." + ci.getOriginalName())) {
+                    if(!p.hasPermission("ce.item.*") && !p.hasPermission("ce.item." + ci.getPermissionName())) {
                         p.sendMessage(ChatColor.RED + "You do not have permission to buy this Item!");
                         return;
                     }

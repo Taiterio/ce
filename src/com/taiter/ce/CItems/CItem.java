@@ -84,6 +84,7 @@ public abstract class CItem extends CBasic {
         this.typeString = "Items";
         this.itemMaterial = mat;
         this.originalName = originalName;
+        this.permissionName = originalName.replace(" ", "").replace("'", "");
         this.description = new ArrayList<String>(Arrays.asList(lDescription.split(";")));
         this.configEntries.add("DisplayName: " + originalName);
         this.configEntries.add("Color: " + color.name());

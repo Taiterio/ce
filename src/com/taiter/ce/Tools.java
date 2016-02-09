@@ -137,14 +137,9 @@ public class Tools {
             name += "ench.";
         if (p.hasPermission(name + "*"))
             return true;
-        name += cb.getOriginalName();
-        if (p.hasPermission(name))
+        if (p.hasPermission(name + cb.getOriginalName()))
             return true;
-        name = name.replace(" ", "");
-        if (p.hasPermission(name))
-            return true;
-        name = name.replace("'", "");
-        if (p.hasPermission(name))
+        if (p.hasPermission(name + cb.getPermissionName()))
             return true;
         return false;
     }
