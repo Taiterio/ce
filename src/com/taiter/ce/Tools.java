@@ -135,12 +135,16 @@ public class Tools {
             name += "item.";
         else
             name += "ench.";
-        if (p.hasPermission(name + "*"))
+        
+        if (p.hasPermission(name + "*")) {
             return true;
-        if (p.hasPermission(name + cb.getOriginalName()))
+        }
+        if (p.hasPermission(name + cb.getOriginalName())) {
             return true;
-        if (p.hasPermission(name + cb.getPermissionName()))
+        }
+        if (p.hasPermission(name + cb.getPermissionName())) {
             return true;
+        }
         return false;
     }
 
@@ -585,11 +589,8 @@ public class Tools {
         HashSet<CEnchantment> list = new HashSet<CEnchantment>();
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == app)
-                list.add(ce);
-
-        for (CEnchantment ce : list)
-            if (Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) && !checkPermission(ce, p))
-                list.remove(ce);
+                if(!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || checkPermission(ce, p))
+                    list.add(ce);
         return list;
     }
 

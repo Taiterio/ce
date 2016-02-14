@@ -154,7 +154,7 @@ public class CEListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void inventoryMenu(final InventoryClickEvent event) {
-        if(event.getSlot() == -999 || event.getSlot() == -1) //No inventory was clicked
+        if (event.getSlot() == -999 || event.getSlot() == -1) //No inventory was clicked
             return;
         
         if (useRuneCrafting)
@@ -168,13 +168,17 @@ public class CEListener implements Listener {
         if (event.getView().getTopInventory().getType().equals(InventoryType.ANVIL)) {
             ItemStack toTest = event.getCurrentItem();
             if (!event.getClick().toString().contains("SHIFT"))
-                if (event.getRawSlot() <= 1) 
+                if (event.getRawSlot() <= 1)
                     toTest = event.getCursor();
                 else
                     return;
-            if (toTest != null && !toTest.getType().equals(Material.AIR) && toTest.hasItemMeta() && toTest.getItemMeta().hasDisplayName()
-                    && toTest.getItemMeta().getDisplayName().equals(EnchantManager.getEnchantBookName())) {
-                event.getWhoClicked().sendMessage(ChatColor.RED + "The book is being repulsed by the Anvil");
+            if (toTest != null && !toTest.getType().equals(Material.AIR) && toTest.hasItemMeta()) {
+                if (EnchantManager.isEnchantmentBook(toTest))
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "The book is being repulsed by the Anvil");
+                else if (EnchantManager.hasEnchantments(toTest))
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "The item is being repulsed by the Anvil");
+                else
+                    return;
                 event.setCancelled(true);
             }
             return;
@@ -198,9 +202,9 @@ public class CEListener implements Listener {
             }
         // ---------------------------------
 
-        if(event.getCurrentItem() == null || event.getCurrentItem().getType().equals(Material.AIR))
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType().equals(Material.AIR))
             return;
-        
+
         if (event.getView().getTopInventory().getTitle().startsWith("CE")) {
             Inventory topInv = event.getView().getTopInventory();
             final Player p = (Player) event.getWhoClicked();
@@ -291,11 +295,11 @@ public class CEListener implements Listener {
 
                 if (topInv.getTitle().equals(Tools.prefix + "Items")) {
                     CItem ci = Tools.getItemByDisplayname(clickedItem.getItemMeta().getDisplayName());
-                    if(!p.hasPermission("ce.item.*") && !p.hasPermission("ce.item." + ci.getPermissionName())) {
+                    if (!p.hasPermission("ce.item.*") && !p.hasPermission("ce.item." + ci.getPermissionName())) {
                         p.sendMessage(ChatColor.RED + "You do not have permission to buy this Item!");
                         return;
                     }
-                    
+
                     if (p.getInventory().firstEmpty() != -1) {
                         double cost = ci.getCost();
                         //Check cost
@@ -330,7 +334,7 @@ public class CEListener implements Listener {
                         return;
                     }
                 }
-                
+
                 if (topInv.getTitle().equals(Tools.prefix + "Level selection")) {
                     String enchantmentName = clickedItem.getItemMeta().getDisplayName();
                     CEnchantment ce = EnchantManager.getEnchantment(enchantmentName);

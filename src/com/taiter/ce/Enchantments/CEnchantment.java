@@ -46,6 +46,8 @@ public abstract class CEnchantment extends CBasic {
     double enchantProbability;
     int enchantmentMaxLevel;
     int occurrenceChance;
+    int combinationCostLevel;
+    double combinationCostMoney;
     private boolean hasRetriedConfig;
 
     public Application getApplication() {
@@ -57,13 +59,21 @@ public abstract class CEnchantment extends CBasic {
     }
 
     public int getEnchantmentMaxLevel() {
-        if(this.enchantmentMaxLevel == -1)
+        if (this.enchantmentMaxLevel == -1)
             return 1;
         return this.enchantmentMaxLevel;
     }
 
     public int getOccurrenceChance() {
         return this.occurrenceChance;
+    }
+
+    public int getCombinationCostLevel() {
+        return combinationCostLevel;
+    }
+
+    public double getCombinationCostMoney() {
+        return combinationCostMoney;
     }
 
     @Override
@@ -152,20 +162,58 @@ public abstract class CEnchantment extends CBasic {
             writeEnchantmentAmounts();
         double enchantmentProbability = getEnchantmentProbability();
         this.configEntries.add("EnchantmentProbability: " + enchantmentProbability);
+        this.configEntries.add("CombinationCost: 10LVL:100$");
 
         if (!getConfig().contains("Enchantments." + getOriginalName()))
             Tools.writeConfigEntries(this);
         try {
             this.displayName = EnchantManager.getLorePrefix() + ChatColor.translateAlternateColorCodes('&', Main.config.getString("Enchantments." + getOriginalName() + ".DisplayName"));
+
+            String[] combinationCost = getConfig().getString("Enchantments." + getOriginalName() + ".CombinationCost").trim().split(":");
+            if (combinationCost[0].contains("$")) {
+                try {
+                    if(Main.hasEconomy)
+                        this.combinationCostMoney = Double.parseDouble(combinationCost[0].replace("$", ""));
+                    else
+                        this.combinationCostMoney = -1;
+                } catch (NumberFormatException ex) {
+                    this.combinationCostMoney = -1;
+                }
+            } else if (combinationCost[0].contains("LVL")) {
+                try {
+                    this.combinationCostLevel = Integer.parseInt(combinationCost[0].replace("LVL", ""));
+                } catch (NumberFormatException ex) {
+                    this.combinationCostLevel = -1;
+                }
+            }
+            
+            if(combinationCost.length == 2) {
+                if (combinationCost[1].contains("$")) {
+                    try {
+                        this.combinationCostMoney = Double.parseDouble(combinationCost[1].replace("$", ""));
+                    } catch (NumberFormatException ex) {
+                        this.combinationCostMoney = -1;
+                    }
+                } else if (combinationCost[1].contains("LVL")) {
+                    try {
+                        this.combinationCostLevel = Integer.parseInt(combinationCost[1].replace("LVL", ""));
+                    } catch (NumberFormatException ex) {
+                        this.combinationCostLevel = -1;
+                    }
+                }
+            }
+
             if (!Boolean.parseBoolean(getConfig().getString("Global.Enchantments.UseCustomEnchantmentProbability")))
                 this.enchantProbability = enchantmentProbability;
             else
                 this.enchantProbability = Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".EnchantmentProbability"));
+
             if (this.enchantmentMaxLevel != -1)
                 this.enchantmentMaxLevel = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".EnchantmentMaxLevel"));
             else
                 this.enchantmentMaxLevel = 1;
             this.occurrenceChance = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".OccurrenceChance"));
+
             for (String entry : this.configEntries) {
                 String[] split = entry.split(": ");
                 if (split[1].equalsIgnoreCase("true") || split[1].equalsIgnoreCase("false"))

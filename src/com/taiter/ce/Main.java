@@ -526,7 +526,7 @@ public final class Main extends JavaPlugin {
         // --------------------------------------------------------------------------------
 
         if (finalize)
-            for (CEnchantment ce : EnchantManager.getEnchantments())
+            for (CEnchantment ce : new HashSet<CEnchantment>(EnchantManager.getEnchantments()))
                 ce.finalizeEnchantment();
 
         if (printSuccess)
