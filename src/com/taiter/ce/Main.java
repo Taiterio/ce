@@ -418,6 +418,9 @@ public final class Main extends JavaPlugin {
     private void writePermissions() {
         Permission mainNode = new Permission("ce.*", "The main permission node for Custom Enchantments.", PermissionDefault.OP);
 
+        Permission runecrafting = new Permission("ce.runecrafting", "The permission for Runecrafting.", PermissionDefault.OP);
+        runecrafting.addParent(mainNode, true);
+        
         Permission cmdNode = new Permission("ce.cmd.*", "The permission node for CE's commands.", PermissionDefault.OP);
         Permission enchNode = new Permission("ce.ench.*", "The permission node for CE's EnchantManager.getEnchantments().", PermissionDefault.OP);
         Permission itemNode = new Permission("ce.item.*", "The permission node for CE's  items.", PermissionDefault.OP);
@@ -439,6 +442,8 @@ public final class Main extends JavaPlugin {
         cmdEnchant.addParent(cmdNode, true);
 
         Bukkit.getServer().getPluginManager().addPermission(mainNode);
+        
+        Bukkit.getServer().getPluginManager().addPermission(runecrafting);
 
         Bukkit.getServer().getPluginManager().addPermission(cmdNode);
         Bukkit.getServer().getPluginManager().addPermission(enchNode);
