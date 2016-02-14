@@ -149,7 +149,7 @@ public final class Main extends JavaPlugin {
         config = this.getConfig();
         config.options().copyDefaults(true);
         this.saveConfig();
-        if (config.contains("EnchantManager.getEnchantments()"))
+        if (config.contains("enchantments"))
             Tools.convertOldConfig();
 
         // Start the listener

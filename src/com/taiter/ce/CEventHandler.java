@@ -433,7 +433,7 @@ public class CEventHandler {
                     ItemMeta im = result.getItemMeta();
                     List<String> lore = im.getLore();
 
-                    if (lore.get(lore.size() - 1).startsWith(ChatColor.GRAY + "Cost: ")) {
+                    if (lore.get(lore.size() - 1).startsWith(ChatColor.GOLD + "Cost: ")) {
                         int levelCost = 0;
                         double moneyCost = 0;
                         String[] costSplit = lore.get(lore.size() - 1).split(" ");
