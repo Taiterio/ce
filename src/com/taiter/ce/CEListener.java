@@ -410,6 +410,7 @@ public class CEListener implements Listener {
 
         Entity damager = e.getDamager();
         Entity damaged = e.getEntity();
+        
 
         // Block self damaging (Enderpearls cause weird behavior)
         if (damager.getUniqueId().equals(damaged.getUniqueId()))

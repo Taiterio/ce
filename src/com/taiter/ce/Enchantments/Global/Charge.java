@@ -21,8 +21,6 @@ package com.taiter.ce.Enchantments.Global;
 
 
 import org.bukkit.Sound;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -46,18 +44,11 @@ public class Charge extends CEnchantment {
 	public void effect(Event e, ItemStack item, int level) {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 		Player player = (Player) event.getDamager();
-		Entity ent = event.getEntity();
 		
 		if(!player.isSprinting())
 			return;
 		
-		double newDamage = event.getDamage() * (1 + DamageIncreasePercentage * level); 
-		double currentHealth = ((Damageable) ent).getHealth();
-		
-		if(currentHealth - newDamage > 0)
-			((Damageable) ent).setHealth(currentHealth-newDamage);
-		else
-			((Damageable) ent).setHealth(0);
+		event.setDamage(event.getDamage() * (1 + DamageIncreasePercentage * level)); 
 
 		player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.1f, 0.1f);
 	}

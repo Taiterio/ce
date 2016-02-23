@@ -375,7 +375,7 @@ public class CEventHandler {
     }
 
     public static void handleRunecrafting(final InventoryClickEvent event) {
-        if(event.getView() == null)
+        if (event.getView() == null)
             return;
         if (event.getRawSlot() > 0 && event.getRawSlot() < event.getView().getTopInventory().getSize()) {
             final Inventory inv = event.getView().getTopInventory();
@@ -438,29 +438,30 @@ public class CEventHandler {
                         double moneyCost = 0;
                         String[] costSplit = lore.get(lore.size() - 1).split(" ");
                         String resultString = ChatColor.WHITE + costSplit[1];
-                        
+
                         if (costSplit[2].equals("Level")) {
                             levelCost = Integer.parseInt(costSplit[1]);
                             resultString += " Level";
                             if (costSplit.length >= 4) {
                                 moneyCost = Double.parseDouble(costSplit[3]);
                                 resultString += ChatColor.GREEN + " and " + ChatColor.WHITE + costSplit[3];
-                                for(int i = 4; i < costSplit.length; i ++)
+                                for (int i = 4; i < costSplit.length; i++)
                                     resultString += " " + costSplit[i];
                             }
                         } else {
                             moneyCost = Double.parseDouble(costSplit[1]);
                             resultString += costSplit[2];
-                            for(int i = 3; i < costSplit.length; i ++)
+                            for (int i = 3; i < costSplit.length; i++)
                                 resultString += " " + costSplit[i];
                         }
 
-                        if (p.getLevel() >= levelCost)
-                            p.setLevel(p.getLevel() - levelCost);
-                        else {
-                            p.sendMessage(ChatColor.RED + "Your level is not high enough!");
-                            return;
-                        }
+                        if (!p.getGameMode().equals(GameMode.CREATIVE))
+                            if (p.getLevel() >= levelCost)
+                                p.setLevel(p.getLevel() - levelCost);
+                            else {
+                                p.sendMessage(ChatColor.RED + "Your level is not high enough!");
+                                return;
+                            }
 
                         if (Main.econ.getBalance(p.getName()) >= moneyCost)
                             Main.econ.withdrawPlayer(p.getName(), moneyCost);
@@ -468,9 +469,8 @@ public class CEventHandler {
                             p.sendMessage(ChatColor.RED + "You do not have enough money!");
                             return;
                         }
-                        
-                        
-                        p.sendMessage(ChatColor.GREEN + "Used " + resultString+ ChatColor.GREEN + " for the transformation.");
+
+                        p.sendMessage(ChatColor.GREEN + "Used " + resultString + ChatColor.GREEN + " for the transformation.");
 
                         lore = lore.subList(0, lore.size() - 2);
                         im.setLore(lore);
@@ -587,14 +587,14 @@ public class CEventHandler {
 
                 if (disenchanting && top.getType().equals(Material.BOOK) && !bot.getType().equals(Material.ENCHANTED_BOOK)) {
                     HashMap<CEnchantment, Integer> enchs = EnchantManager.getEnchantmentLevels(bot.getItemMeta().getLore());
-                    
+
                     for (CEnchantment ce : enchs.keySet()) {
                         if (ce.getCombinationCostLevel() > 0)
-                            levelCost += enchs.get(ce)* ce.getCombinationCostLevel();
+                            levelCost += enchs.get(ce) * ce.getCombinationCostLevel();
                         if (ce.getCombinationCostMoney() > 0)
                             moneyCost += enchs.get(ce) * ce.getCombinationCostMoney();
                     }
-                    
+
                     ItemStack book = EnchantManager.getEnchantBook(enchs);
                     ItemMeta im = book.getItemMeta();
                     List<String> lore = im.getLore();
@@ -607,7 +607,7 @@ public class CEventHandler {
                         im.setLore(lore);
                         book.setItemMeta(im);
                     }
-                    
+
                     inv.setItem(2, book);
                     return;
                 }
