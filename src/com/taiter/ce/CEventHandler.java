@@ -93,7 +93,7 @@ public class CEventHandler {
         for (ItemStack i : toCheck.getInventory().getArmorContents())
             if (i.getType() != Material.AIR)
                 handleEventMain(toCheck, i, e, list);
-        handleEventMain(toCheck, toCheck.getItemInHand(), e, list);
+        handleEventMain(toCheck, toCheck.getInventory().getItemInMainHand(), e, list);
 
         if (Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogEvents"))) {
             long timeF = (System.currentTimeMillis() - time);
@@ -242,7 +242,7 @@ public class CEventHandler {
             for (String ench : enchantments) {
                 String[] enchantment = ench.split(" : ");
                 CEnchantment ce = EnchantManager.getEnchantment(enchantment[0]);
-                ce.effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
+                ce.effect(e, toCheck.getInventory().getItemInMainHand(), Integer.parseInt(enchantment[1]));
             }
             e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
         }
@@ -294,7 +294,7 @@ public class CEventHandler {
 
                                                             if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player
                                                                     && ce.triggers.contains(Trigger.SHOOT_BOW)
-                                                                    && ((Player) ((EntityDamageByEntityEvent) e).getDamager()).getItemInHand().getType().equals(Material.BOW))
+                                                                    && ((Player) ((EntityDamageByEntityEvent) e).getDamager()).getInventory().getItemInMainHand().getType().equals(Material.BOW))
                                                                 continue;
 
                                                             ce.effect(e, i, level);

@@ -126,7 +126,7 @@ public class RocketBoots extends CItem {
 				}
 			}
 		} else {
-			rocketBoots = player.getItemInHand();
+			rocketBoots = player.getInventory().getItemInMainHand();
 			final ItemMeta im = rocketBoots.getItemMeta();
 			List<String> lore = im.getLore();
 			e.setCancelled(true);
@@ -148,13 +148,13 @@ public class RocketBoots extends CItem {
 					
 					@Override
 					public void run() {
-						ItemStack hand = player.getItemInHand();
+						ItemStack hand = player.getInventory().getItemInMainHand();
 						if(hand.equals(current)) {
 							if(hand.getDurability() == 0) {
 								removeLock(player);
 								player.getWorld().playEffect(player.getLocation(), Effect.CLICK2, 1000);
 								hand.setItemMeta(im);
-								player.setItemInHand(hand);
+								player.getInventory().setItemInMainHand(hand);
 								this.cancel();
 							} else {
 								hand.setDurability((short) (hand.getDurability() - 1));
@@ -180,7 +180,7 @@ public class RocketBoots extends CItem {
 				}
 				
 				im.setLore(lore);
-				player.getItemInHand().setItemMeta(im);
+				player.getInventory().getItemInMainHand().setItemMeta(im);
 				player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 5);
 				player.sendMessage(newStateMsg);
 					

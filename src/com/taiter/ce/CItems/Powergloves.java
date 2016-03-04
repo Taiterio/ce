@@ -77,12 +77,12 @@ public class Powergloves extends CItem {
 					new BukkitRunnable() {
 
 						int			GrabTime	= MaxGrabtime;
-						ItemStack	current		= player.getItemInHand();
+						ItemStack	current		= player.getInventory().getItemInMainHand();
 
 						@Override
 						public void run() {
-							if(current.equals(player.getItemInHand())) {
-								current = player.getItemInHand();
+							if(current.equals(player.getInventory().getItemInMainHand())) {
+								current = player.getInventory().getItemInMainHand();
 							if(GrabTime > 0) {
 								if(!player.hasMetadata("ce." + getOriginalName())) {
 									this.cancel();

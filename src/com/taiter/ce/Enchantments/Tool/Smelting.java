@@ -72,7 +72,7 @@ public class Smelting extends CEnchantment {
 				drop = Material.BRICK;
 			
 			if(drop != null) {
-				itemToDrop = new ItemStack(drop, event.getBlock().getDrops(player.getItemInHand()).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
+				itemToDrop = new ItemStack(drop, event.getBlock().getDrops(player.getInventory().getItemInMainHand()).size()); //Prevents unallowed tool usage (Wooden Pickaxe -> Diamond Ore)
 				itemToDrop.setDurability(dur);
 				event.setCancelled(true);
 				player.getWorld().dropItemNaturally(b.getLocation(), itemToDrop);

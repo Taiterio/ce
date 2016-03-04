@@ -51,7 +51,7 @@ public class Explosive extends CEnchantment {
         BlockBreakEvent event = (BlockBreakEvent) e;
         Player player = event.getPlayer();
 
-        if (!isUsable(player.getItemInHand().getType().toString(), event.getBlock().getType().toString()))
+        if (!isUsable(player.getInventory().getItemInMainHand().getType().toString(), event.getBlock().getType().toString()))
             return;
 
         List<Location> locations = new ArrayList<Location>();

@@ -70,12 +70,12 @@ public class NecromancersStaff extends CItem {
     @Override
     public boolean effect(Event event, Player player) {
         PlayerInteractEvent e = (PlayerInteractEvent) event;
-        ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
+        ItemMeta im = e.getPlayer().getInventory().getItemInMainHand().getItemMeta();
         List<String> lore = new ArrayList<String>();
         if (!im.hasLore()) {
             lore.add(spells.get(0));
             im.setLore(lore);
-            e.getPlayer().getItemInHand().setItemMeta(im);
+            e.getPlayer().getInventory().getItemInMainHand().setItemMeta(im);
         }
         lore = im.getLore();
         int lastElement = lore.size() - 1;
@@ -91,7 +91,7 @@ public class NecromancersStaff extends CItem {
 
             lore.set(lastElement, nextSpell);
             im.setLore(lore);
-            e.getPlayer().getItemInHand().setItemMeta(im);
+            e.getPlayer().getInventory().getItemInMainHand().setItemMeta(im);
 
             player.sendMessage(ChatColor.GRAY + "Changed Spell to " + nextSpell.split(": ")[1] + ChatColor.GRAY + ".");
             player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 10);

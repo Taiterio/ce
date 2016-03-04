@@ -69,7 +69,7 @@ public class ThorsAxe extends CItem {
 					
 						player.getWorld().playSound(e.getClickedBlock().getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 3f, 1f);
 					
-						player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() + 1));
+						player.getInventory().getItemInMainHand().setDurability((short) (player.getInventory().getItemInMainHand().getDurability() + 1));
 					
 						new BukkitRunnable() {
 							@Override

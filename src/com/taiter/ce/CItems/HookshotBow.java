@@ -58,7 +58,7 @@ public class HookshotBow extends CItem {
 	@Override
 	public boolean effect(Event event, Player player) {
 		if(event instanceof PlayerInteractEvent) {
-				ItemStack item = player.getItemInHand();
+				ItemStack item = player.getInventory().getItemInMainHand();
 				ItemMeta im = item.getItemMeta();
 				List<String> lore = new ArrayList<String>();
 				if(im.hasLore())

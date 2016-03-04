@@ -58,7 +58,7 @@ public class Flamethrower extends CItem {
 		PlayerInteractEvent e = (PlayerInteractEvent) event;
 			e.setCancelled(true);
 
-			if(player.getItemInHand().getDurability() >= 64) {
+			if(player.getInventory().getItemInMainHand().getDurability() >= 64) {
 				if(IsReloadable) {
 				addLock(player);
 				player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 2);
@@ -66,17 +66,17 @@ public class Flamethrower extends CItem {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						if(player.getItemInHand().getDurability() == 0) {
+						if(player.getInventory().getItemInMainHand().getDurability() == 0) {
 							removeLock(player);
 							player.getWorld().playEffect(player.getLocation(), Effect.CLICK2, 2);
 							this.cancel();
 						} else {
-							player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() - 1));
+							player.getInventory().getItemInMainHand().setDurability((short) (player.getInventory().getItemInMainHand().getDurability() - 1));
 						}
 					}
 				}.runTaskTimer(main, 0l, 2l);
 			} else { 
-				player.getItemInHand().setType(Material.AIR);
+				player.getInventory().getItemInMainHand().setType(Material.AIR);
 			}
 			} else {
 				final List<Location> list = getLinePlayer(player, FireBlocksPerBurst);
@@ -121,7 +121,7 @@ public class Flamethrower extends CItem {
 				}.runTaskLater(main, 200l);
 				player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 30);
 				if(!player.getGameMode().equals(GameMode.CREATIVE)) {
-				player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() + 1));
+				player.getInventory().getItemInMainHand().setDurability((short) (player.getInventory().getItemInMainHand().getDurability() + 1));
 				}
 			}
 		
