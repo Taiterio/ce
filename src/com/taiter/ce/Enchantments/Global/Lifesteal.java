@@ -63,7 +63,7 @@ public class Lifesteal extends CEnchantment {
 		else
 			damager.setHealth(((Damageable) damager).getMaxHealth());
 		
-		damager.getWorld().playSound(damager.getLocation(), Sound.ORB_PICKUP, 0.3f, 1f);
+		damager.getWorld().playSound(damager.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.3f, 1f);
 
 		
 	}

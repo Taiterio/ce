@@ -92,7 +92,7 @@ public class BeastmastersBow extends CItem {
 					e.setDamage(e.getDamage()*DamageMultiplication);
 					w.playEffect(loc, Effect.SMOKE, 50);
 					w.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 50);
-					w.playSound(loc, Sound.PISTON_RETRACT, 1.3f, 3f);
+					w.playSound(loc, Sound.BLOCK_PISTON_CONTRACT, 1.3f, 3f);
 				return true;
 			} else if (ent instanceof Player) {
 				for(int i = 0; i < MaximumMobs; i++) {
@@ -100,7 +100,7 @@ public class BeastmastersBow extends CItem {
 						w.spawnEntity(loc, rand.nextInt(2) == 1 ? EntityType.SPIDER : EntityType.SLIME);
 						w.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 30);
 						w.playEffect(loc, Effect.SMOKE, 30);
-						w.playSound(loc, Sound.ANVIL_BREAK, 0.3f, 0.1f);
+						w.playSound(loc, Sound.BLOCK_ANVIL_BREAK, 0.3f, 0.1f);
 					}
 				}
 			}

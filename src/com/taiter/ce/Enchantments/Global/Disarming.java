@@ -19,10 +19,10 @@ public class Disarming extends CEnchantment {
     public void effect(Event e, ItemStack item, int level) {
         EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
         LivingEntity target = (LivingEntity) event.getEntity();
-        ItemStack inHand = target.getEquipment().getItemInHand();
+        ItemStack inHand = target.getEquipment().getItemInMainHand();
         if (inHand != null && !inHand.getType().equals(Material.AIR)) {
             target.getWorld().dropItem(target.getLocation(), inHand).setPickupDelay(40);
-            target.getEquipment().setItemInHand(new ItemStack(Material.AIR));
+            target.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
         }
     }
 

@@ -75,7 +75,7 @@ public class AssassinsBlade extends CItem {
 				  e.setDamage(e.getDamage() * AmbushDmgMultiplier);
 				  player.removeMetadata("ce.assassin", main);
 				  player.removePotionEffect(PotionEffectType.INVISIBILITY);
-				  player.getWorld().playSound(e.getEntity().getLocation(), Sound.ZOMBIE_METAL, 0.4f, 0.1f);
+				  player.getWorld().playSound(e.getEntity().getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.4f, 0.1f);
 				  player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, WeaknessLength, WeaknessLevel, false), true);
 				  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You are no longer hidden!");
 		   }

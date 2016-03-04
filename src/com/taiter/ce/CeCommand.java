@@ -499,7 +499,7 @@ public class CeCommand {
                     requiredPermission += "remove";
                     if (!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
                         return Error + "You do not have permission to use this command.";
-                    ItemStack item = ((Player) sender).getItemInHand();
+                    ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
                     if (item == null || item.getType().equals(Material.AIR)) {
                         return Error + "You are not holding an item!";
                     }
@@ -536,7 +536,7 @@ public class CeCommand {
                     return "";
                 }
 
-                ItemStack item = p.getItemInHand();
+                ItemStack item = p.getInventory().getItemInMainHand();
 
                 if (name.startsWith("i") || name.startsWith("e")) {
 
@@ -563,7 +563,7 @@ public class CeCommand {
                             }
 
                         if (test != null) {
-                            if (p.getItemInHand().getType() != test)
+                            if (p.getInventory().getItemInMainHand().getType() != test)
                                 return Error + "You do not have the right material to enchant this!";
                             start++;
                             customName = args[2];
@@ -633,7 +633,7 @@ public class CeCommand {
                         }
 
                         if (item.getType().equals(Material.BOOK) && custom instanceof CEnchantment) {
-                            p.setItemInHand(EnchantManager.getEnchantBook((CEnchantment) custom, level));
+                            p.getInventory().setItemInMainHand(EnchantManager.getEnchantBook((CEnchantment) custom, level));
 
                             return Success + "You have created an enchanted book with '" + custom.getDisplayName() + ChatColor.GREEN + "' level " + level + "!";
                         }
@@ -662,7 +662,7 @@ public class CeCommand {
                                             lore.set(i, custom.getDisplayName() + " " + EnchantManager.intToLevel(newLevel));
                                             im.setLore(lore);
                                             item.setItemMeta(im);
-                                            p.setItemInHand(item);
+                                            p.getInventory().setItemInMainHand(item);
                                             return (Success + "You have increased your item's level of " + custom.getDisplayName() + ChatColor.GREEN
                                                     + (newLevel == maxLevel ? " to " + maxLevel : " by " + level) + "!");
                                         }
@@ -681,7 +681,7 @@ public class CeCommand {
                         }
 
                         if (custom instanceof CEnchantment) {
-                            p.setItemInHand(EnchantManager.addEnchant(item, (CEnchantment) custom, level));
+                            p.getInventory().setItemInMainHand(EnchantManager.addEnchant(item, (CEnchantment) custom, level));
                             Success += "You have enchanted your item with '" + custom.getDisplayName() + ChatColor.GREEN + "' level " + level + "!";
                         } else if (custom instanceof CItem) {
                             Material toSet = item.getType();
@@ -727,7 +727,7 @@ public class CeCommand {
                                 p.getInventory().addItem(le);
                                 p.getInventory().addItem(bo);
                             } else
-                                p.setItemInHand(newItem);
+                                p.getInventory().setItemInMainHand(newItem);
 
                             Success += "You have created the item '" + custom.getDisplayName() + ChatColor.GREEN + "'!";
                         }

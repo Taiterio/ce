@@ -83,7 +83,7 @@ public class RocketBoots extends CItem {
 						im.setLore(lore);
 						player.sendMessage(ChatColor.GRAY + "Out of Fuel");
 						player.updateInventory();
-						player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.2f, 0f);
+						player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.2f, 0f);
 						return false;
 					} else {
 						rocketBoots.setDurability((short) (rocketBoots.getDurability() + 1));
@@ -96,7 +96,7 @@ public class RocketBoots extends CItem {
 					player.setVelocity(player.getLocation().getDirection().setY(0.5));
 					player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
 					player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 40);
-					player.getWorld().playSound(player.getLocation(), Sound.FIRE, 5f, 5f);
+					player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 5f, 5f);
 					if(player.getGameMode().equals(GameMode.CREATIVE)) 
 						return false;
 					
@@ -126,7 +126,7 @@ public class RocketBoots extends CItem {
 				}
 			}
 		} else {
-			rocketBoots = player.getItemInHand();
+			rocketBoots = player.getInventory().getItemInMainHand();
 			final ItemMeta im = rocketBoots.getItemMeta();
 			List<String> lore = im.getLore();
 			e.setCancelled(true);
@@ -148,13 +148,13 @@ public class RocketBoots extends CItem {
 					
 					@Override
 					public void run() {
-						ItemStack hand = player.getItemInHand();
+						ItemStack hand = player.getInventory().getItemInMainHand();
 						if(hand.equals(current)) {
 							if(hand.getDurability() == 0) {
 								removeLock(player);
 								player.getWorld().playEffect(player.getLocation(), Effect.CLICK2, 1000);
 								hand.setItemMeta(im);
-								player.setItemInHand(hand);
+								player.getInventory().setItemInMainHand(hand);
 								this.cancel();
 							} else {
 								hand.setDurability((short) (hand.getDurability() - 1));
@@ -180,7 +180,7 @@ public class RocketBoots extends CItem {
 				}
 				
 				im.setLore(lore);
-				player.getItemInHand().setItemMeta(im);
+				player.getInventory().getItemInMainHand().setItemMeta(im);
 				player.getWorld().playEffect(player.getLocation(), Effect.CLICK1, 5);
 				player.sendMessage(newStateMsg);
 					

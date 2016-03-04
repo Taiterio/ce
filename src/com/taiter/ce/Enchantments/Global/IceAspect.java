@@ -75,7 +75,7 @@ public class IceAspect extends CEnchantment {
 
 		if(i < chanceFreeze) {
 			((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SlowDuration, SlowStrength, false), true);
-			event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.DIG_SNOW, 4f, 2f);
+			event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.BLOCK_SNOW_BREAK, 4f, 2f);
 		}
 		if(specialFreeze) {
 			if(i < chanceSpecialFreeze) {

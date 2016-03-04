@@ -47,8 +47,8 @@ public class HealingShovel extends CItem {
 		e.setDamage(0);
 		damaged.getWorld().playSound(
 				damaged.getLocation(),
-				Sound.ORB_PICKUP, 0.5f, 1f);
-		short currentDur = player.getItemInHand()
+				Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1f);
+		short currentDur = player.getInventory().getItemInMainHand()
 				.getDurability();
 
 		if (((Damageable) damaged).getHealth() + Heal <= ((Damageable) damaged).getMaxHealth()) {
@@ -58,16 +58,16 @@ public class HealingShovel extends CItem {
 			damaged.setHealth(((Damageable) damaged).getMaxHealth());
 		}
 
-			if (currentDur + Heal < player.getItemInHand().getType().getMaxDurability()) {
-			player.getItemInHand()
+			if (currentDur + Heal < player.getInventory().getItemInMainHand().getType().getMaxDurability()) {
+			player.getInventory().getItemInMainHand()
 					.setDurability(
 							(short) (currentDur + Heal));
 			} else {
-			player.setItemInHand(new ItemStack(
+			player.getInventory().setItemInMainHand(new ItemStack(
 					Material.AIR, 1));
 			player.getWorld().playSound(
 					player.getLocation(),
-					Sound.ITEM_BREAK, 0.1f, 0f);
+					Sound.ENTITY_ITEM_BREAK, 0.1f, 0f);
 			}
 			return true;
 		}

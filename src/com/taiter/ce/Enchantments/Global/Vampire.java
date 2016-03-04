@@ -59,7 +59,7 @@ public class Vampire extends CEnchantment {
 				damager.setFoodLevel(food);
 			 else 
 				damager.setFoodLevel(20);
-			damager.getWorld().playSound(damager.getLocation(), Sound.BURP, 0.4f, 1f);
+			damager.getWorld().playSound(damager.getLocation(), Sound.ENTITY_PLAYER_BURP, 0.4f, 1f);
 			generateCooldown(damager, cooldown);
 		}
 	}

@@ -50,7 +50,7 @@ public class Block extends CEnchantment {
 		PlayerInteractEvent event = (PlayerInteractEvent) e;
 		final Player owner = event.getPlayer();
 
-		event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.ANVIL_LAND, 10, 10);
+		event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 10, 10);
 		new BukkitRunnable() {
 
 			PotionEffect	resistance	= new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 20, strength + level);

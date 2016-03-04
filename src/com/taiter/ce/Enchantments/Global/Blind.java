@@ -49,7 +49,7 @@ public class Blind extends CEnchantment {
 		EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) e;
 		LivingEntity target = (LivingEntity) event.getEntity();
 
-			target.getWorld().playSound(target.getLocation(), Sound.HURT_FLESH, 1f, 0.1f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1f, 0.1f);
 			target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration + 20 * level, 0));
 
 	}

@@ -514,12 +514,12 @@ public class CEListener implements Listener {
             //Check for runecrafting
             if (useRuneCrafting)
                 if (e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.ANVIL)) {
-                    ItemStack i = p.getItemInHand();
+                    ItemStack i = p.getInventory().getItemInMainHand();
                     if (EnchantManager.hasEnchantments(i) || EnchantManager.isEnchantmentBook(i)) {
                         if (!p.hasPermission("ce.*") && !p.hasPermission("ce.runecrafting"))
                             return;
                         e.setCancelled(true);
-                        p.setItemInHand(new ItemStack(Material.AIR));
+                        p.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                         Inventory einv = Bukkit.createInventory(p, InventoryType.FURNACE, ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE
                                 + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba");
                         einv.setContents(new ItemStack[] { new ItemStack(Material.AIR), i, new ItemStack(Material.AIR) });
@@ -529,8 +529,8 @@ public class CEListener implements Listener {
                 }
 
             // Check if the player has put armor on by rightclicking
-            if (p.getItemInHand().getType() != Material.AIR) {
-                ItemStack i = p.getItemInHand();
+            if (p.getInventory().getItemInMainHand().getType() != Material.AIR) {
+                ItemStack i = p.getInventory().getItemInMainHand();
                 String mat = i.getType().toString();
                 PlayerInventory inv = p.getInventory();
                 if ((mat.endsWith("BOOTS") && inv.getBoots() == null) || (mat.endsWith("LEGGINGS") && inv.getLeggings() == null) || (mat.endsWith("CHESTPLATE") && inv.getChestplate() == null)
@@ -543,7 +543,7 @@ public class CEListener implements Listener {
         if (e.getClickedBlock() != null && e.getClickedBlock().getType().toString().contains("SIGN"))
             if (((Sign) e.getClickedBlock().getState()).getLine(0).equals("[CustomEnchant]")) {
                 if (Main.hasEconomy)
-                    if (p.getItemInHand().getType() != Material.AIR) {
+                    if (p.getInventory().getItemInMainHand().getType() != Material.AIR) {
                         Sign sign = ((Sign) e.getClickedBlock().getState());
                         CEnchantment ce = EnchantManager.getEnchantment(sign.getLine(1));
                         if (ce == null)
@@ -555,7 +555,7 @@ public class CEListener implements Listener {
                         if (ce == null)
                             return;
 
-                        ItemStack inHand = p.getItemInHand();
+                        ItemStack inHand = p.getInventory().getItemInMainHand();
                         if (!Tools.isApplicable(inHand, ce)) {
                             p.sendMessage(ChatColor.RED + "This enchantment can not be applied to this item.");
                             return;
