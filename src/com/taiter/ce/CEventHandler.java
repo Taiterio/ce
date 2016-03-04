@@ -462,12 +462,14 @@ public class CEventHandler {
                                 p.sendMessage(ChatColor.RED + "Your level is not high enough!");
                                 return;
                             }
-
-                        if (Main.econ.getBalance(p.getName()) >= moneyCost)
-                            Main.econ.withdrawPlayer(p.getName(), moneyCost);
-                        else {
-                            p.sendMessage(ChatColor.RED + "You do not have enough money!");
-                            return;
+                        
+                        if (Main.hasEconomy) {
+                        	if (Main.econ.getBalance(p.getName()) >= moneyCost)
+                        		Main.econ.withdrawPlayer(p.getName(), moneyCost);
+                        	else {
+                        		p.sendMessage(ChatColor.RED + "You do not have enough money!");
+                        		return;
+                        	}
                         }
 
                         p.sendMessage(ChatColor.GREEN + "Used " + resultString + ChatColor.GREEN + " for the transformation.");

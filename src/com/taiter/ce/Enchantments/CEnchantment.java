@@ -190,7 +190,10 @@ public abstract class CEnchantment extends CBasic {
             if(combinationCost.length == 2) {
                 if (combinationCost[1].contains("$")) {
                     try {
-                        this.combinationCostMoney = Double.parseDouble(combinationCost[1].replace("$", ""));
+                    	if (Main.hasEconomy)
+                    		this.combinationCostMoney = Double.parseDouble(combinationCost[1].replace("$", ""));
+                        else
+                            this.combinationCostMoney = -1;
                     } catch (NumberFormatException ex) {
                         this.combinationCostMoney = -1;
                     }
