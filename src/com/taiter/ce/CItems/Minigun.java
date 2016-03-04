@@ -87,7 +87,7 @@ public class Minigun extends CItem {
 										ItemStack brokenItem = new ItemStack(Material.AIR);
 										player.setItemInHand(brokenItem);
 										player.getWorld().playEffect(player.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
-										player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.4f, 0f);
+										player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.4f, 0f);
 										removeLock(player);
 										this.cancel();
 										

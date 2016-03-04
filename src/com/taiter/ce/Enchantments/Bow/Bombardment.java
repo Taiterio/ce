@@ -82,7 +82,7 @@ public class Bombardment extends CEnchantment {
 					this.cancel();
 				}
 				
-				world.playSound(l, Sound.ENDERDRAGON_GROWL, Volume, 5f);
+				world.playSound(l, Sound.ENTITY_ENDERDRAGON_GROWL, Volume, 5f);
 			}
 		}.runTaskTimer(getPlugin(), 0l, 5l);
 		}

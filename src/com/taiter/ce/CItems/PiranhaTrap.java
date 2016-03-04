@@ -114,7 +114,7 @@ public class PiranhaTrap extends CItem {
 					public void run() {
 						if (maxTime >= 0) {
 							for(Item fish : fishList) {
-								fish.getWorld().playSound(fish.getLocation(), Sound.WATER, 0.1f, 0.5f);
+								fish.getWorld().playSound(fish.getLocation(), Sound.BLOCK_WATER_AMBIENT, 0.1f, 0.5f);
 								Vector vel = new Vector(0.02 * (rand.nextInt(2) == 1 ? -1 : 1), 0.4, 0.02 * (rand.nextInt(2) == 1 ? -1 : 1));
 								fish.setVelocity(vel);
 							}

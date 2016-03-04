@@ -47,7 +47,7 @@ public class HealingShovel extends CItem {
 		e.setDamage(0);
 		damaged.getWorld().playSound(
 				damaged.getLocation(),
-				Sound.ORB_PICKUP, 0.5f, 1f);
+				Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 1f);
 		short currentDur = player.getItemInHand()
 				.getDurability();
 
@@ -67,7 +67,7 @@ public class HealingShovel extends CItem {
 					Material.AIR, 1));
 			player.getWorld().playSound(
 					player.getLocation(),
-					Sound.ITEM_BREAK, 0.1f, 0f);
+					Sound.ENTITY_ITEM_BREAK, 0.1f, 0f);
 			}
 			return true;
 		}

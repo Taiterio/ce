@@ -53,7 +53,7 @@ public class Headless extends CEnchantment {
                         skull.setItemMeta(sm);
                     }
                     ent.getWorld().dropItem(ent.getLocation(), skull);
-                    player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_WOODBREAK, 0.1f, 0.1f);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.1f, 0.1f);
                 }
             }
         }.runTaskLater(getPlugin(), 5l);

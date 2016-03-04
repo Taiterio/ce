@@ -133,19 +133,19 @@ public class NecromancersStaff extends CItem {
                         ws.setVelocity(l.getDirection().multiply(2));
                         if (!Main.createExplosions)
                             ws.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
-                        player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
+                        player.getWorld().playSound(l, Sound.ENTITY_WITHER_AMBIENT, 0.5f, 10f);
                     } else {
-                        player.getWorld().playSound(l, Sound.CAT_HISS, 0.3f, 5f);
+                        player.getWorld().playSound(l, Sound.ENTITY_CAT_HISS, 0.3f, 5f);
                     }
                 } else if (spell == 1) {
                     player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
-                    player.getWorld().playSound(l, Sound.BLAZE_HIT, 0.2f, 0f);
+                    player.getWorld().playSound(l, Sound.ENTITY_BLAZE_HURT, 0.2f, 0f);
                 } else if (spell == 2) {
                     Location target = player.getTargetBlock((HashSet<Byte>) null, 20).getLocation();
                     player.getWorld().strikeLightning(target);
                     if (Tools.checkWorldGuard(l, player, "TNT", true))
                         player.getWorld().createExplosion(target, 1);
-                    player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
+                    player.getWorld().playSound(target, Sound.ENTITY_ENDERDRAGON_GROWL, 5f, 9999f);
                 }
 
                 // Generate the cooldown based on the cooldown value

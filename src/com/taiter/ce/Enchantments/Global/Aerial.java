@@ -49,7 +49,7 @@ public class Aerial extends CEnchantment {
 		
 		event.setDamage(event.getDamage() * (1 + DamageIncreasePercentage * level));
 
-		player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.1f, 0.1f);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.1f, 0.1f);
 	}
 
 	@Override

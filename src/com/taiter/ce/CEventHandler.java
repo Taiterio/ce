@@ -192,7 +192,7 @@ public class CEventHandler {
         im.setLore(lore);
         i.setItemMeta(im);
 
-        p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
+        p.getWorld().playSound(p.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 1f, 1f);
 
     }
 
@@ -476,8 +476,8 @@ public class CEventHandler {
                         im.setLore(lore);
                         result.setItemMeta(im);
                     }
-                    p.getWorld().playSound(p.getLocation(), Sound.ANVIL_USE, 1f, 10f);
-                    p.getWorld().playSound(p.getLocation(), Sound.LEVEL_UP, 1f, 2f);
+                    p.getWorld().playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1f, 10f);
+                    p.getWorld().playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 2f);
 
                     inv.clear();
 

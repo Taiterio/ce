@@ -51,8 +51,8 @@ public class Cripple extends CEnchantment {
 		
 		if(!target.hasPotionEffect(PotionEffectType.CONFUSION)) {
 
-			target.getWorld().playSound(target.getLocation(), Sound.HURT_FLESH, 1f, 0.1f);
-			target.getWorld().playSound(target.getLocation(), Sound.ANVIL_LAND, 0.1f, 10f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1f, 0.1f);
+			target.getWorld().playSound(target.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.1f, 10f);
 			target.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, duration * level, 0));
 			target.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration * level, strength + level));
 

@@ -50,7 +50,7 @@ public class Charge extends CEnchantment {
 		
 		event.setDamage(event.getDamage() * (1 + DamageIncreasePercentage * level)); 
 
-		player.getWorld().playSound(player.getLocation(), Sound.ANVIL_LAND, 0.1f, 0.1f);
+		player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.1f, 0.1f);
 	}
 
 	@Override

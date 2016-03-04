@@ -83,7 +83,7 @@ public class RocketBoots extends CItem {
 						im.setLore(lore);
 						player.sendMessage(ChatColor.GRAY + "Out of Fuel");
 						player.updateInventory();
-						player.getWorld().playSound(player.getLocation(), Sound.BAT_TAKEOFF, 0.2f, 0f);
+						player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 0.2f, 0f);
 						return false;
 					} else {
 						rocketBoots.setDurability((short) (rocketBoots.getDurability() + 1));
@@ -96,7 +96,7 @@ public class RocketBoots extends CItem {
 					player.setVelocity(player.getLocation().getDirection().setY(0.5));
 					player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 10);
 					player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 40);
-					player.getWorld().playSound(player.getLocation(), Sound.FIRE, 5f, 5f);
+					player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 5f, 5f);
 					if(player.getGameMode().equals(GameMode.CREATIVE)) 
 						return false;
 					

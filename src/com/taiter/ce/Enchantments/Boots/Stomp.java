@@ -68,7 +68,7 @@ public class Stomp extends CEnchantment {
 							player.getWorld().playEffect(player.getLocation(),
 									Effect.ZOMBIE_DESTROY_DOOR, 5);
 							player.getWorld().playSound(player.getLocation(),
-									Sound.EXPLODE, 1f, 4f);
+									Sound.ENTITY_GENERIC_EXPLODE, 1f, 4f);
 							
 							double damage = event.getDamage()/damageReductionFraction;
 							if(((Damageable) player).getHealth() - damage > 0)

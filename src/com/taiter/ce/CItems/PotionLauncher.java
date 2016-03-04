@@ -52,7 +52,7 @@ public class PotionLauncher extends CItem {
 			Location loc = player.getLocation();
 			if(potion != null && potion.getType().equals(Material.POTION)) {
 				ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
-				player.getWorld().playSound(loc, Sound.EXPLODE, 1f, 10f);
+				player.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 1f, 10f);
 				tp.setItem(potion);
 				tp.setBounce(false);
 				tp.setVelocity(loc.getDirection().multiply(ProjectileSpeedMultiplier));
