@@ -38,8 +38,8 @@ public class Frozen extends CEnchantment {
 
 	public Frozen(Application app) {
 		super(app);		
-		configEntries.add("Duration: 60");
-		configEntries.add("Strength: 1");
+		configEntries.put("Duration", 60);
+		configEntries.put("Strength", 1);
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 

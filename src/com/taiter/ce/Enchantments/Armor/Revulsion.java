@@ -37,7 +37,7 @@ public class Revulsion extends CEnchantment {
 
 	public Revulsion(Application app) {
 		super(app);		
-		configEntries.add("Duration: 20");
+		configEntries.put("Duration", 20);
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 

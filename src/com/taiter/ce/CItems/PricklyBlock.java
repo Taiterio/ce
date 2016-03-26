@@ -40,9 +40,9 @@ public class PricklyBlock extends CItem {
 	
 	public PricklyBlock(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("Damage: 3");
-		this.configEntries.add("NauseaLevel: 2");
-		this.configEntries.add("NauseaDuration: 200");
+		this.configEntries.put("Damage", 3);
+		this.configEntries.put("NauseaLevel", 2);
+		this.configEntries.put("NauseaDuration", 200);
 		triggers.add(Trigger.BLOCK_PLACED);
 		triggers.add(Trigger.MOVE);
 	}

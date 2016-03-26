@@ -47,9 +47,9 @@ public class Flamethrower extends CItem {
 	
 	public Flamethrower(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("IsReloadable: true");
-		this.configEntries.add("BurnDuration: 100");
-		this.configEntries.add("FireBlocksPerBurst: 10");
+		this.configEntries.put("IsReloadable", true);
+		this.configEntries.put("BurnDuration", 100);
+		this.configEntries.put("FireBlocksPerBurst", 10);
 		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 

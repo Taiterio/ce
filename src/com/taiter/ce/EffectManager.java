@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import net.md_5.bungee.api.ChatColor;
 
 /*
 * This file is part of Custom Enchantments
@@ -28,7 +31,7 @@ import org.bukkit.util.Vector;
 
 public class EffectManager {
 
-    //The particle enum as of 1.8.8
+    //The particle enum as of 1.9
     public enum ParticleEffect {
         EXPLOSION_NORMAL,
         EXPLOSION_LARGE,
@@ -71,7 +74,11 @@ public class EffectManager {
         BLOCK_DUST,
         WATER_DROP,
         ITEM_TAKE,
-        MOB_APPEARANCE
+        MOB_APPEARANCE,
+        //1.9 Only
+        END_ROD,
+        DAMAGE_INDICATOR,
+        SWEEP_ATTACK
     }
 
     private static Constructor<?> effectConstructor;
@@ -82,16 +89,34 @@ public class EffectManager {
             effectConstructor = ReflectionHelper.getEffectPacketConstructor();
             particles = (Object[]) ReflectionHelper.loadEnumParticleValues();
         } catch (Exception e) {
-            for (StackTraceElement st : e.getStackTrace())
-                Bukkit.getConsoleSender().sendMessage("" + st.toString());
+            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] Could not load particle effects. ERROR:");
+            e.printStackTrace();
+
         }
+    }
+
+    public static void playSound(Location loc, String sound, float volume, float pitch) {
+        Sound s;
+
+        try {
+            s = Sound.valueOf(sound);
+        } catch (IllegalArgumentException ex) {
+            try {
+                //Try to resolve the 1.8 Sounds
+                s = Sound.valueOf(sound.substring(sound.indexOf("_") + 1, sound.length()).replace("_AMBIENT", "").replace("GENERIC_", "").replace("EXPERIENCE_", "").replace("PLAYER_", ""));
+            } catch (IllegalArgumentException ex2) {
+                return;
+            }
+        }
+
+        loc.getWorld().playSound(loc, s, volume, pitch);
     }
 
     public static void sendBlockEffect(List<Player> targets, Location loc, Vector offset, int blockID, float speed, int amount, byte data) {
         Object packet = null;
         try {
-            packet = effectConstructor.newInstance(particles[5], true, (float) loc.getX(), (float) loc.getY(), (float) loc.getZ(), (float) offset.getX(), (float) offset.getY(), (float) offset.getZ(), speed, amount,
-                    new int[] { blockID, data });
+            packet = effectConstructor.newInstance(particles[5], true, (float) loc.getX(), (float) loc.getY(), (float) loc.getZ(), (float) offset.getX(), (float) offset.getY(), (float) offset.getZ(),
+                    speed, amount, new int[] { blockID, data });
         } catch (Exception e) {
         }
 
@@ -108,8 +133,8 @@ public class EffectManager {
         Object packet = null;
 
         try {
-            packet = effectConstructor.newInstance(particles[particle.ordinal()], true, (float) loc.getX(), (float) loc.getY(), (float) loc.getZ(), (float) offset.getX(), (float) offset.getY(), (float) offset.getZ(), speed,
-                    amount, null);
+            packet = effectConstructor.newInstance(particles[particle.ordinal()], true, (float) loc.getX(), (float) loc.getY(), (float) loc.getZ(), (float) offset.getX(), (float) offset.getY(),
+                    (float) offset.getZ(), speed, amount, null);
         } catch (Exception e) {
         }
 

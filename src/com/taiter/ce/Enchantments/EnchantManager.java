@@ -4,8 +4,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,7 +36,7 @@ import com.taiter.ce.Main;
 
 public class EnchantManager {
 
-    private static HashSet<CEnchantment> enchantments = new HashSet<CEnchantment>();
+    private static Set<CEnchantment> enchantments = new LinkedHashSet<CEnchantment>();
     private static Enchantment glowEnchantment;
     private static int maxEnchants = -1;
 
@@ -164,6 +165,22 @@ public class EnchantManager {
             }
     }
 
+    /**
+     * Retrieves an enchantment by its original name. Assumes that the given String is not colored and equals the name
+     * of an enchantment.
+     * 
+     * @param originalName
+     *            The original name of the enchantment to retrieve
+     * @return The enchantment specified by originalName
+     */
+    public static CEnchantment getInternalEnchantment(String originalName) {
+        for (CEnchantment ce : enchantments) {
+            if (ce.getOriginalName().equals(originalName))
+                return ce;
+        }
+        return null;
+    }
+
     public static CEnchantment getEnchantment(String name) {
         if (name.length() > 3)
             for (CEnchantment ce : enchantments) {
@@ -184,12 +201,12 @@ public class EnchantManager {
         return null;
     }
 
-    public static HashSet<CEnchantment> getEnchantments() {
+    public static Set<CEnchantment> getEnchantments() {
         return enchantments;
     }
 
-    public static HashSet<CEnchantment> getEnchantments(List<String> lore) {
-        HashSet<CEnchantment> list = new HashSet<CEnchantment>();
+    public static Set<CEnchantment> getEnchantments(List<String> lore) {
+        Set<CEnchantment> list = new LinkedHashSet<CEnchantment>();
         if (lore != null)
             for (String name : lore)
                 if (name.length() > 3)

@@ -1,6 +1,7 @@
 bin
+*.xml
 .checkstyle
- .jardesc
+*.launch
 .project
 .classpath
 .settings

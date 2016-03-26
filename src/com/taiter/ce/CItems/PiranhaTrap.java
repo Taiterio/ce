@@ -27,7 +27,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
@@ -41,6 +40,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Tools;
 
 
@@ -52,9 +52,9 @@ public class PiranhaTrap extends CItem {
 	
 	public PiranhaTrap(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("BleedDuration: 120");
-		this.configEntries.add("FishAmount: 20");
-		this.configEntries.add("FishDuration: 200");
+		this.configEntries.put("BleedDuration", 120);
+		this.configEntries.put("FishAmount", 20);
+		this.configEntries.put("FishDuration", 200);
 		triggers.add(Trigger.BLOCK_PLACED);
 		triggers.add(Trigger.MOVE);
 	}
@@ -114,7 +114,7 @@ public class PiranhaTrap extends CItem {
 					public void run() {
 						if (maxTime >= 0) {
 							for(Item fish : fishList) {
-								fish.getWorld().playSound(fish.getLocation(), Sound.WATER, 0.1f, 0.5f);
+								EffectManager.playSound(fish.getLocation(), "BLOCK_WATER_AMBIENT", 0.1f, 0.5f);
 								Vector vel = new Vector(0.02 * (rand.nextInt(2) == 1 ? -1 : 1), 0.4, 0.02 * (rand.nextInt(2) == 1 ? -1 : 1));
 								fish.setVelocity(vel);
 							}

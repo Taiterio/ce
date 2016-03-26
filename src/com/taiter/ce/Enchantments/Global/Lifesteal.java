@@ -21,7 +21,6 @@ package com.taiter.ce.Enchantments.Global;
 
 
 import org.bukkit.GameMode;
-import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
@@ -29,6 +28,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -39,7 +39,7 @@ public class Lifesteal extends CEnchantment {
 
 	public Lifesteal(Application app) {
 		super(app);		
-		configEntries.add("Heal: 2");
+		configEntries.put("Heal", 2);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
@@ -63,7 +63,7 @@ public class Lifesteal extends CEnchantment {
 		else
 			damager.setHealth(((Damageable) damager).getMaxHealth());
 		
-		damager.getWorld().playSound(damager.getLocation(), Sound.ORB_PICKUP, 0.3f, 1f);
+		EffectManager.playSound(damager.getLocation(), "ENTITY_EXPERIENCE_ORB_PICKUP", 0.3f, 1f);
 
 		
 	}

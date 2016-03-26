@@ -41,9 +41,9 @@ public class Bandage extends CItem {
 
 	public Bandage(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("TotalHealAmount: 10");
-		this.configEntries.add("TotalHealTime: 200");
-		this.configEntries.add("StopAtFullHealth: true");
+		this.configEntries.put("TotalHealAmount", 10);
+		this.configEntries.put("TotalHealTime", 200);
+		this.configEntries.put("StopAtFullHealth", true);
 		triggers.add(Trigger.INTERACT_RIGHT);
 		triggers.add(Trigger.INTERACT_ENTITY);
 		triggers.add(Trigger.DAMAGE_GIVEN);

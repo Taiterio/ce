@@ -24,7 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -32,6 +31,8 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.taiter.ce.EffectManager;
 
 
 public class Minigun extends CItem {
@@ -42,8 +43,8 @@ public class Minigun extends CItem {
 	
 	public Minigun(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("ArrowCountPerVolley: 20");
-		this.configEntries.add("ShotsPerSecond: 20");
+		this.configEntries.put("ArrowCountPerVolley", 20);
+		this.configEntries.put("ShotsPerSecond", 20);
 		triggers.add(Trigger.SHOOT_BOW);
 	}
 
@@ -87,7 +88,7 @@ public class Minigun extends CItem {
 										ItemStack brokenItem = new ItemStack(Material.AIR);
 										player.setItemInHand(brokenItem);
 										player.getWorld().playEffect(player.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
-										player.getWorld().playSound(player.getLocation(), Sound.ITEM_BREAK, 0.4f, 0f);
+										EffectManager.playSound(player.getLocation(), "ENTITY_ITEM_BREAK", 0.4f, 0f);
 										removeLock(player);
 										this.cancel();
 										

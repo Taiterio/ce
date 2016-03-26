@@ -17,8 +17,8 @@ public class Cloaking extends CEnchantment {
 
     public Cloaking(Application app) {
         super(app);
-        configEntries.add("DurationPerLevel: 60");
-        configEntries.add("Cooldown: 200");
+        configEntries.put("DurationPerLevel", 60);
+        configEntries.put("Cooldown", 200);
         triggers.add(Trigger.DAMAGE_TAKEN);
     }
 

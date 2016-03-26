@@ -36,10 +36,10 @@ public class DruidBoots extends CItem {
 	
 	public DruidBoots(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("SpeedDuration: 100");
-		this.configEntries.add("SpeedLevel: 5");
-		this.configEntries.add("RegenerationDuration: 100");
-		this.configEntries.add("RegenerationLevel: 5");
+		this.configEntries.put("SpeedDuration", 100);
+		this.configEntries.put("SpeedLevel", 5);
+		this.configEntries.put("RegenerationDuration", 100);
+		this.configEntries.put("RegenerationLevel", 5);
 		triggers.add(Trigger.MOVE);
 	}
 

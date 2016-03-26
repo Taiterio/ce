@@ -43,9 +43,9 @@ public class Powergloves extends CItem {
 
 	public Powergloves(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("ThrowSpeedMultiplier: 60");
-		this.configEntries.add("ThrowDelayAfterGrab: 20");
-		this.configEntries.add("MaxGrabtime: 10");
+		this.configEntries.put("ThrowSpeedMultiplier", 60);
+		this.configEntries.put("ThrowDelayAfterGrab", 20);
+		this.configEntries.put("MaxGrabtime", 10);
 		triggers.add(Trigger.INTERACT_RIGHT);
 		triggers.add(Trigger.INTERACT_ENTITY);
 	}

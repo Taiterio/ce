@@ -40,9 +40,9 @@ public class Paralyze extends CEnchantment {
 
 	public Paralyze(Application app) {
 		super(app);		
-		configEntries.add("Duration: 60");
-		configEntries.add("Strength: 5");
-		configEntries.add("Cooldown: 200");
+		configEntries.put("Duration", 60);
+		configEntries.put("Strength", 5);
+		configEntries.put("Cooldown", 200);
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}

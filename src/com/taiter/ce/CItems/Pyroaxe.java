@@ -22,12 +22,12 @@ package com.taiter.ce.CItems;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Main;
 
 
@@ -37,7 +37,7 @@ public class Pyroaxe extends CItem {
 	
 	public Pyroaxe(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		configEntries.add("DamageMultiplier: 2");
+		configEntries.put("DamageMultiplier", 2);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 
@@ -51,7 +51,7 @@ public class Pyroaxe extends CItem {
 		if(e.getDamager() == player && entity.getFireTicks() > 0) {
 			e.setDamage(damageMultiplier * e.getDamage());
 			entity.getWorld().playEffect(entity.getLocation(), Effect.ZOMBIE_DESTROY_DOOR, 10);
-			entity.getWorld().playSound(entity.getLocation(), Sound.ANVIL_LAND, 1f, 0.001f);
+			EffectManager.playSound(entity.getLocation(), "BLOCK_ANVIL_LAND", 1f, 0.001f);
 			return true;
 		}
 		return false;

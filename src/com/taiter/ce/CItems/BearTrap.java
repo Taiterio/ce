@@ -46,11 +46,11 @@ public class BearTrap extends CItem {
 	
 	public BearTrap(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("BleedDuration: 100");
-		this.configEntries.add("SlowLevel: 2");
-		this.configEntries.add("SlowDuration: 100");
-		this.configEntries.add("WeaknessLevel: 4");
-		this.configEntries.add("WeaknessDuration: 100");
+		this.configEntries.put("BleedDuration", 100);
+		this.configEntries.put("SlowLevel", 2);
+		this.configEntries.put("SlowDuration", 100);
+		this.configEntries.put("WeaknessLevel", 4);
+		this.configEntries.put("WeaknessDuration", 100);
 		triggers.add(Trigger.BLOCK_PLACED);
 		triggers.add(Trigger.MOVE);
 	}

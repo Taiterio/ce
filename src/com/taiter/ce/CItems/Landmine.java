@@ -43,7 +43,7 @@ public class Landmine extends CItem {
 	
 	public Landmine(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("ExplosionStrength: 5");
+		this.configEntries.put("ExplosionStrength", 5);
 		triggers.add(Trigger.BLOCK_PLACED);
 		triggers.add(Trigger.MOVE);
 	}

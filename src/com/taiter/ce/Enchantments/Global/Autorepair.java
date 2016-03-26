@@ -38,8 +38,8 @@ public class Autorepair extends CEnchantment {
 	
 	public Autorepair(Application app) {
 		super(app);				
-		configEntries.add("HealAmount: 1");
-		configEntries.add("HealFully: false");
+		configEntries.put("HealAmount", 1);
+		configEntries.put("HealFully", false);
 		triggers.add(Trigger.MOVE);
 	}
 

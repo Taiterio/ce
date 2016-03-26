@@ -39,8 +39,8 @@ public class Energizing extends CEnchantment {
 	
 	public Energizing(Application app) {
 		super(app);		
-		configEntries.add("Strength: 1");
-		configEntries.add("Duration: 20");
+		configEntries.put("Strength", 1);
+		configEntries.put("Duration", 20);
 		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 

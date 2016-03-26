@@ -40,10 +40,10 @@ public class Endershift extends CEnchantment {
 
 	public Endershift(Application app) {
 		super(app);
-		configEntries.add("Duration: 200");
-		configEntries.add("Strength: 5");
-		configEntries.add("HpToTrigger: 4");
-		configEntries.add("Cooldown: 6000");
+		configEntries.put("Duration", 200);
+		configEntries.put("Strength", 5);
+		configEntries.put("HpToTrigger", 4);
+		configEntries.put("Cooldown", 6000);
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 

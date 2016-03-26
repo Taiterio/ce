@@ -42,7 +42,7 @@ public class CeCommand {
     private Main main;
     private Boolean confirmUpdate = false;
 
-    public CeCommand(Main m) {
+    public CeCommand(Main m) { 
         this.main = m;
     }
 

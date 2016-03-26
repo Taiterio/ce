@@ -46,12 +46,12 @@ public class BountyHunter extends CEnchantment {
 
 	public BountyHunter(Application app) {
 		super(app);		
-		this.configEntries.add("MaximumBounty: 8");
-		this.configEntries.add("Cooldown: 600");
-		this.configEntries.add("ChanceEmerald: 2.5");
-		this.configEntries.add("ChanceDiamond: 5");
-		this.configEntries.add("ChanceGold: 15");
-		this.configEntries.add("ChanceIron: 27.5");
+		this.configEntries.put("MaximumBounty", 8);
+		this.configEntries.put("Cooldown", 600);
+		this.configEntries.put("ChanceEmerald", 2.5);
+		this.configEntries.put("ChanceDiamond", 5);
+		this.configEntries.put("ChanceGold", 15);
+		this.configEntries.put("ChanceIron", 27.5);
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}

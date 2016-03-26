@@ -36,7 +36,7 @@ public class Gooey extends CEnchantment {
 
 	public Gooey(Application app) {
 		super(app);		
-		configEntries.add("HeightMultiplier: 3");
+		configEntries.put("HeightMultiplier", 3);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 

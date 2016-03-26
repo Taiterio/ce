@@ -40,9 +40,9 @@ public class Explosive extends CEnchantment {
 
     public Explosive(Application app) {
         super(app);
-        configEntries.add("Radius: 3");
-        configEntries.add("LargerRadius: true");
-        configEntries.add("DropItems: true");
+        configEntries.put("Radius", 3);
+        configEntries.put("LargerRadius", true);
+        configEntries.put("DropItems", true);
         triggers.add(Trigger.BLOCK_BROKEN);
     }
 

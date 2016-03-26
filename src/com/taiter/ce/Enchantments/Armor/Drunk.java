@@ -34,8 +34,8 @@ public class Drunk extends CEnchantment {
 
     public Drunk(Application app) {
         super(app);
-        configEntries.add("DurationPerLevel: 60");
-        configEntries.add("BaseStrength: 1");
+        configEntries.put("DurationPerLevel", 60);
+        configEntries.put("BaseStrength", 1);
         triggers.add(Trigger.DAMAGE_TAKEN);
     }
 

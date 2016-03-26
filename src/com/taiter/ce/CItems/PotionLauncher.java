@@ -25,11 +25,12 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+
+import com.taiter.ce.EffectManager;
 
 
 
@@ -39,7 +40,7 @@ public class PotionLauncher extends CItem {
 
 	public PotionLauncher(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("ProjectileSpeedMultiplier: 4");
+		this.configEntries.put("ProjectileSpeedMultiplier", 4);
 		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
@@ -52,7 +53,7 @@ public class PotionLauncher extends CItem {
 			Location loc = player.getLocation();
 			if(potion != null && potion.getType().equals(Material.POTION)) {
 				ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
-				player.getWorld().playSound(loc, Sound.EXPLODE, 1f, 10f);
+				EffectManager.playSound(loc, "ENTITY_GENERIC_EXPLODE", 0.5f, 2f);
 				tp.setItem(potion);
 				tp.setBounce(false);
 				tp.setVelocity(loc.getDirection().multiply(ProjectileSpeedMultiplier));

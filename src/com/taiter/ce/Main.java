@@ -34,6 +34,8 @@ import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -84,8 +86,8 @@ import com.taiter.ce.CItems.Pyroaxe;
 import com.taiter.ce.CItems.RocketBoots;
 import com.taiter.ce.CItems.ThorsAxe;
 import com.taiter.ce.Enchantments.CEnchantment;
-import com.taiter.ce.Enchantments.EnchantManager;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
+import com.taiter.ce.Enchantments.EnchantManager;
 import com.taiter.ce.Enchantments.Global.IceAspect;
 
 import net.milkbowl.vault.economy.Economy;
@@ -98,7 +100,7 @@ public final class Main extends JavaPlugin {
     public static CeCommand commandC;
     private static ClassLoader classLoader;
 
-    public static HashSet<CItem> items;
+    public static Set<CItem> items;
 
     public static Boolean createExplosions;
     public static Boolean hasRPGItems = false;
@@ -420,7 +422,7 @@ public final class Main extends JavaPlugin {
 
         Permission runecrafting = new Permission("ce.runecrafting", "The permission for Runecrafting.", PermissionDefault.OP);
         runecrafting.addParent(mainNode, true);
-        
+
         Permission cmdNode = new Permission("ce.cmd.*", "The permission node for CE's commands.", PermissionDefault.OP);
         Permission enchNode = new Permission("ce.ench.*", "The permission node for CE's EnchantManager.getEnchantments().", PermissionDefault.OP);
         Permission itemNode = new Permission("ce.item.*", "The permission node for CE's  items.", PermissionDefault.OP);
@@ -442,7 +444,7 @@ public final class Main extends JavaPlugin {
         cmdEnchant.addParent(cmdNode, true);
 
         Bukkit.getServer().getPluginManager().addPermission(mainNode);
-        
+
         Bukkit.getServer().getPluginManager().addPermission(runecrafting);
 
         Bukkit.getServer().getPluginManager().addPermission(cmdNode);
@@ -496,11 +498,12 @@ public final class Main extends JavaPlugin {
 
             while (entries.hasMoreElements()) {
                 String entryName = entries.nextElement().getName();
-                if (!entryName.contains("$") && entryName.contains("Enchantments")
+                if (!entryName.contains("$") && entryName.contains("Enchantments") && entryName.endsWith(".class")
                         && !(entryName.contains("CEnchantment") || entryName.contains("EnchantManager") || entryName.contains("GlowEnchantment")))
                     try {
                         Application app = null;
                         String className = entryName.replace(".class", "");
+
                         if (entryName.contains("/")) {
                             app = Application.valueOf(entryName.split("/")[4].toUpperCase());
                             className = className.replaceAll("/", ".");
@@ -611,8 +614,8 @@ public final class Main extends JavaPlugin {
 
     @SuppressWarnings("unchecked")
     private static void deleteInactive() {
-        HashSet<CEnchantment> e = (HashSet<CEnchantment>) EnchantManager.getEnchantments().clone();
-        HashSet<CItem> i = (HashSet<CItem>) items.clone();
+        Set<CEnchantment> e = new LinkedHashSet<CEnchantment>(EnchantManager.getEnchantments());
+        Set<CItem> i = new LinkedHashSet<CItem>(items);
         for (CEnchantment ce : e) {
             if (!Boolean.parseBoolean(config.getString("Enchantments." + ce.getOriginalName() + ".Enabled"))) {
                 EnchantManager.getEnchantments().remove(ce);

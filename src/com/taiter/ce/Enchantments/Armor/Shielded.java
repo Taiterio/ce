@@ -49,9 +49,9 @@ public class Shielded extends CEnchantment {
 
     public Shielded(Application app) {
         super(app);
-        configEntries.add("BaseStrength: 4");
-        configEntries.add("StrengthPerLevel: 2");
-        configEntries.add("Cooldown: 30");
+        configEntries.put("BaseStrength", 4);
+        configEntries.put("StrengthPerLevel", 2);
+        configEntries.put("Cooldown", 30);
         triggers.add(Trigger.DAMAGE_TAKEN);
     }
 

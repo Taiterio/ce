@@ -39,8 +39,8 @@ public class LivefireBoots extends CItem {
 	
 	public LivefireBoots(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("FlameDuration: 200");
-		this.configEntries.add("FireResistanceLevel: 5");
+		this.configEntries.put("FlameDuration", 200);
+		this.configEntries.put("FireResistanceLevel", 5);
 		triggers.add(Trigger.MOVE);
 		triggers.add(Trigger.WEAR_ITEM);
 	}

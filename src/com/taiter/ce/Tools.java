@@ -313,10 +313,6 @@ public class Tools {
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == Application.ARMOR) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 ArmorMenu.setItem(current, tempItem);
 
@@ -334,10 +330,6 @@ public class Tools {
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == Application.GLOBAL) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 GlobalMenu.setItem(current, tempItem);
 
@@ -356,10 +348,6 @@ public class Tools {
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == Application.TOOL) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 ToolMenu.setItem(current, tempItem);
 
@@ -379,10 +367,6 @@ public class Tools {
 
             if (ce.getApplication() == Application.BOW) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 BowMenu.setItem(current, tempItem);
 
@@ -402,10 +386,6 @@ public class Tools {
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == Application.HELMET) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 HelmetMenu.setItem(current, tempItem);
 
@@ -424,10 +404,6 @@ public class Tools {
         for (CEnchantment ce : EnchantManager.getEnchantments())
             if (ce.getApplication() == Application.BOOTS) {
                 tempMeta.setDisplayName(ce.getDisplayName());
-                if (Main.hasEconomy && ce.getCost() > 0) {
-                    tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ce.getCost());
-                    tempMeta.setLore(tempLore);
-                }
                 tempItem.setItemMeta(tempMeta);
                 BootsMenu.setItem(current, tempItem);
 
@@ -489,15 +465,13 @@ public class Tools {
     }
 
     public static void writeConfigEntries(CBasic ce) {
-        for (String entry : ce.configEntries) {
-            int start = entry.indexOf(": ");
-            String path = entry.substring(0, start);
-            String actualData = entry.substring(start + 2, entry.length());
-            String fullPath = (ce.getType() == "Enchantment" ? "Enchantments" : ce.getType()) + "." + ce.getOriginalName() + "." + path;
+        for (String entry : ce.configEntries.keySet()) {
+            String fullPath = (ce.getType() == "Enchantment" ? "Enchantments" : ce.getType()) + "." + ce.getOriginalName() + "." + entry;
             if (!Main.plugin.getConfig().contains(fullPath))
-                Main.plugin.getConfig().set(fullPath, actualData);
+                Main.plugin.getConfig().set(fullPath, ce.configEntries.get(entry));
         }
         Main.plugin.saveConfig();
+        Main.plugin.reloadConfig();
         Main.config = Main.plugin.getConfig();
     }
 

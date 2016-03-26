@@ -37,6 +37,7 @@ public class Smelting extends CEnchantment {
 	public Smelting(Application app) {
 		super(app);		
 		triggers.add(Trigger.BLOCK_BROKEN);
+		this.resetMaxLevel();
 	}
 
 	@Override
@@ -86,7 +87,6 @@ public class Smelting extends CEnchantment {
 	
 	@Override
 	public void initConfigEntries() {
-		this.resetMaxLevel();
 	}
 	
 }

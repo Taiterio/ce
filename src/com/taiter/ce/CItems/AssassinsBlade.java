@@ -31,6 +31,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.EffectManager;
+
 
 public class AssassinsBlade extends CItem {
 
@@ -41,10 +43,10 @@ public class AssassinsBlade extends CItem {
 	
 	public AssassinsBlade(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("InvisibilityDuration: 400");
-		this.configEntries.add("AmbushDmgMultiplier: 2");
-		this.configEntries.add("WeaknessLevel: 4");
-		this.configEntries.add("WeaknessLength: 100");
+		this.configEntries.put("InvisibilityDuration", 400);
+		this.configEntries.put("AmbushDmgMultiplier", 2);
+		this.configEntries.put("WeaknessLevel", 4);
+		this.configEntries.put("WeaknessLength", 100);
 		triggers.add(Trigger.INTERACT_RIGHT);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 
@@ -75,7 +77,7 @@ public class AssassinsBlade extends CItem {
 				  e.setDamage(e.getDamage() * AmbushDmgMultiplier);
 				  player.removeMetadata("ce.assassin", main);
 				  player.removePotionEffect(PotionEffectType.INVISIBILITY);
-				  player.getWorld().playSound(e.getEntity().getLocation(), Sound.ZOMBIE_METAL, 0.4f, 0.1f);
+				  EffectManager.playSound(e.getEntity().getLocation(), "BLOCK_PISTON_EXTEND", 0.4f, 0.1f);
 				  player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, WeaknessLength, WeaknessLevel, false), true);
 				  player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You are no longer hidden!");
 		   }

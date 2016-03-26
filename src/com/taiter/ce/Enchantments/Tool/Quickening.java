@@ -39,8 +39,8 @@ public class Quickening extends CEnchantment {
 	
 	public Quickening(Application app) {
 		super(app);		
-		configEntries.add("Strength: 3");
-		configEntries.add("Duration: 40");
+		configEntries.put("Strength", 3);
+		configEntries.put("Duration", 40);
 		triggers.add(Trigger.BLOCK_BROKEN);
 	}
 

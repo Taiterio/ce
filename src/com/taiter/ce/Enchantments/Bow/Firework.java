@@ -42,8 +42,8 @@ public class Firework extends CEnchantment {
 
 	public Firework(Application app) {
 		super(app);		
-		configEntries.add("FireworkAmount: 30");
-		configEntries.add("Delay: 5");		
+		configEntries.put("FireworkAmount", 30);
+		configEntries.put("Delay", 5);		
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}

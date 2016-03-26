@@ -41,7 +41,7 @@ public class SelfDestruct extends CEnchantment {
 	public SelfDestruct(Application app) {
 		super(app);		
 		triggers.add(Trigger.DEATH);
-		this.configEntries.add("ExplosionDelay: 40");
+		this.configEntries.put("ExplosionDelay", 40);
 	}
 
 	@Override

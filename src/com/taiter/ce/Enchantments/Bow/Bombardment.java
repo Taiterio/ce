@@ -22,7 +22,6 @@ package com.taiter.ce.Enchantments.Bow;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
@@ -34,6 +33,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Main;
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -46,8 +46,8 @@ public class Bombardment extends CEnchantment {
 
 	public Bombardment(Application app) {
 		super(app);		
-		configEntries.add("BaseTNTAmount: 3");
-		configEntries.add("Volume: 1");
+		configEntries.put("BaseTNTAmount", 3);
+		configEntries.put("Volume", 1);
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
@@ -82,7 +82,7 @@ public class Bombardment extends CEnchantment {
 					this.cancel();
 				}
 				
-				world.playSound(l, Sound.ENDERDRAGON_GROWL, Volume, 5f);
+				EffectManager.playSound(l, "ENTITY_ENDERDRAGON_GROWL", Volume, 2f);
 			}
 		}.runTaskTimer(getPlugin(), 0l, 5l);
 		}

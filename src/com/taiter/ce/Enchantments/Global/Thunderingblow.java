@@ -37,7 +37,7 @@ public class Thunderingblow extends CEnchantment {
 
 	public Thunderingblow(Application app) {
 		super(app);		
-		configEntries.add("LightningChance: 20");
+		configEntries.put("LightningChance", 20);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 

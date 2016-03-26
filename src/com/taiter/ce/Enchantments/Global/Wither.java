@@ -38,8 +38,8 @@ public class Wither extends CEnchantment {
 
 	public Wither(Application app) {
 		super(app);		
-		configEntries.add("Duration: 60");
-		configEntries.add("Strength: 1");
+		configEntries.put("Duration", 60);
+		configEntries.put("Strength", 1);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 		triggers.add(Trigger.SHOOT_BOW);
 	}

@@ -35,7 +35,7 @@ public class Medikit extends CItem {
 	
 	public Medikit(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("HealAmount: 10");
+		this.configEntries.put("HealAmount", 10);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 		triggers.add(Trigger.INTERACT_ENTITY);
 		triggers.add(Trigger.INTERACT_RIGHT);

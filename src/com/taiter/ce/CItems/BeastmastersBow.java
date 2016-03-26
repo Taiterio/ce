@@ -25,7 +25,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.CaveSpider;
 import org.bukkit.entity.EnderDragon;
@@ -41,6 +40,8 @@ import org.bukkit.entity.Spider;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import com.taiter.ce.EffectManager;
 
 
 public class BeastmastersBow extends CItem {
@@ -62,10 +63,10 @@ public class BeastmastersBow extends CItem {
 //		description.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "Collected Beasts:");
 //		description.add(placeHolder);
 //		descriptionSize = this.description.size();
-//		this.configEntries.add("MaximumMobStorage: 5");
-		this.configEntries.add("MaximumMobs: 5");
-		this.configEntries.add("MobAppearanceChance: 90");
-		this.configEntries.add("DamageMultiplication: 5");
+//		this.configEntries.put("MaximumMobStorage", 5);
+		this.configEntries.put("MaximumMobs", 5);
+		this.configEntries.put("MobAppearanceChance", 90);
+		this.configEntries.put("DamageMultiplication", 5);
 		rand = new Random();
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
@@ -92,7 +93,7 @@ public class BeastmastersBow extends CItem {
 					e.setDamage(e.getDamage()*DamageMultiplication);
 					w.playEffect(loc, Effect.SMOKE, 50);
 					w.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 50);
-					w.playSound(loc, Sound.PISTON_RETRACT, 1.3f, 3f);
+					EffectManager.playSound(loc, "BLOCK_PISTON_RETRACT", 1.3f, 3f);
 				return true;
 			} else if (ent instanceof Player) {
 				for(int i = 0; i < MaximumMobs; i++) {
@@ -100,7 +101,7 @@ public class BeastmastersBow extends CItem {
 						w.spawnEntity(loc, rand.nextInt(2) == 1 ? EntityType.SPIDER : EntityType.SLIME);
 						w.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 30);
 						w.playEffect(loc, Effect.SMOKE, 30);
-						w.playSound(loc, Sound.ANVIL_BREAK, 0.3f, 0.1f);
+						EffectManager.playSound(loc, "BLOCK_ANVIL_BREAK", 0.3f, 0.1f);
 					}
 				}
 			}

@@ -1,5 +1,9 @@
 package com.taiter.ce.Enchantments;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /*
 * This file is part of Custom Enchantments
 * Copyright (C) Taiterio 2015
@@ -32,7 +36,12 @@ import com.taiter.ce.Tools;
 public abstract class CEnchantment extends CBasic {
 
     static public enum Application {
-        ARMOR, GLOBAL, BOW, BOOTS, HELMET, TOOL
+        ARMOR,
+        GLOBAL,
+        BOW,
+        BOOTS,
+        HELMET,
+        TOOL
     }
 
     private static int amountGlobal = -1;
@@ -46,8 +55,9 @@ public abstract class CEnchantment extends CBasic {
     double enchantProbability;
     int enchantmentMaxLevel;
     int occurrenceChance;
-    int combinationCostLevel;
-    double combinationCostMoney;
+    List<Integer> runecraftCostLevel;
+    List<Double> runecraftCostMoney;
+    List<Double> costPerLevel;
     private boolean hasRetriedConfig;
 
     public Application getApplication() {
@@ -68,17 +78,16 @@ public abstract class CEnchantment extends CBasic {
         return this.occurrenceChance;
     }
 
-    public int getCombinationCostLevel() {
-        return combinationCostLevel;
+    public int getRunecraftCostLevel(int level) {
+        return runecraftCostLevel.get(level - 1);
     }
 
-    public double getCombinationCostMoney() {
-        return combinationCostMoney;
+    public double getRunecraftCostMoney(int level) {
+        return runecraftCostMoney.get(level - 1);
     }
 
-    @Override
-    public double getCost() {
-        return Double.parseDouble(Main.config.getString("Enchantments." + getOriginalName() + ".Cost"));
+    public double getCost(int level) {
+        return costPerLevel.get(level - 1);
     }
 
     public CEnchantment(Application app) {
@@ -95,10 +104,16 @@ public abstract class CEnchantment extends CBasic {
         }
 
         this.occurrenceChance = 100;
-        this.configEntries.add("DisplayName: " + originalName);
-        this.configEntries.add("EnchantmentMaxLevel: 5");
-        this.configEntries.add("OccurrenceChance: 100");
-        this.configEntries.add("Cost: 0");
+        this.costPerLevel = new ArrayList<Double>(Arrays.asList(0d, 0d, 0d, 0d, 0d));
+        this.runecraftCostLevel = new ArrayList<Integer>();
+        this.runecraftCostMoney = new ArrayList<Double>();
+
+        this.configEntries.put("Enabled", true);
+        this.configEntries.put("DisplayName", originalName);
+        this.configEntries.put("EnchantmentMaxLevel", 5);
+        this.configEntries.put("OccurrenceChance", 100);
+        this.configEntries.put("Cost", costPerLevel);
+        this.configEntries.put("RunecraftingCost", Arrays.asList("0LVL&0$", "0LVL&0$", "0LVL&0$", "0LVL&0$", "0LVL&0$"));
     }
 
     public boolean getHasCooldown(Player p) {
@@ -161,48 +176,13 @@ public abstract class CEnchantment extends CBasic {
         if (amountGlobal < 0)
             writeEnchantmentAmounts();
         double enchantmentProbability = getEnchantmentProbability();
-        this.configEntries.add("EnchantmentProbability: " + enchantmentProbability);
-        this.configEntries.add("CombinationCost: 10LVL:100$");
+        this.configEntries.put("EnchantmentProbability", enchantmentProbability);
 
         if (!getConfig().contains("Enchantments." + getOriginalName()))
             Tools.writeConfigEntries(this);
+
         try {
             this.displayName = EnchantManager.getLorePrefix() + ChatColor.translateAlternateColorCodes('&', Main.config.getString("Enchantments." + getOriginalName() + ".DisplayName"));
-
-            String[] combinationCost = getConfig().getString("Enchantments." + getOriginalName() + ".CombinationCost").trim().split(":");
-            if (combinationCost[0].contains("$")) {
-                try {
-                    if(Main.hasEconomy)
-                        this.combinationCostMoney = Double.parseDouble(combinationCost[0].replace("$", ""));
-                    else
-                        this.combinationCostMoney = -1;
-                } catch (NumberFormatException ex) {
-                    this.combinationCostMoney = -1;
-                }
-            } else if (combinationCost[0].contains("LVL")) {
-                try {
-                    this.combinationCostLevel = Integer.parseInt(combinationCost[0].replace("LVL", ""));
-                } catch (NumberFormatException ex) {
-                    this.combinationCostLevel = -1;
-                }
-            }
-            
-            if(combinationCost.length == 2) {
-                if (combinationCost[1].contains("$")) {
-                    try {
-                        this.combinationCostMoney = Double.parseDouble(combinationCost[1].replace("$", ""));
-                    } catch (NumberFormatException ex) {
-                        this.combinationCostMoney = -1;
-                    }
-                } else if (combinationCost[1].contains("LVL")) {
-                    try {
-                        this.combinationCostLevel = Integer.parseInt(combinationCost[1].replace("LVL", ""));
-                    } catch (NumberFormatException ex) {
-                        this.combinationCostLevel = -1;
-                    }
-                }
-            }
-
             if (!Boolean.parseBoolean(getConfig().getString("Global.Enchantments.UseCustomEnchantmentProbability")))
                 this.enchantProbability = enchantmentProbability;
             else
@@ -214,13 +194,76 @@ public abstract class CEnchantment extends CBasic {
                 this.enchantmentMaxLevel = 1;
             this.occurrenceChance = Integer.parseInt(Main.config.getString("Enchantments." + getOriginalName() + ".OccurrenceChance"));
 
-            for (String entry : this.configEntries) {
-                String[] split = entry.split(": ");
-                if (split[1].equalsIgnoreCase("true") || split[1].equalsIgnoreCase("false"))
-                    if (!getConfig().contains("Enchantments." + getOriginalName() + "." + split[0])) {
-                        Tools.writeConfigEntries(this);
-                        break;
+            this.costPerLevel = getConfig().getDoubleList("Enchantments." + getOriginalName() + ".Cost");
+
+            if (costPerLevel.isEmpty()) {
+                double cost = Double.parseDouble(getConfig().getString("Enchantments." + getOriginalName() + ".Cost"));
+                costPerLevel = new ArrayList<Double>();
+                for (int i = 0; i < this.enchantmentMaxLevel; i++) {
+                    costPerLevel.add(cost);
+                }
+            } else if (costPerLevel.size() > this.enchantmentMaxLevel) {
+                costPerLevel = costPerLevel.subList(0, enchantmentMaxLevel);
+                this.getConfig().set("Enchantments." + getOriginalName() + ".Cost", costPerLevel);
+                main.saveConfig();
+                main.reloadConfig();
+            }
+
+            List<String> list = getConfig().getStringList("Enchantments." + getOriginalName() + ".RunecraftingCost");
+
+            if (list.isEmpty()) {
+                String cost = getConfig().getString("Enchantments." + getOriginalName() + ".RunecraftingCost");
+                if (cost == null)
+                    cost = "0LVL&0$";
+                for (int i = 0; i < this.enchantmentMaxLevel; i++)
+                    list.add(cost);
+            }
+
+            if (list.size() > this.enchantmentMaxLevel) {
+                list = list.subList(0, enchantmentMaxLevel);
+                this.getConfig().set("Enchantments." + getOriginalName() + ".RunecraftingCost", list);
+                main.saveConfig();
+                main.reloadConfig();
+            }
+
+            for (String rcCost : list) {
+                String[] runecraftCost = rcCost.trim().split("&");
+                if (runecraftCost[0].contains("$")) {
+                    try {
+                        this.runecraftCostMoney.add(Double.parseDouble(runecraftCost[0].replace("$", "")));
+                    } catch (NumberFormatException ex) {
+                        this.runecraftCostMoney.add(-1d);
                     }
+                } else if (runecraftCost[0].contains("LVL")) {
+                    try {
+                        this.runecraftCostLevel.add(Integer.parseInt(runecraftCost[0].replace("LVL", "")));
+                    } catch (NumberFormatException ex) {
+                        this.runecraftCostLevel.add(-1);
+                    }
+                }
+
+                if (runecraftCost.length == 2) {
+                    if (runecraftCost[1].contains("$")) {
+                        try {
+                            this.runecraftCostMoney.add(Double.parseDouble(runecraftCost[1].replace("$", "")));
+                        } catch (NumberFormatException ex) {
+                            this.runecraftCostMoney.add(-1d);
+                        }
+                    } else if (runecraftCost[1].contains("LVL")) {
+                        try {
+                            this.runecraftCostLevel.add(Integer.parseInt(runecraftCost[1].replace("LVL", "")));
+                        } catch (NumberFormatException ex) {
+                            this.runecraftCostLevel.add(-1);
+                        }
+                    }
+                }
+            }
+
+            for (String entry : this.configEntries.keySet()) {
+                if (!getConfig().contains("Enchantments." + getOriginalName() + "." + entry)) {
+                    Tools.writeConfigEntries(this);
+                    break;
+                }
             }
             initConfigEntries();
         } catch (Exception e) {
@@ -231,7 +274,9 @@ public abstract class CEnchantment extends CBasic {
             } else {
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] WARNING: Could not configurate the CE '" + getOriginalName() + "',");
                 Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE]          please check the config for any errors, the enchantment is now disabled. ");
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] 	  Explicit error: " + e.getMessage());
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] 	  Explicit error:");
+                for (StackTraceElement exc : e.getStackTrace())
+                    Bukkit.getConsoleSender().sendMessage(exc.toString());
                 EnchantManager.getEnchantments().remove(this);
             }
         }
@@ -239,6 +284,7 @@ public abstract class CEnchantment extends CBasic {
 
     protected void resetMaxLevel() {
         this.enchantmentMaxLevel = -1;
+        this.configEntries.remove("EnchantmentMaxLevel");
     }
 
     public abstract void effect(Event event, ItemStack triggerItem, int level);

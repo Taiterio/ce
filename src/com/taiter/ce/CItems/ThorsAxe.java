@@ -22,12 +22,12 @@ package com.taiter.ce.CItems;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Tools;
 
 
@@ -37,7 +37,7 @@ public class ThorsAxe extends CItem {
 	
 	public ThorsAxe(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
 		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.add("FireDuration: 200");
+		this.configEntries.put("FireDuration", 200);
 		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
@@ -67,7 +67,7 @@ public class ThorsAxe extends CItem {
 						if(loc.getBlock().getType().equals(Material.AIR) && Tools.checkWorldGuard(loc, player, "PVP", false)) 
 							loc.getBlock().setType(Material.FIRE);
 					
-						player.getWorld().playSound(e.getClickedBlock().getLocation(), Sound.ENDERDRAGON_GROWL, 3f, 1f);
+						EffectManager.playSound(e.getClickedBlock().getLocation(), "ENTITY_ENDERDRAGON_GROWL", 0.75f, 1f);
 					
 						player.getItemInHand().setDurability((short) (player.getItemInHand().getDurability() + 1));
 					

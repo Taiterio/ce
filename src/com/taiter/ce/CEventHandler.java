@@ -10,7 +10,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -31,15 +30,15 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.taiter.ce.CBasic.Trigger;
+import com.taiter.ce.EffectManager.ParticleEffect;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.CItems.HookshotBow;
 import com.taiter.ce.CItems.NecromancersStaff;
 import com.taiter.ce.CItems.RocketBoots;
-import com.taiter.ce.EffectManager.ParticleEffect;
 import com.taiter.ce.Enchantments.CEnchantment;
+import com.taiter.ce.Enchantments.CEnchantment.Application;
 import com.taiter.ce.Enchantments.EnchantManager;
 import com.taiter.ce.Enchantments.Bow.Volley;
-import com.taiter.ce.Enchantments.CEnchantment.Application;
 
 /*
  * This file is part of Custom Enchantments
@@ -192,7 +191,7 @@ public class CEventHandler {
         im.setLore(lore);
         i.setItemMeta(im);
 
-        p.getWorld().playSound(p.getLocation(), Sound.AMBIENCE_THUNDER, 1f, 1f);
+        EffectManager.playSound(p.getLocation(), "ENTITY_FIREWORK_BLAST", 1f, 1f);
 
     }
 
@@ -241,7 +240,7 @@ public class CEventHandler {
             String[] enchantments = e.getDamager().getMetadata("ce.bow.enchantment").get(0).asString().split(" ; ");
             for (String ench : enchantments) {
                 String[] enchantment = ench.split(" : ");
-                CEnchantment ce = EnchantManager.getEnchantment(enchantment[0]);
+                CEnchantment ce = EnchantManager.getInternalEnchantment(enchantment[0]);
                 ce.effect(e, toCheck.getItemInHand(), Integer.parseInt(enchantment[1]));
             }
             e.getDamager().removeMetadata("ce.bow.enchantment", Main.plugin);
@@ -282,9 +281,10 @@ public class CEventHandler {
                                                             // BOWS
                                                             if (e instanceof EntityShootBowEvent) {
                                                                 String enchantments = ce.getOriginalName() + " : " + level;
+                                                                Entity proj = ((EntityShootBowEvent) e).getProjectile();
                                                                 if (((EntityShootBowEvent) e).getProjectile().hasMetadata("ce.bow.enchantment"))
-                                                                    enchantments += " ; " + ((EntityShootBowEvent) e).getProjectile().getMetadata("ce.bow.enchantment").get(0).asString();
-                                                                ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
+                                                                    enchantments += " ; " + proj.getMetadata("ce.bow.enchantment").get(0).asString();
+                                                                proj.setMetadata("ce.bow.enchantment", new FixedMetadataValue(Main.plugin, enchantments));
                                                                 if (ce instanceof Volley) {
                                                                     volleyLevel = level;
                                                                     continue;
@@ -377,7 +377,7 @@ public class CEventHandler {
     public static void handleRunecrafting(final InventoryClickEvent event) {
         if (event.getView() == null)
             return;
-        if (event.getRawSlot() > 0 && event.getRawSlot() < event.getView().getTopInventory().getSize()) {
+        if (event.getRawSlot() >= 0 && event.getRawSlot() < 3) {
             final Inventory inv = event.getView().getTopInventory();
 
             ItemStack item = event.getCursor();
@@ -433,18 +433,18 @@ public class CEventHandler {
                     ItemMeta im = result.getItemMeta();
                     List<String> lore = im.getLore();
 
-                    if (lore.get(lore.size() - 1).startsWith(ChatColor.GOLD + "Cost: ")) {
+                    if (lore.get(lore.size() - 1).startsWith(ChatColor.GRAY + "Cost: ")) {
                         int levelCost = 0;
                         double moneyCost = 0;
-                        String[] costSplit = lore.get(lore.size() - 1).split(" ");
-                        String resultString = ChatColor.WHITE + costSplit[1];
+                        String[] costSplit = ChatColor.stripColor(lore.get(lore.size() - 1)).split(" ");
+                        String resultString = ChatColor.WHITE + "" + ChatColor.BOLD + costSplit[1];
 
-                        if (costSplit[2].equals("Level")) {
+                        if (costSplit[2].equals("Levels")) {
                             levelCost = Integer.parseInt(costSplit[1]);
-                            resultString += " Level";
+                            resultString += " Levels";
                             if (costSplit.length >= 4) {
                                 moneyCost = Double.parseDouble(costSplit[3]);
-                                resultString += ChatColor.GREEN + " and " + ChatColor.WHITE + costSplit[3];
+                                resultString += ChatColor.GREEN + " and " + ChatColor.WHITE + ChatColor.BOLD + costSplit[3];
                                 for (int i = 4; i < costSplit.length; i++)
                                     resultString += " " + costSplit[i];
                             }
@@ -463,12 +463,13 @@ public class CEventHandler {
                                 return;
                             }
 
-                        if (Main.econ.getBalance(p.getName()) >= moneyCost)
-                            Main.econ.withdrawPlayer(p.getName(), moneyCost);
-                        else {
-                            p.sendMessage(ChatColor.RED + "You do not have enough money!");
-                            return;
-                        }
+                        if (moneyCost > 0)
+                            if (Main.econ.getBalance(p.getName()) >= moneyCost)
+                                Main.econ.withdrawPlayer(p.getName(), moneyCost);
+                            else {
+                                p.sendMessage(ChatColor.RED + "You do not have enough money!");
+                                return;
+                            }
 
                         p.sendMessage(ChatColor.GREEN + "Used " + resultString + ChatColor.GREEN + " for the transformation.");
 
@@ -476,8 +477,8 @@ public class CEventHandler {
                         im.setLore(lore);
                         result.setItemMeta(im);
                     }
-                    p.getWorld().playSound(p.getLocation(), Sound.ANVIL_USE, 1f, 10f);
-                    p.getWorld().playSound(p.getLocation(), Sound.LEVEL_UP, 1f, 2f);
+                    EffectManager.playSound(p.getLocation(), "BLOCK_ANVIL_USE", 1f, 2f);
+                    EffectManager.playSound(p.getLocation(), "ENTITY_FIREWORK_LAUNCH", 1f, 1.5f);
 
                     inv.clear();
 
@@ -589,18 +590,24 @@ public class CEventHandler {
                     HashMap<CEnchantment, Integer> enchs = EnchantManager.getEnchantmentLevels(bot.getItemMeta().getLore());
 
                     for (CEnchantment ce : enchs.keySet()) {
-                        if (ce.getCombinationCostLevel() > 0)
-                            levelCost += enchs.get(ce) * ce.getCombinationCostLevel();
-                        if (ce.getCombinationCostMoney() > 0)
-                            moneyCost += enchs.get(ce) * ce.getCombinationCostMoney();
+                        int lvl = ce.getRunecraftCostLevel(enchs.get(ce));
+                        double money = ce.getRunecraftCostMoney(enchs.get(ce));
+
+                        if (lvl > 0)
+                            levelCost += lvl;
+                        if (money > 0)
+                            moneyCost += money;
                     }
 
                     ItemStack book = EnchantManager.getEnchantBook(enchs);
                     ItemMeta im = book.getItemMeta();
                     List<String> lore = im.getLore();
 
-                    String costString = ChatColor.GOLD + "Cost: " + (levelCost > 0 ? levelCost + " Level " : "")
-                            + (moneyCost > 0 ? moneyCost + " " + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) : "");
+                    String costString = ChatColor.GRAY + "Cost: " + (levelCost > 0 ? ChatColor.WHITE + "" + ChatColor.BOLD + levelCost + ChatColor.GOLD + " Levels " : "");
+                    if (Main.hasEconomy)
+                        costString += (moneyCost > 0
+                                ? ChatColor.WHITE + "" + ChatColor.BOLD + moneyCost + " " + ChatColor.GOLD + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) : "");
+
                     if (!costString.endsWith("Cost: ")) {
                         lore.add("");
                         lore.add(costString);
@@ -626,23 +633,30 @@ public class CEventHandler {
                             for (CEnchantment ce : topList.keySet())
                                 if (botList.containsKey(ce)) {
                                     int newLevel = botList.get(ce) + topList.get(ce);
+
                                     if (newLevel > ce.getEnchantmentMaxLevel())
                                         newLevel = ce.getEnchantmentMaxLevel();
 
-                                    if (ce.getCombinationCostLevel() > 0)
-                                        levelCost += (newLevel - botList.get(ce)) * ce.getCombinationCostLevel();
-                                    if (ce.getCombinationCostMoney() > 0)
-                                        moneyCost += (newLevel - botList.get(ce)) * ce.getCombinationCostMoney();
+                                    int lvl = ce.getRunecraftCostLevel((newLevel - botList.get(ce)));
+                                    double money = ce.getRunecraftCostMoney((newLevel - botList.get(ce)));
+
+                                    if (lvl > 0)
+                                        levelCost += lvl;
+                                    if (money > 0)
+                                        moneyCost += money;
 
                                     botList.replace(ce, newLevel);
                                 } else {
                                     if (botList.size() < EnchantManager.getMaxEnchants()) {
                                         int newLevel = topList.get(ce);
 
-                                        if (ce.getCombinationCostLevel() > 0)
-                                            levelCost += newLevel * ce.getCombinationCostLevel();
-                                        if (ce.getCombinationCostMoney() > 0)
-                                            moneyCost += newLevel * ce.getCombinationCostMoney();
+                                        int lvl = ce.getRunecraftCostLevel(newLevel);
+                                        double money = ce.getRunecraftCostMoney(newLevel);
+
+                                        if (lvl > 0)
+                                            levelCost += lvl;
+                                        if (money > 0)
+                                            moneyCost += money;
 
                                         botList.put(ce, newLevel);
                                     } else
@@ -652,8 +666,11 @@ public class CEventHandler {
                             ItemMeta im = book.getItemMeta();
                             List<String> lore = im.getLore();
 
-                            String costString = ChatColor.GOLD + "Cost: " + (levelCost > 0 ? levelCost + " Level " : "")
-                                    + (moneyCost > 0 ? moneyCost + " " + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) : "");
+                            String costString = ChatColor.GRAY + "Cost: " + (levelCost > 0 ? ChatColor.WHITE + "" + ChatColor.BOLD + levelCost + ChatColor.GOLD + " Levels " : "");
+                            if (Main.hasEconomy)
+                                costString += (moneyCost > 0 ? ChatColor.WHITE + "" + ChatColor.BOLD + moneyCost + " " + ChatColor.GOLD
+                                        + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) : "");
+
                             if (!costString.endsWith("Cost: ")) {
                                 lore.add("");
                                 lore.add(costString);
@@ -671,16 +688,22 @@ public class CEventHandler {
                         if (!topList.containsKey(ce) && Tools.isApplicable(item, ce)) {
                             int newLevel = botList.get(ce);
 
-                            if (ce.getCombinationCostLevel() > 0)
-                                levelCost += newLevel * ce.getCombinationCostLevel();
-                            if (ce.getCombinationCostMoney() > 0)
-                                moneyCost += newLevel * ce.getCombinationCostMoney();
+                            int lvl = ce.getRunecraftCostLevel(newLevel);
+                            double money = ce.getRunecraftCostMoney(newLevel);
+
+                            if (lvl > 0)
+                                levelCost += lvl;
+                            if (money > 0)
+                                moneyCost += money;
 
                             item = EnchantManager.addEnchant(item, ce, newLevel);
                         }
                     if (EnchantManager.getEnchantments(item.getItemMeta().getLore()).size() > topList.size()) {
-                        String costString = ChatColor.GOLD + "Cost: " + (levelCost > 0 ? levelCost + " Level " : "")
-                                + (moneyCost > 0 ? moneyCost + " " + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural()) : "");
+                        String costString = ChatColor.GRAY + "Cost: " + (levelCost > 0 ? ChatColor.WHITE + "" + ChatColor.BOLD + levelCost + ChatColor.GOLD + " Levels " : "");
+                        if (Main.hasEconomy)
+                            costString += (moneyCost > 0
+                                    ? ChatColor.WHITE + "" + ChatColor.BOLD + moneyCost + " " + ChatColor.GOLD + (moneyCost == 1 ? Main.econ.currencyNameSingular() : Main.econ.currencyNamePlural())
+                                    : "");
 
                         if (!costString.endsWith("Cost: ")) {
                             ItemMeta im = item.getItemMeta();

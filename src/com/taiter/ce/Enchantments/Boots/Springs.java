@@ -34,7 +34,7 @@ public class Springs extends CEnchantment {
 
 	public Springs(Application app) {
 		super(app);		
-		configEntries.add("Strength: 4");
+		configEntries.put("Strength", 4);
 		triggers.add(Trigger.WEAR_ITEM);
 	}
 

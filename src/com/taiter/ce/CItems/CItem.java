@@ -46,6 +46,7 @@ public abstract class CItem extends CBasic {
     private long cooldownTime;
     private ChatColor itemColor;
     private ItemType itemType;
+    private double cost;
 
     protected void addToDescription(String toAdd) {
         this.description.add(toAdd);
@@ -71,9 +72,8 @@ public abstract class CItem extends CBasic {
         return this.itemColor;
     }
 
-    @Override
     public double getCost() {
-        return Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));
+        return cost;
     }
 
     public abstract boolean effect(Event event, Player owner); // The boolean represents whether the cooldown is to be applied or not
@@ -86,11 +86,13 @@ public abstract class CItem extends CBasic {
         this.originalName = originalName;
         this.permissionName = originalName.replace(" ", "").replace("'", "");
         this.description = new ArrayList<String>(Arrays.asList(lDescription.split(";")));
-        this.configEntries.add("DisplayName: " + originalName);
-        this.configEntries.add("Color: " + color.name());
-        this.configEntries.add("Description: " + lDescription);
-        this.configEntries.add("Cooldown: " + lCooldown);
-        this.configEntries.add("Cost: 0");
+        
+        this.configEntries.put("Enabled", true);
+        this.configEntries.put("DisplayName", originalName);
+        this.configEntries.put("Color", color.name());
+        this.configEntries.put("Description", lDescription);
+        this.configEntries.put("Cooldown", lCooldown);
+        this.configEntries.put("Cost", 0);
     }
 
     // Cooldown
@@ -140,6 +142,7 @@ public abstract class CItem extends CBasic {
         this.displayName = itemColor + Main.config.getString("Items." + getOriginalName() + ".DisplayName");
         this.description = new ArrayList<String>(Arrays.asList(Main.config.getString("Items." + getOriginalName() + ".Description").split(";")));
         this.cooldownTime = Long.parseLong(Main.config.getString("Items." + getOriginalName() + ".Cooldown"));
+        this.cost = Double.parseDouble(Main.config.getString("Items." + getOriginalName() + ".Cost"));
 
         for (String s : description)
             description.set(description.indexOf(s), ChatColor.GRAY + "" + ChatColor.ITALIC + s);
@@ -148,10 +151,8 @@ public abstract class CItem extends CBasic {
         this.description.add("");
 
         try {
-            for (String entry : this.configEntries) {
-                String[] split = entry.split(": ");
-                if (split[1].equalsIgnoreCase("true") || split[1].equalsIgnoreCase("false"))
-                    if (!getConfig().contains("Items." + getOriginalName() + "." + split[0])) {
+            for (String entry : this.configEntries.keySet()) {
+                    if (!getConfig().contains("Items." + getOriginalName() + "." + entry)) {
                         Tools.writeConfigEntries(this);
                         break;
                     }

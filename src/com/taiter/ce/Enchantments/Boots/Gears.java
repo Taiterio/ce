@@ -34,7 +34,7 @@ public class Gears extends CEnchantment {
 
 	public Gears(Application app) {
 		super(app);		
-		configEntries.add("SpeedBoost: 1");
+		configEntries.put("SpeedBoost", 1);
 		triggers.add(Trigger.WEAR_ITEM);
 	}
 

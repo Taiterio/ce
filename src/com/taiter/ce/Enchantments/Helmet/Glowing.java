@@ -34,6 +34,7 @@ public class Glowing extends CEnchantment {
 	public Glowing(Application app) {
 		super(app);		
 		triggers.add(Trigger.WEAR_ITEM);
+		this.resetMaxLevel();
 	}
 
 	@Override
@@ -43,6 +44,5 @@ public class Glowing extends CEnchantment {
 	@Override
 	public void initConfigEntries() {
 		this.potionsOnWear.put(PotionEffectType.NIGHT_VISION, 1);
-		this.resetMaxLevel();
 	}
 }

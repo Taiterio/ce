@@ -23,7 +23,6 @@ package com.taiter.ce.Enchantments.Bow;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -31,6 +30,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 
@@ -41,6 +41,7 @@ public class Shuffle extends CEnchantment {
 		super(app);		
 		triggers.add(Trigger.SHOOT_BOW);
 		triggers.add(Trigger.DAMAGE_GIVEN);
+		this.resetMaxLevel();
 	}
 
 	@Override
@@ -59,8 +60,8 @@ public class Shuffle extends CEnchantment {
 		target.teleport(pLoc);
 		p.teleport(tLoc);
 		
-		p.getWorld().playSound(tLoc, Sound.ENDERMAN_TELEPORT, 0.4f, 2f);
-		p.getWorld().playSound(pLoc, Sound.ENDERMAN_TELEPORT, 0.4f, 2f);
+		EffectManager.playSound(tLoc, "ENTITY_ENDERMAN_TELEPORT", 0.4f, 2f);
+		EffectManager.playSound(pLoc, "ENTITY_ENDERMAN_TELEPORT", 0.4f, 2f);
 
 		
 		for(int i = 10; i>0; i--) {
@@ -79,7 +80,6 @@ public class Shuffle extends CEnchantment {
 
 	@Override
 	public void initConfigEntries() {
-		this.resetMaxLevel();
 	}
 
 }

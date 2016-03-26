@@ -39,8 +39,8 @@ public class Deepwounds extends CEnchantment {
 
 	public Deepwounds(Application app) {
 		super(app);		
-		configEntries.add("Duration: 20");
-		configEntries.add("BleedChance: 20");
+		configEntries.put("Duration", 20);
+		configEntries.put("BleedChance", 20);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 	}
 

@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,6 +39,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Tools;
 import com.taiter.ce.Enchantments.CEnchantment;
 
@@ -58,12 +58,12 @@ public class IceAspect extends CEnchantment {
 
 	public IceAspect(Application app) {
 		super(app);		
-		configEntries.add("SlowStrength: 5");
-		configEntries.add("SlowDuration: 40");
-		configEntries.add("ChanceFreeze: 60");
-		configEntries.add("SpecialFreeze: true");
-		configEntries.add("SpecialFreezeDuration: 60");
-		configEntries.add("ChanceSpecialFreeze: 10");
+		configEntries.put("SlowStrength", 5);
+		configEntries.put("SlowDuration", 40);
+		configEntries.put("ChanceFreeze", 60);
+		configEntries.put("SpecialFreeze", true);
+		configEntries.put("SpecialFreezeDuration", 60);
+		configEntries.put("ChanceSpecialFreeze", 10);
 		triggers.add(Trigger.DAMAGE_GIVEN);
 		triggers.add(Trigger.SHOOT_BOW);
 	}
@@ -75,7 +75,7 @@ public class IceAspect extends CEnchantment {
 
 		if(i < chanceFreeze) {
 			((LivingEntity) event.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, SlowDuration, SlowStrength, false), true);
-			event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.DIG_SNOW, 4f, 2f);
+			EffectManager.playSound(event.getEntity().getLocation(), "BLOCK_DIG_SNOW", 0.6f, 2f);
 		}
 		if(specialFreeze) {
 			if(i < chanceSpecialFreeze) {

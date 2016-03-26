@@ -33,7 +33,7 @@ public class Lightning extends CEnchantment {
 
     public Lightning(Application app) {
         super(app);
-        configEntries.add("LightningChance: 75");
+        configEntries.put("LightningChance", 75);
         triggers.add(Trigger.SHOOT_BOW);
         triggers.add(Trigger.DAMAGE_GIVEN);
     }

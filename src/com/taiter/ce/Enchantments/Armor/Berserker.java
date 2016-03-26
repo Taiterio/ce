@@ -40,10 +40,10 @@ public class Berserker extends CEnchantment {
 
 	public Berserker(Application app) {
 		super(app);
-		configEntries.add("DurationPerLevel: 200");
-		configEntries.add("BaseStrength: 5");
-		configEntries.add("HpToTrigger: 4");
-		configEntries.add("Cooldown: 6000");
+		configEntries.put("DurationPerLevel", 200);
+		configEntries.put("BaseStrength", 5);
+		configEntries.put("HpToTrigger", 4);
+		configEntries.put("Cooldown", 6000);
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 

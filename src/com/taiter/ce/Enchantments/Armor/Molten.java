@@ -35,7 +35,7 @@ public class Molten extends CEnchantment {
 
 	public Molten(Application app) {
 		super(app);		
-		configEntries.add("Duration: 60");
+		configEntries.put("Duration", 60);
 		triggers.add(Trigger.DAMAGE_TAKEN);
 	}
 

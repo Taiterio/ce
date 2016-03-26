@@ -38,6 +38,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Main;
 import com.taiter.ce.Tools;
 
@@ -57,13 +58,13 @@ public class NecromancersStaff extends CItem {
 
     public NecromancersStaff(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
         super(originalName, color, lDescription, lCooldown, mat);
-        this.configEntries.add("Fuel: 377");
-        this.configEntries.add("WitherCost: 10");
-        this.configEntries.add("WitherCooldown: 100");
-        this.configEntries.add("FireballCost: 35");
-        this.configEntries.add("FireballCooldown: 60");
-        this.configEntries.add("LightningCost: 20");
-        this.configEntries.add("LightningCooldown: 240");
+        this.configEntries.put("Fuel", 377);
+        this.configEntries.put("WitherCost", 10);
+        this.configEntries.put("WitherCooldown", 100);
+        this.configEntries.put("FireballCost", 35);
+        this.configEntries.put("FireballCooldown", 60);
+        this.configEntries.put("LightningCost", 20);
+        this.configEntries.put("LightningCooldown", 240);
         triggers.add(Trigger.INTERACT);
     }
 
@@ -133,19 +134,19 @@ public class NecromancersStaff extends CItem {
                         ws.setVelocity(l.getDirection().multiply(2));
                         if (!Main.createExplosions)
                             ws.setMetadata("ce.explosive", new FixedMetadataValue(getPlugin(), null));
-                        player.getWorld().playSound(l, Sound.WITHER_IDLE, 0.5f, 10f);
+                        EffectManager.playSound(l, "ENTITY_WITHER_IDLE", 0.5f, 10f);
                     } else {
-                        player.getWorld().playSound(l, Sound.CAT_HISS, 0.3f, 5f);
+                        EffectManager.playSound(l, "ENTITY_CAT_HISS", 0.3f, 5f);
                     }
                 } else if (spell == 1) {
                     player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
-                    player.getWorld().playSound(l, Sound.BLAZE_HIT, 0.2f, 0f);
+                    EffectManager.playSound(l, "ENTITY_BLAZE_HIT", 0.2f, 0f);
                 } else if (spell == 2) {
                     Location target = player.getTargetBlock((HashSet<Byte>) null, 20).getLocation();
                     player.getWorld().strikeLightning(target);
                     if (Tools.checkWorldGuard(l, player, "TNT", true))
                         player.getWorld().createExplosion(target, 1);
-                    player.getWorld().playSound(target, Sound.ENDERDRAGON_GROWL, 5f, 9999f);
+                    EffectManager.playSound(target, "ENTITY_ENDERDRAGON_GROWL", 0.5f, 2f);
                 }
 
                 // Generate the cooldown based on the cooldown value

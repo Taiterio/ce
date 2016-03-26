@@ -42,7 +42,7 @@ public class Implants extends CEnchantment {
 
 	public Implants(Application app) {
 		super(app);		
-		configEntries.add("FoodBurstDelay: 20");
+		configEntries.put("FoodBurstDelay", 20);
 		triggers.add(Trigger.MOVE);
 	}
 

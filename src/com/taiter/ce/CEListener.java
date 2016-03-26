@@ -35,7 +35,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -209,7 +208,6 @@ public class CEListener implements Listener {
             Inventory topInv = event.getView().getTopInventory();
             final Player p = (Player) event.getWhoClicked();
             ItemStack clickedItem = event.getCurrentItem();
-            event.setResult(Result.ALLOW);
 
             event.setCancelled(true);
 
@@ -269,15 +267,18 @@ public class CEListener implements Listener {
                         tempMeta = clickedItem.getItemMeta();
                         String enchName = tempMeta.getDisplayName();
                         CEnchantment ce = EnchantManager.getEnchantment(enchName + " I");
-                        double cost = ce.getCost();
-
-                        tempLore.clear();
-                        if (Main.hasEconomy && cost > 0)
-                            tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + cost);
 
                         for (int i = 1; i <= ce.getEnchantmentMaxLevel(); i++) {
                             if (i > 5)
                                 break;
+                            
+                            double cost = ce.getCost(i);
+                            tempLore.clear();
+                            if (Main.hasEconomy && cost > 0) {
+                                tempLore.add("");
+                                tempLore.add(ChatColor.GRAY + "Cost: " + ChatColor.WHITE + ChatColor.BOLD + cost);
+                            }
+                            
                             ItemStack newItem = clickedItem.clone();
                             String fullName = enchName + " " + EnchantManager.intToLevel(i);
                             tempMeta.setDisplayName(fullName);
@@ -339,7 +340,7 @@ public class CEListener implements Listener {
                     String enchantmentName = clickedItem.getItemMeta().getDisplayName();
                     CEnchantment ce = EnchantManager.getEnchantment(enchantmentName);
                     int level = EnchantManager.getLevel(enchantmentName);
-                    double cost = ce.getCost();
+                    double cost = ce.getCost(level);
 
                     if (p.getInventory().firstEmpty() != -1) {
                         //Check cost
@@ -379,7 +380,7 @@ public class CEListener implements Listener {
                 try {
                     p.openInventory(Tools.getNextInventory(clickedItem.getItemMeta().getDisplayName()));
                 } catch (Exception e) {
-                    p.sendMessage(ChatColor.RED + "This feature is disabled.");
+                    p.sendMessage(ChatColor.RED + "This feature is not yet implemented.");
                 }
 
             }

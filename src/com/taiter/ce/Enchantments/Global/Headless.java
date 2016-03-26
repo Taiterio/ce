@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.taiter.ce.EffectManager;
 import com.taiter.ce.Enchantments.CEnchantment;
 
 public class Headless extends CEnchantment {
@@ -53,7 +54,7 @@ public class Headless extends CEnchantment {
                         skull.setItemMeta(sm);
                     }
                     ent.getWorld().dropItem(ent.getLocation(), skull);
-                    player.getWorld().playSound(player.getLocation(), Sound.ZOMBIE_WOODBREAK, 0.1f, 0.1f);
+                    EffectManager.playSound(player.getLocation(), "BLOCK_ANVIL_LAND", 0.1f, 1.5f);
                 }
             }
         }.runTaskLater(getPlugin(), 5l);
@@ -62,6 +63,5 @@ public class Headless extends CEnchantment {
 
     @Override
     public void initConfigEntries() {
-        this.resetMaxLevel();
     }
 }
