@@ -138,7 +138,7 @@ public class CEListener implements Listener {
             HumanEntity p = event.getPlayer();
             Location loc = p.getLocation().add(0, 1.25, 0);
             Vector velocity = loc.getDirection().multiply(0.25);
-            if (contents[0] != null && !contents[1].getType().equals(Material.AIR))
+            if (contents[0] != null && !contents[0].getType().equals(Material.AIR))
                 if (p.getInventory().firstEmpty() == -1)
                     p.getWorld().dropItem(loc, contents[0]).setVelocity(velocity);
                 else

@@ -123,7 +123,7 @@ public class CEventHandler {
             CEnchantment ce = list.get(Tools.random.nextInt(list.size()));
             int level = Tools.random.nextInt(ce.getEnchantmentMaxLevel()) + 1;
             ItemStack book = EnchantManager.getEnchantBook(ce, level);
-            e.getInventory().remove(0);
+            e.getInventory().clear(0);
             e.getInventory().setItem(0, book);
             if (!p.getGameMode().equals(GameMode.CREATIVE))
                 p.setLevel(p.getLevel() - 30);
