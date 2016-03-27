@@ -20,15 +20,14 @@ package com.taiter.ce.CItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.entity.WitherSkull;
@@ -142,7 +141,7 @@ public class NecromancersStaff extends CItem {
                     player.launchProjectile(SmallFireball.class).setVelocity(l.getDirection().multiply(1.5));
                     EffectManager.playSound(l, "ENTITY_BLAZE_HIT", 0.2f, 0f);
                 } else if (spell == 2) {
-                    Location target = player.getTargetBlock((HashSet<Byte>) null, 20).getLocation();
+                    Location target = player.getTargetBlock((Set<Material>) null, 20).getLocation();
                     player.getWorld().strikeLightning(target);
                     if (Tools.checkWorldGuard(l, player, "TNT", true))
                         player.getWorld().createExplosion(target, 1);
@@ -160,6 +159,7 @@ public class NecromancersStaff extends CItem {
                       // returns false
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void initConfigEntries() {
         Fuel = Material.getMaterial(Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".Fuel")));

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,8 +49,8 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.taiter.ce.CBasic.Trigger;
 import com.taiter.ce.CItems.CItem;
 import com.taiter.ce.Enchantments.CEnchantment;
-import com.taiter.ce.Enchantments.EnchantManager;
 import com.taiter.ce.Enchantments.CEnchantment.Application;
+import com.taiter.ce.Enchantments.EnchantManager;
 
 public class Tools {
 
@@ -120,13 +121,6 @@ public class Tools {
         else if (name.equals("Tool"))
             return Main.CEToolMenu;
         return null;
-    }
-
-    public static void openCEMenu(Player p) {
-        Inventory tempInv = Main.CEMainMenu;
-        if (!p.isOp())
-            tempInv.remove(6);
-        p.openInventory(tempInv);
     }
 
     public static boolean checkPermission(CBasic cb, Player p) {
@@ -792,7 +786,7 @@ public class Tools {
     public static List<Location> getLinePlayer(Player player, int length) {
         List<Location> list = new ArrayList<Location>();
         for (int amount = length; amount > 0; amount--) {
-            list.add(player.getTargetBlock((HashSet<Byte>) null, amount).getLocation());
+            list.add(player.getTargetBlock((Set<Material>) null, amount).getLocation());
         }
         return list;
     }

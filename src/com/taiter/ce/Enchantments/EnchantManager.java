@@ -48,6 +48,7 @@ public class EnchantManager {
         glowEnchantment = registerGlowEnchantment();
     }
 
+    @SuppressWarnings("deprecation")
     private static Enchantment registerGlowEnchantment() {
         int id = Main.config.getInt("Global.Enchantments.GlowEnchantmentID");
         Enchantment glow = Enchantment.getById(id);

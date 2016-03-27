@@ -28,6 +28,8 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -46,6 +48,7 @@ public class CeCommand {
         this.main = m;
     }
 
+    @SuppressWarnings("deprecation")
     public String processCommand(CommandSender sender, String[] args) {
 
         String Success = ChatColor.GREEN + "";
@@ -463,12 +466,24 @@ public class CeCommand {
                 } else
                     return usageError;
             }
+            
+            
             if (sender instanceof Player) {
 
                 Player p = (Player) sender;
-
-                if (name.startsWith("l")) {
-
+                
+                if(name.startsWith("rune")) {
+                    requiredPermission += "runecrafting";
+                    if (!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
+                        return Error + "You do not have permission to use this command.";
+                    
+                    Inventory inv = Bukkit.createInventory(p, InventoryType.FURNACE, ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE
+                            + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba");
+                    inv.setContents(new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) });
+                    
+                    p.openInventory(inv);
+                    return "";
+                } else if (name.startsWith("l")) {
                     requiredPermission += "list";
                     if (!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
                         return Error + "You do not have permission to use this command.";
@@ -532,7 +547,7 @@ public class CeCommand {
                     if (!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
                         return Error + "You do not have permission to use this command.";
 
-                    Tools.openCEMenu(p);
+                    p.openInventory(Main.CEMainMenu);
                     return "";
                 }
 

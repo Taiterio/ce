@@ -48,6 +48,7 @@ public class Shockwave extends CEnchantment {
         triggers.add(Trigger.DAMAGE_GIVEN);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void effect(Event e, ItemStack item, final int level) {
 
@@ -121,6 +122,7 @@ public class Shockwave extends CEnchantment {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     private void makeList() {
         ForbiddenMaterials = new ArrayList<Material>();
         String mS = getConfig().getString("Enchantments." + getOriginalName() + ".ForbiddenMaterials");

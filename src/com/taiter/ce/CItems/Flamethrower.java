@@ -20,8 +20,8 @@ package com.taiter.ce.CItems;
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -53,7 +53,8 @@ public class Flamethrower extends CItem {
 		triggers.add(Trigger.INTERACT_RIGHT);
 	}
 
-	@Override
+	@SuppressWarnings("deprecation")
+    @Override
 	public boolean effect(Event event, final Player player) {
 		PlayerInteractEvent e = (PlayerInteractEvent) event;
 			e.setCancelled(true);
@@ -84,7 +85,7 @@ public class Flamethrower extends CItem {
 					if(l.getBlock().getType().equals(Material.AIR))
 						l.getBlock().setType(Material.FIRE);
 					l.getWorld().playEffect(l, Effect.SMOKE, 20);
-					final FallingBlock fire = l.getWorld().spawnFallingBlock(l, Material.FIRE.getId(), (byte) 0x00);
+					final FallingBlock fire = l.getWorld().spawnFallingBlock(l, Material.FIRE.getId(), (byte) 0);
 					fire.setDropItem(false);
 					fire.setVelocity(player.getLocation().getDirection());
 					new BukkitRunnable() {
@@ -139,7 +140,7 @@ public class Flamethrower extends CItem {
 	public List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
 		for(int amount = length; amount > 0; amount --) {
-			list.add(player.getTargetBlock((HashSet<Byte>)null, amount).getLocation());
+			list.add(player.getTargetBlock((Set<Material>)null, amount).getLocation());
 		}
 		return list;
 	}

@@ -138,6 +138,7 @@ public final class Main extends JavaPlugin {
     public Boolean hasChecked = false;
     //------------------------------------------------------
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
         plugin = this;
@@ -436,12 +437,14 @@ public final class Main extends JavaPlugin {
         Permission cmdGive = new Permission("ce.cmd.give", "The permission for the CE command 'give'");
         Permission cmdChange = new Permission("ce.cmd.change", "The permission for the CE command 'change'");
         Permission cmdEnchant = new Permission("ce.cmd.enchant", "The permission for the CE command 'enchant'");
+        Permission cmdRunecraft = new Permission("ce.cmd.runecrafting", "The permission for the CE command 'runecrafting'");
 
         cmdMenu.addParent(cmdNode, true);
         cmdList.addParent(cmdNode, true);
         cmdGive.addParent(cmdNode, true);
         cmdChange.addParent(cmdNode, true);
         cmdEnchant.addParent(cmdNode, true);
+        cmdRunecraft.addParent(cmdNode, true);
 
         Bukkit.getServer().getPluginManager().addPermission(mainNode);
 
@@ -456,6 +459,7 @@ public final class Main extends JavaPlugin {
         Bukkit.getServer().getPluginManager().addPermission(cmdGive);
         Bukkit.getServer().getPluginManager().addPermission(cmdChange);
         Bukkit.getServer().getPluginManager().addPermission(cmdEnchant);
+        Bukkit.getServer().getPluginManager().addPermission(cmdRunecraft);
 
         for (CItem ci : items) {
             Permission itemTemp = new Permission("ce.item." + ci.getPermissionName(), "The permission for the CE Item '" + ci.getOriginalName() + "'.");
@@ -612,7 +616,6 @@ public final class Main extends JavaPlugin {
 
     }
 
-    @SuppressWarnings("unchecked")
     private static void deleteInactive() {
         Set<CEnchantment> e = new LinkedHashSet<CEnchantment>(EnchantManager.getEnchantments());
         Set<CItem> i = new LinkedHashSet<CItem>(items);
