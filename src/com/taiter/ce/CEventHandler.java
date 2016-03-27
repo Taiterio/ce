@@ -90,7 +90,7 @@ public class CEventHandler {
         long time = System.currentTimeMillis();
 
         for (ItemStack i : toCheck.getInventory().getArmorContents())
-            if (i.getType() != Material.AIR)
+            if (i != null && i.getType() != Material.AIR)
                 handleEventMain(toCheck, i, e, list);
         handleEventMain(toCheck, toCheck.getItemInHand(), e, list);
 
@@ -248,7 +248,7 @@ public class CEventHandler {
     }
 
     public static void handleEventMain(Player toCheck, ItemStack i, Event e, HashSet<CBasic> list) {
-        if (i.hasItemMeta()) {
+        if (i != null && i.hasItemMeta()) {
             ItemMeta im = i.getItemMeta();
             if (!list.isEmpty()) {
 
@@ -398,7 +398,7 @@ public class CEventHandler {
 
             switch (event.getSlot()) {
             case 0:
-                if (item.getAmount() > 1) {
+                if (item != null && item.getAmount() > 1) {
                     item.setAmount(item.getAmount() - 1);
                     event.getWhoClicked().setItemOnCursor(item.clone());
                     if (current != null && !current.getType().equals(Material.AIR))
@@ -412,7 +412,7 @@ public class CEventHandler {
                 break;
             case 1:
                 //Check if item does not belong in this slot
-                if (!item.getType().equals(Material.AIR) && !EnchantManager.isEnchantmentBook(item) && !EnchantManager.hasEnchantments(item)) {
+                if (item != null && !item.getType().equals(Material.AIR) && !EnchantManager.isEnchantmentBook(item) && !EnchantManager.hasEnchantments(item)) {
                     event.setCancelled(true);
                     break;
                 }
