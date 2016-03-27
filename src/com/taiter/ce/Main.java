@@ -220,7 +220,7 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getScheduler().cancelAllTasks();
+        getServer().getScheduler().cancelTasks(plugin);
         for (CEnchantment c : EnchantManager.getEnchantments())
             if (c instanceof IceAspect)
                 for (HashMap<org.bukkit.block.Block, String> list : ((IceAspect) c).IceLists)
