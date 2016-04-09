@@ -44,7 +44,7 @@ public class CeCommand {
     private Main main;
     private Boolean confirmUpdate = false;
 
-    public CeCommand(Main m) { 
+    public CeCommand(Main m) {
         this.main = m;
     }
 
@@ -444,7 +444,7 @@ public class CeCommand {
                         HashMap<CEnchantment, Integer> list = new HashMap<CEnchantment, Integer>();
                         for (String e : cEnchants) {
                             String[] split = e.split(" ");
-                            list.put(EnchantManager.getEnchantment(e), Integer.parseInt(split[split.length-1]));
+                            list.put(EnchantManager.getEnchantment(e), Integer.parseInt(split[split.length - 1]));
                         }
 
                         if (newItem.getType().equals(Material.BOOK))
@@ -466,21 +466,20 @@ public class CeCommand {
                 } else
                     return usageError;
             }
-            
-            
+
             if (sender instanceof Player) {
 
                 Player p = (Player) sender;
-                
-                if(name.startsWith("rune")) {
+
+                if (name.startsWith("rune")) {
                     requiredPermission += "runecrafting";
                     if (!sender.hasPermission(node) && !sender.hasPermission(requiredPermission) && !sender.isOp())
                         return Error + "You do not have permission to use this command.";
-                    
-                    Inventory inv = Bukkit.createInventory(p, InventoryType.FURNACE, ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE
-                            + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba");
+
+                    Inventory inv = Bukkit.createInventory(p, InventoryType.FURNACE,
+                            ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "abc" + ChatColor.RESET + ChatColor.DARK_PURPLE + " Runecrafting " + ChatColor.LIGHT_PURPLE + "" + ChatColor.MAGIC + "cba");
                     inv.setContents(new ItemStack[] { new ItemStack(Material.AIR), new ItemStack(Material.AIR), new ItemStack(Material.AIR) });
-                    
+
                     p.openInventory(inv);
                     return "";
                 } else if (name.startsWith("l")) {
@@ -525,10 +524,10 @@ public class CeCommand {
                     List<String> lore = im.getLore();
                     if (args.length >= 2) {
                         CEnchantment ce = EnchantManager.getEnchantment(args[1]);
-                        if(ce == null)
-                            return Error + "The enchantment " + args[1] +" does not exist!";
-                        for(String s : im.getLore())
-                            if(EnchantManager.containsEnchantment(s, ce)) {
+                        if (ce == null)
+                            return Error + "The enchantment " + args[1] + " does not exist!";
+                        for (String s : im.getLore())
+                            if (EnchantManager.containsEnchantment(s, ce)) {
                                 lore.remove(s);
                                 im.setLore(lore);
                                 item.setItemMeta(im);
@@ -593,6 +592,8 @@ public class CeCommand {
                                 level = Integer.parseInt(args[args.length - 1]);
                             } catch (Exception e) {
                             }
+                        } else {
+                            level = 0;
                         }
 
                         if (level < 0)
@@ -607,19 +608,29 @@ public class CeCommand {
 
                         CBasic custom = null;
 
-                        for (CEnchantment ce : EnchantManager.getEnchantments())
-                            if (ce.getOriginalName().equalsIgnoreCase(customName) || ChatColor.stripColor(ce.getDisplayName()).equalsIgnoreCase(customName)
-                                    || ce.getOriginalName().replace(" ", "").equalsIgnoreCase(customName) || ChatColor.stripColor(ce.getDisplayName()).replace(" ", "").equalsIgnoreCase(customName)) {
-                                custom = ce;
-                                if (ce.getEnchantmentMaxLevel() < level) {
-                                    level = ce.getEnchantmentMaxLevel();
+                        if (name.startsWith("e")) {
+                            for (CEnchantment ce : EnchantManager.getEnchantments())
+                                if (ce.getOriginalName().equalsIgnoreCase(customName) || ChatColor.stripColor(ce.getDisplayName()).equalsIgnoreCase(customName)
+                                        || ce.getOriginalName().replace(" ", "").equalsIgnoreCase(customName)
+                                        || ChatColor.stripColor(ce.getDisplayName()).replace(" ", "").equalsIgnoreCase(customName)) {
+                                    custom = ce;
+                                    if (ce.getEnchantmentMaxLevel() < level) {
+                                        level = ce.getEnchantmentMaxLevel();
+                                    }
                                 }
+                        } else {
+                            for (CItem ci : Main.items)
+                                if (ci.getOriginalName().equalsIgnoreCase(customName) || ChatColor.stripColor(ci.getDisplayName()).equalsIgnoreCase(customName)
+                                        || ci.getOriginalName().replace(" ", "").equalsIgnoreCase(customName)
+                                        || ChatColor.stripColor(ci.getDisplayName()).replace(" ", "").equalsIgnoreCase(customName)) {
+                                    custom = ci;
+                                }
+
+                            if (custom == null) {
+                                Error += "The item '" + customName + "' does not exist.";
+                                return Error;
                             }
-                        for (CItem ci : Main.items)
-                            if (ci.getOriginalName().equalsIgnoreCase(customName) || ChatColor.stripColor(ci.getDisplayName()).equalsIgnoreCase(customName)
-                                    || ci.getOriginalName().replace(" ", "").equalsIgnoreCase(customName) || ChatColor.stripColor(ci.getDisplayName()).replace(" ", "").equalsIgnoreCase(customName)) {
-                                custom = ci;
-                            }
+                        }
                         if (custom == null) {
                             Enchantment ench = null;
                             try {
@@ -642,7 +653,7 @@ public class CeCommand {
                                     return Success + "You have succesfully enchanted your item with " + ench.getName() + " level " + level + ".";
                                 }
 
-                            Error += "The " + (name.startsWith("i") ? "item" : "enchantment") + " '" + customName + "' does not exist.";
+                            Error += "The enchantment '" + customName + "' does not exist.";
                             return Error;
 
                         }
@@ -699,10 +710,7 @@ public class CeCommand {
                             p.setItemInHand(EnchantManager.addEnchant(item, (CEnchantment) custom, level));
                             Success += "You have enchanted your item with '" + custom.getDisplayName() + ChatColor.GREEN + "' level " + level + "!";
                         } else if (custom instanceof CItem) {
-                            Material toSet = item.getType();
-                            if (toSet == Material.AIR)
-                                toSet = ((CItem) custom).getMaterial();
-                            ItemStack newItem = new ItemStack(toSet);
+                            ItemStack newItem = new ItemStack(((CItem) custom).getMaterial());
                             ItemMeta newIm = newItem.getItemMeta();
                             newIm.setDisplayName(custom.getDisplayName());
                             newIm.setLore(((CItem) custom).getDescription());
@@ -741,8 +749,12 @@ public class CeCommand {
                                 p.getInventory().addItem(cp);
                                 p.getInventory().addItem(le);
                                 p.getInventory().addItem(bo);
-                            } else
-                                p.setItemInHand(newItem);
+                            } else {
+                                if (p.getInventory().firstEmpty() == -1) {
+                                    return Error + "Your inventory is full!";
+                                } else
+                                    p.getInventory().addItem(newItem);
+                            }
 
                             Success += "You have created the item '" + custom.getDisplayName() + ChatColor.GREEN + "'!";
                         }
