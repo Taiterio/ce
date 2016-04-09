@@ -18,8 +18,6 @@ package com.taiter.ce.CItems;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -32,47 +30,53 @@ import org.bukkit.inventory.ItemStack;
 
 import com.taiter.ce.EffectManager;
 
-
-
 public class PotionLauncher extends CItem {
-	
-	int ProjectileSpeedMultiplier;
 
-	public PotionLauncher(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
-		super(originalName, color, lDescription, lCooldown, mat);
-		this.configEntries.put("ProjectileSpeedMultiplier", 4);
-		triggers.add(Trigger.INTERACT_RIGHT);
-	}
+    int ProjectileSpeedMultiplier;
 
-	@Override
-	public boolean effect(Event event, Player player) {
+    public PotionLauncher(String originalName, ChatColor color, String lDescription, long lCooldown, Material mat) {
+        super(originalName, color, lDescription, lCooldown, mat);
+        this.configEntries.put("ProjectileSpeedMultiplier", 4);
+        triggers.add(Trigger.INTERACT_RIGHT);
+    }
 
-			int slot = player.getInventory().getHeldItemSlot();
+    @Override
+    public boolean effect(Event event, Player player) {
+        int slot = player.getInventory().getHeldItemSlot();
 
-			ItemStack potion = player.getInventory().getItem(slot + 1);
-			Location loc = player.getLocation();
-			if(potion != null && potion.getType().equals(Material.POTION)) {
-				ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
-				EffectManager.playSound(loc, "ENTITY_GENERIC_EXPLODE", 0.5f, 2f);
-				tp.setItem(potion);
-				tp.setBounce(false);
-				tp.setVelocity(loc.getDirection().multiply(ProjectileSpeedMultiplier));
-				if(!player.getGameMode().equals(GameMode.CREATIVE)) {
-					potion.setAmount(potion.getAmount() - 1);
-					player.getInventory().setItem(slot + 1, potion);
-					player.updateInventory();
-				}
-				return true;
-			} else {
-				player.sendMessage(ChatColor.RED + "You need a Potion in the slot to the right of the Potion Launcher!");
-				player.getWorld().playEffect(loc, Effect.CLICK1, 5);
-			}
-		return false;
-	}
+        ItemStack potion = player.getInventory().getItem(slot + 1);
+        Location loc = player.getLocation();
+        if (potion != null && potion.getType().toString().contains("POTION")) {
+            ThrownPotion tp = player.launchProjectile(ThrownPotion.class);
+            EffectManager.playSound(loc, "ENTITY_GENERIC_EXPLODE", 0.5f, 2f);
 
-	@Override
-	public void initConfigEntries() {
-		ProjectileSpeedMultiplier = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".ProjectileSpeedMultiplier"));
-	}
+            try {
+                tp.setItem(potion);
+            } catch (IllegalArgumentException ex) {
+                ItemStack pt = potion.clone();
+                if (potion.getType().equals(Material.POTION) || potion.getType().equals(Material.LINGERING_POTION))
+                    pt.setType(Material.SPLASH_POTION);
+                tp.setItem(pt);
+            }
+
+            tp.setBounce(false);
+            tp.setVelocity(loc.getDirection().multiply(ProjectileSpeedMultiplier));
+            if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+                potion.setAmount(potion.getAmount() - 1);
+                player.getInventory().setItem(slot + 1, potion);
+                player.updateInventory();
+            }
+            return true;
+        } else {
+            player.sendMessage(ChatColor.RED + "You need a Potion in the slot to the right of the Potion Launcher!");
+            player.getWorld().playEffect(loc, Effect.CLICK1, 5);
+        }
+        return false;
+    }
+
+    @Override
+    public void initConfigEntries() {
+        ProjectileSpeedMultiplier = Integer.parseInt(getConfig().getString("Items." + getOriginalName() + ".ProjectileSpeedMultiplier"));
+    }
 
 }

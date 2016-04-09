@@ -21,7 +21,6 @@ package com.taiter.ce.CItems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -34,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.taiter.ce.Tools;
 
@@ -139,8 +139,10 @@ public class Flamethrower extends CItem {
 	
 	public List<Location> getLinePlayer(Player player, int length) {
 		List<Location> list = new ArrayList<Location>();
+		Vector direction = player.getLocation().getDirection();
+		Location cLoc = player.getLocation().add(0, 1, 0); //Current location
 		for(int amount = length; amount > 0; amount --) {
-			list.add(player.getTargetBlock((Set<Material>)null, amount).getLocation());
+		    list.add(cLoc.add(direction).getBlock().getLocation());
 		}
 		return list;
 	}

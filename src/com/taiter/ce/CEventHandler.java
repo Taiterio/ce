@@ -324,41 +324,54 @@ public class CEventHandler {
                         if (cb instanceof CItem) {
                             CItem ci = (CItem) cb;
                             if (name.equals(ci.getDisplayName())) {
-                                if (ci instanceof RocketBoots || ci instanceof NecromancersStaff || ci instanceof HookshotBow || lore.equals(ci.getDescription()))
-                                    if (!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || Tools.checkPermission(ci, toCheck))
-                                        if (!ci.getHasCooldown(toCheck))
-                                            if (!ci.lockList.contains(toCheck)) {
-                                                if (e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap")
-                                                        || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
-                                                    return;
-                                                try {
-                                                    if (e instanceof EntityShootBowEvent)
-                                                        ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
-                                                    if (e instanceof ProjectileLaunchEvent)
-                                                        ((ProjectileLaunchEvent) e).getEntity().setMetadata("ce.projectile.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
-                                                    long time = System.currentTimeMillis();
+                                if (!(ci instanceof RocketBoots) && !(ci instanceof NecromancersStaff) && !(ci instanceof HookshotBow) && !lore.equals(ci.getDescription())) {
+                                    boolean lorePass = true;
+                                    if (lore.size() != ci.getDescription().size())
+                                        continue;
 
-                                                    if (ci.effect(e, toCheck))
-                                                        ci.generateCooldown(toCheck, ci.getCooldown());
-                                                    if (Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled"))
-                                                            && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
-                                                        long timeF = (System.currentTimeMillis() - time);
-                                                        if (timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
-                                                            Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process "
-                                                                    + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
-                                                    }
-                                                } catch (Exception ex) {
-                                                    if (!(ex instanceof ClassCastException))
-                                                        for (StackTraceElement element : ex.getStackTrace()) {
-                                                            String className = element.getClassName();
-                                                            if (className.contains("com.taiter.ce")) {
-                                                                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line "
-                                                                        + element.getLineNumber() + ": " + ex.getCause());
-                                                                break;
-                                                            }
-                                                        }
+                                    for (int x = 0; x < lore.size(); x++) {
+                                        if (!lore.get(x).replace(ChatColor.MAGIC + "", "").equals(ci.getDescription().get(x).replace(ChatColor.MAGIC + "", ""))) {
+                                            lorePass = false;
+                                            break;
+                                        }
+                                    }
+                                    if (lorePass)
+                                        continue;
+                                }
+
+                                if (!Boolean.parseBoolean(Main.config.getString("Global.Enchantments.RequirePermissions")) || Tools.checkPermission(ci, toCheck))
+                                    if (!ci.getHasCooldown(toCheck))
+                                        if (!ci.lockList.contains(toCheck)) {
+                                            if (e instanceof PlayerMoveEvent && (ci.getOriginalName().equals("Landmine") || ci.getOriginalName().equals("Bear Trap")
+                                                    || ci.getOriginalName().equals("Piranha Trap") || ci.getOriginalName().equals("Poison Ivy") || ci.getOriginalName().equals("Prickly Block")))
+                                                return;
+                                            try {
+                                                if (e instanceof EntityShootBowEvent)
+                                                    ((EntityShootBowEvent) e).getProjectile().setMetadata("ce.bow.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
+                                                if (e instanceof ProjectileLaunchEvent)
+                                                    ((ProjectileLaunchEvent) e).getEntity().setMetadata("ce.projectile.item", new FixedMetadataValue(Main.plugin, ci.getOriginalName()));
+                                                long time = System.currentTimeMillis();
+
+                                                if (ci.effect(e, toCheck))
+                                                    ci.generateCooldown(toCheck, ci.getCooldown());
+                                                if (Boolean.parseBoolean(Main.config.getString("Global.Logging.Enabled")) && Boolean.parseBoolean(Main.config.getString("Global.Logging.LogItems"))) {
+                                                    long timeF = (System.currentTimeMillis() - time);
+                                                    if (timeF > Integer.parseInt(Main.config.getString("Global.Logging.MinimumMsForLog")))
+                                                        Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "[CE] Event " + e.getEventName() + " took " + timeF + "ms to process "
+                                                                + ci.getDisplayName() + " (" + ci.getOriginalName() + ")" + ChatColor.RESET + ".");
                                                 }
+                                            } catch (Exception ex) {
+                                                if (!(ex instanceof ClassCastException))
+                                                    for (StackTraceElement element : ex.getStackTrace()) {
+                                                        String className = element.getClassName();
+                                                        if (className.contains("com.taiter.ce")) {
+                                                            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[CE] An error occurred in " + element.getFileName() + " on line "
+                                                                    + element.getLineNumber() + ": " + ex.getCause());
+                                                            break;
+                                                        }
+                                                    }
                                             }
+                                        }
                                 return; // Stops going through the list of items  as it is not needed anymore
                             }
                         }
