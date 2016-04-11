@@ -452,7 +452,7 @@ public class CEventHandler {
                         String[] costSplit = ChatColor.stripColor(lore.get(lore.size() - 1)).split(" ");
                         String resultString = ChatColor.WHITE + "" + ChatColor.BOLD + costSplit[1];
 
-                        if (costSplit[2].equals("Levels")) {
+                        if (costSplit.length >= 3 && costSplit[2].equals("Levels")) {
                             levelCost = Integer.parseInt(costSplit[1]);
                             resultString += " Levels";
                             if (costSplit.length >= 4) {
@@ -463,7 +463,8 @@ public class CEventHandler {
                             }
                         } else {
                             moneyCost = Double.parseDouble(costSplit[1]);
-                            resultString += costSplit[2];
+                            if (costSplit.length >= 3)
+                                resultString += costSplit[2];
                             for (int i = 3; i < costSplit.length; i++)
                                 resultString += " " + costSplit[i];
                         }
