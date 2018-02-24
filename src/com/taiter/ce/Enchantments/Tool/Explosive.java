@@ -18,9 +18,9 @@ package com.taiter.ce.Enchantments.Tool;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.taiter.ce.Enchantments.CEnchantment;
+import com.taiter.ce.Tools;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,8 +29,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.taiter.ce.Tools;
-import com.taiter.ce.Enchantments.CEnchantment;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Explosive extends CEnchantment {
 
@@ -79,19 +79,22 @@ public class Explosive extends CEnchantment {
 
         for (Location loc : locations) {
             String iMat = item.getType().toString();
-            Block b = loc.getBlock();
-            String bMat = b.getType().toString();
+            Block block = loc.getBlock();
+            String bMat = block.getType().toString();
 
-            if (isUsable(iMat, bMat))
-                if (!loc.getBlock().getDrops(item).isEmpty())
-                    if (Tools.checkWorldGuard(loc, player, "BUILD", false))
-                        if (DropItems)
-                            loc.getBlock().breakNaturally(item);
-                        else
-                            for (ItemStack i : loc.getBlock().getDrops(item)) {
-                                player.getInventory().addItem(i);
-                                loc.getBlock().setType(Material.AIR);
-                            }
+            if (isUsable(iMat, bMat)) {
+                BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
+                Bukkit.getServer().getPluginManager().callEvent(blockBreakEvent);
+                if (blockBreakEvent.isCancelled()) return;
+                if (!block.getDrops(item).isEmpty())
+                    if (DropItems && blockBreakEvent.isDropItems())
+                        block.breakNaturally(item);
+                    else
+                        for (ItemStack i : block.getDrops(item)) {
+                            player.getInventory().addItem(i);
+                            block.setType(Material.AIR);
+                        }
+            }
         }
 
     }
@@ -99,12 +102,10 @@ public class Explosive extends CEnchantment {
     // Checks if the Material of the block (bMat) is intended to be mined by the
     // item's Material (iMat)
     private boolean isUsable(String iMat, String bMat) {
-        if ((iMat.endsWith("PICKAXE") && (bMat.contains("ORE") || (!bMat.contains("STAIRS") && bMat.contains("STONE")) || bMat.equals("STAINED_CLAY") || bMat.equals("NETHERRACK")))
+        return (iMat.endsWith("PICKAXE") && (bMat.contains("ORE") || (!bMat.contains("STAIRS") && bMat.contains("STONE")) || bMat.equals("STAINED_CLAY") || bMat.equals("NETHERRACK")))
                 || (iMat.endsWith("SPADE") && (bMat.contains("SAND") || bMat.equals("DIRT") || bMat.equals("SNOW_BLOCK") || bMat.equals("SNOW") || bMat.equals("MYCEL") || bMat.equals("CLAY")
                 || bMat.equals("GRAVEL") || bMat.equals("GRASS")))
-                || (iMat.endsWith("_AXE") && bMat.contains("LOG") || bMat.contains("PLANKS")) || (iMat.endsWith("HOE") && (bMat.equals("CROPS") || bMat.equals("POTATO") || bMat.equals("CARROT"))))
-            return true;
-        return false;
+                || (iMat.endsWith("_AXE") && bMat.contains("LOG") || bMat.contains("PLANKS")) || (iMat.endsWith("HOE") && (bMat.equals("CROPS") || bMat.equals("POTATO") || bMat.equals("CARROT")));
     }
 
     @Override
