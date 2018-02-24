@@ -18,9 +18,9 @@ package com.taiter.ce.Enchantments.Tool;
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.taiter.ce.Enchantments.CEnchantment;
+import com.taiter.ce.Tools;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -29,14 +29,14 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.taiter.ce.Tools;
-import com.taiter.ce.Enchantments.CEnchantment;
+import java.util.*;
 
 public class Explosive extends CEnchantment {
 
-    int Radius;
-    boolean LargerRadius;
-    boolean DropItems;
+    int radius;
+    boolean largerRadius;
+    boolean dropItems;
+    private Set<UUID> uuidSet = new HashSet<UUID>();
 
     public Explosive(Application app) {
         super(app);
@@ -50,14 +50,15 @@ public class Explosive extends CEnchantment {
     public void effect(Event e, ItemStack item, int level) {
         BlockBreakEvent event = (BlockBreakEvent) e;
         Player player = event.getPlayer();
-
+        if (uuidSet.contains(player.getUniqueId())) return;
+        uuidSet.add(player.getUniqueId());
         if (!isUsable(player.getItemInHand().getType().toString(), event.getBlock().getType().toString()))
             return;
 
         List<Location> locations = new ArrayList<Location>();
 
-        int locRad = Radius;
-        if (LargerRadius && Tools.random.nextInt(100) < level * 5)
+        int locRad = radius;
+        if (largerRadius && Tools.random.nextInt(100) < level * 5)
             locRad += 2;
         int r = locRad - 1;
         int start = r / 2;
@@ -79,41 +80,43 @@ public class Explosive extends CEnchantment {
 
         for (Location loc : locations) {
             String iMat = item.getType().toString();
-            Block b = loc.getBlock();
-            String bMat = b.getType().toString();
-
-            if (isUsable(iMat, bMat))
-                if (!loc.getBlock().getDrops(item).isEmpty())
-                    if (Tools.checkWorldGuard(loc, player, "BUILD", false))
-                        if (DropItems)
-                            loc.getBlock().breakNaturally(item);
-                        else
-                            for (ItemStack i : loc.getBlock().getDrops(item)) {
-                                player.getInventory().addItem(i);
-                                loc.getBlock().setType(Material.AIR);
-                            }
+            Block block = loc.getBlock();
+            String bMat = block.getType().toString();
+            if (isUsable(iMat, bMat)) {
+                BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
+                Bukkit.getServer().getPluginManager().callEvent(blockBreakEvent);
+                if (blockBreakEvent.isCancelled()) return;
+                if (!block.getDrops(item).isEmpty())
+                    if (dropItems && blockBreakEvent.isDropItems())
+                        block.breakNaturally(item);
+                    else
+                        for (ItemStack i : block.getDrops(item)) {
+                            player.getInventory().addItem(i);
+                            block.setType(Material.AIR);
+                        }
+            }
         }
+
+        uuidSet.remove(player.getUniqueId());
 
     }
 
     // Checks if the Material of the block (bMat) is intended to be mined by the
     // item's Material (iMat)
     private boolean isUsable(String iMat, String bMat) {
-        if ((iMat.endsWith("PICKAXE") && (bMat.contains("ORE") || (!bMat.contains("STAIRS") && bMat.contains("STONE")) || bMat.equals("STAINED_CLAY") || bMat.equals("NETHERRACK")))
+        return (iMat.endsWith("PICKAXE") && (bMat.contains("ORE") || (!bMat.contains("STAIRS") && bMat.contains("STONE")) || bMat.equals("STAINED_CLAY") || bMat.equals("NETHERRACK")))
                 || (iMat.endsWith("SPADE") && (bMat.contains("SAND") || bMat.equals("DIRT") || bMat.equals("SNOW_BLOCK") || bMat.equals("SNOW") || bMat.equals("MYCEL") || bMat.equals("CLAY")
                 || bMat.equals("GRAVEL") || bMat.equals("GRASS")))
-                || (iMat.endsWith("_AXE") && bMat.contains("LOG") || bMat.contains("PLANKS")) || (iMat.endsWith("HOE") && (bMat.equals("CROPS") || bMat.equals("POTATO") || bMat.equals("CARROT"))))
-            return true;
-        return false;
+                || (iMat.endsWith("_AXE") && bMat.contains("LOG") || bMat.contains("PLANKS")) || (iMat.endsWith("HOE") && (bMat.equals("CROPS") || bMat.equals("POTATO") || bMat.equals("CARROT")));
     }
 
     @Override
     public void initConfigEntries() {
-        Radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Radius"));
-        if (Radius % 2 == 0)
-            Radius += 1;
-        LargerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".LargerRadius"));
-        DropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".DropItems"));
+        radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Radius"));
+        if (radius % 2 == 0)
+            radius += 1;
+        largerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".LargerRadius"));
+        dropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".DropItems"));
     }
 
 }
