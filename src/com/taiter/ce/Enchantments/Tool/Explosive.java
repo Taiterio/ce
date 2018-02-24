@@ -29,20 +29,20 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Explosive extends CEnchantment {
 
-    int Radius;
-    boolean LargerRadius;
-    boolean DropItems;
+    int radius;
+    boolean largerRadius;
+    boolean dropItems;
+    private Set<UUID> uuidSet = new HashSet<UUID>();
 
     public Explosive(Application app) {
         super(app);
-        configEntries.put("Radius", 3);
-        configEntries.put("LargerRadius", true);
-        configEntries.put("DropItems", true);
+        configEntries.put("radius", 3);
+        configEntries.put("largerRadius", true);
+        configEntries.put("dropItems", true);
         triggers.add(Trigger.BLOCK_BROKEN);
     }
 
@@ -50,14 +50,15 @@ public class Explosive extends CEnchantment {
     public void effect(Event e, ItemStack item, int level) {
         BlockBreakEvent event = (BlockBreakEvent) e;
         Player player = event.getPlayer();
-
+        if (uuidSet.contains(player.getUniqueId())) return;
+        uuidSet.add(player.getUniqueId());
         if (!isUsable(player.getItemInHand().getType().toString(), event.getBlock().getType().toString()))
             return;
 
         List<Location> locations = new ArrayList<Location>();
 
-        int locRad = Radius;
-        if (LargerRadius && Tools.random.nextInt(100) < level * 5)
+        int locRad = radius;
+        if (largerRadius && Tools.random.nextInt(100) < level * 5)
             locRad += 2;
         int r = locRad - 1;
         int start = r / 2;
@@ -81,13 +82,12 @@ public class Explosive extends CEnchantment {
             String iMat = item.getType().toString();
             Block block = loc.getBlock();
             String bMat = block.getType().toString();
-
             if (isUsable(iMat, bMat)) {
                 BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
                 Bukkit.getServer().getPluginManager().callEvent(blockBreakEvent);
                 if (blockBreakEvent.isCancelled()) return;
                 if (!block.getDrops(item).isEmpty())
-                    if (DropItems && blockBreakEvent.isDropItems())
+                    if (dropItems && blockBreakEvent.isDropItems())
                         block.breakNaturally(item);
                     else
                         for (ItemStack i : block.getDrops(item)) {
@@ -96,6 +96,8 @@ public class Explosive extends CEnchantment {
                         }
             }
         }
+
+        uuidSet.remove(player.getUniqueId());
 
     }
 
@@ -110,11 +112,11 @@ public class Explosive extends CEnchantment {
 
     @Override
     public void initConfigEntries() {
-        Radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Radius"));
-        if (Radius % 2 == 0)
-            Radius += 1;
-        LargerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".LargerRadius"));
-        DropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".DropItems"));
+        radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".radius"));
+        if (radius % 2 == 0)
+            radius += 1;
+        largerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".largerRadius"));
+        dropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".dropItems"));
     }
 
 }
