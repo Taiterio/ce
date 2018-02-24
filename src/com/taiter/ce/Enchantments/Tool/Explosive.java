@@ -40,9 +40,9 @@ public class Explosive extends CEnchantment {
 
     public Explosive(Application app) {
         super(app);
-        configEntries.put("radius", 3);
-        configEntries.put("largerRadius", true);
-        configEntries.put("dropItems", true);
+        configEntries.put("Radius", 3);
+        configEntries.put("LargerRadius", true);
+        configEntries.put("DropItems", true);
         triggers.add(Trigger.BLOCK_BROKEN);
     }
 
@@ -112,11 +112,11 @@ public class Explosive extends CEnchantment {
 
     @Override
     public void initConfigEntries() {
-        radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".radius"));
+        radius = Integer.parseInt(getConfig().getString("Enchantments." + getOriginalName() + ".Radius"));
         if (radius % 2 == 0)
             radius += 1;
-        largerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".largerRadius"));
-        dropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".dropItems"));
+        largerRadius = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".LargerRadius"));
+        dropItems = Boolean.parseBoolean(getConfig().getString("Enchantments." + getOriginalName() + ".DropItems"));
     }
 
 }
